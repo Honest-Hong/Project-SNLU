@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "516230197254",
+    "firebase_url": "https://snlu-e6627.firebaseio.com",
+    "project_id": "snlu-e6627",
+    "storage_bucket": "snlu-e6627.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516230197254:android:933918069510a7e9",
+        "android_client_info": {
+          "package_name": "com.snlu.snluapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "516230197254-qjkm4aivn25od2gquseo2878u4eth6ei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATir4wqHkm0Afw-9mdhKaN-Kp1JuAEjt8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

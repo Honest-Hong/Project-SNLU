@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.snlu.snluapp.activity.LoginActivity"
+    android:orientation="vertical"
+    android:gravity="bottom"
+    android:background="@color/colorPink">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="전화번호"
+            android:textStyle="bold"
+            android:textSize="@dimen/font_big"
+            android:textColor="@color/colorBlack"/>
+
+        <TextView
+            android:id="@+id/text_phone"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="@dimen/font_normal"
+            android:textColor="@color/colorRedPink"
+            android:background="@drawable/shape_text_phone"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:gravity="center"
+            android:text="전화번호가 일치하면 카카오 또는 페이스북으로 로그인해주세요. 전화번호는 ID로 사용되며 전화번호가 없는 경우 계정 이메일로 사용합니다."
+            android:textStyle="bold"
+            android:textSize="@dimen/font_normal"
+            android:textColor="@color/colorRedPink"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/login_button_height"
+        android:orientation="horizontal"
+        android:background="@color/com_kakao_button_background_press">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/kakao_login_symbol"/>
+
+        <TextView
+            android:id="@+id/button_kakao"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/com_kakao_brown"
+            android:text="카카오 계정으로 로그인 하기"
+            android:background="?attr/selectableItemBackground"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/login_button_height"
+        android:orientation="horizontal"
+        android:background="@color/com_facebook_blue">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/com_facebook_button_login_logo"/>
+
+        <TextView
+            android:id="@+id/button_facebook"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/com_facebook_button_text_color"
+            android:text="페이스북 계정으로 로그인 하기"
+            android:background="?attr/selectableItemBackground"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_above="@+id/phone_linear"
+    >
+    <ImageView
+        android:layout_width="@dimen/content_icon_size_small"
+        android:layout_height="@dimen/content_icon_size_small"
+        android:layout_gravity="center"
+        android:src="@drawable/icon_phone"
+        android:layout_marginRight="15dp"
+        />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/phone_putPhone"
+        android:ems="6"
+        android:enabled="false"/>
+</LinearLayout>
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:id="@+id/phone_linear">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="인증번호 입력"
+        android:layout_marginRight="25dp"
+        android:maxLength="4"
+        />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:id="@+id/phone_putCertify"
+        android:inputType="number"
+        android:maxLength="4"
+        />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="인증번호전송"
+        android:id="@+id/phone_button"
+        android:layout_below="@+id/phone_linear"
+        android:layout_centerHorizontal="true"
+        android:ems="7"
+        android:layout_margin="@dimen/bar_icon_size"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phone_button"
+        android:id="@+id/phone_text_time"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/phone_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="테스트"/>
+
+</RelativeLayout>

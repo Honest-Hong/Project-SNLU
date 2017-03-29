@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_button_height"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:background="@color/colorPrimary"
+        android:text="회의방을 생성합니다."/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="@dimen/content_icon_size"
+            android:layout_height="@dimen/content_icon_size"
+            android:layout_margin="@dimen/content_icon_margin"
+            android:src="@drawable/icon_plus"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="회의방 제목"/>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/dialog_create_edit_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textShortMessage"
+        android:layout_margin="15dp"/>
+
+    <TextView
+        android:id="@+id/dialog_create_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_button_height"
+        android:background="@drawable/selector_bottom_button"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:text="생성하기"/>
+</LinearLayout>
