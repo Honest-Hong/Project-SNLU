@@ -2,6 +2,7 @@ package com.snlu.snluapp.activity;
 
 import android.Manifest;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -279,7 +280,6 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         }
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse("http://52.78.92.129:8000/downloadDocument?documentNumber=" + documentItem.getNumber() + "&documentType=" + type))
                 .setAllowedOverRoaming(false)
-                .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
                 .setTitle(fileName)
                 .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
                 .setDescription("문서를 다운로드 중입니다.");
@@ -315,13 +315,12 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 return;
             }
 
-            DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 
             // make a query
-            DownloadManager.Query query = new DownloadManager.Query();
+            final DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(id);
 
-            // check the status
             Cursor cursor = downloadManager.query(query);
             if (cursor.moveToFirst()) {
                 // when download completed
@@ -332,12 +331,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
 
                 int uriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
                 String downloadedPackageUriString = cursor.getString(uriIndex);
-                Snackbar.make(getWindow().getDecorView().getRootView(), "다운로드가 완료되었습니다.", 3000).show();
                 String file = Uri.decode(downloadedPackageUriString);
                 showFile(file);
-            }else{
-                // when canceled
-                return;
             }
         }
     };
