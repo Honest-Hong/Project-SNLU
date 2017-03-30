@@ -12,7 +12,7 @@
     <style name="AppTheme.Fab_Menu_Linear" >
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/fab_list_height</item>
-        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginRight">9dp</item>
         <item name="android:translationX">200dp</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">horizontal</item>

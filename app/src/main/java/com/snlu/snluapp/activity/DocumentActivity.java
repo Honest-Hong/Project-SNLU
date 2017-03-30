@@ -17,6 +17,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.text.Html;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 public class DocumentActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
     private DocumentItem documentItem;
     private ArrayList<SentenceItem> sentenceItems;
+    private ArrayList<SentenceItem> searchItems;
     private LinearLayout paper;
     private FloatingActionButton fab;
     private LinearLayout linearPdf, linearWord, linearStatistic, linearSummary;
@@ -74,8 +77,6 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.fab_summary).setOnClickListener(this);
         findViewById(R.id.fab_word).setOnClickListener(this);
 
-        registerReceiver(broadcastReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-
         SNLUPermission.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
     }
 
@@ -104,6 +105,24 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if(newText.equals("")) {
+                    createPaper(sentenceItems, false);
+                } else {
+                    ArrayList<SentenceItem> temp = new ArrayList<>();
+                    searchItems = new ArrayList<>();
+                    for(int i=0; i<sentenceItems.size(); i++) {
+                        if(sentenceItems.get(i).getSentence().contains(newText)) {
+                            searchItems.add(sentenceItems.get(i));
+                            SentenceItem item = new SentenceItem();
+                            item.setSentence(sentenceItems.get(i).getSentence().replace(newText, "<font color='red'>" + newText + "</font>"));
+                            item.setSpeakTime(sentenceItems.get(i).getSpeakTime());
+                            item.setSpeakerPhoneNumber(sentenceItems.get(i).getSpeakerPhoneNumber());
+                            item.setSpeakerName(sentenceItems.get(i).getSpeakerName());
+                            temp.add(item);
+                        }
+                    }
+                    createPaper(temp, true);
+                }
                 return false;
             }
         });
@@ -120,7 +139,16 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_save:
-                if(editedPosition != -1) setEditedMode(editedPosition, false);
+                if(editedPosition != -1) {
+                    SentenceItem sentenceItem = sentenceItems.get(editedPosition);
+                    View parent = paper.getChildAt(editedPosition);
+                    EditText editText = (EditText)parent.findViewById(R.id.edit_sentence);
+                    sentenceItem.setSentence(editText.getText().toString());
+                    TextView textView = (TextView)parent.findViewById(R.id.item_sentence_sentence);
+                    textView.setText(sentenceItem.getSentence());
+                    requestSentenceSave(sentenceItem);
+                    setEditedMode(editedPosition, false);
+                }
                 showEditMenu(false);
                 return true;
             case R.id.menu_cancel:
@@ -131,6 +159,33 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 return true;
         }
     }
+
+    private void requestSentenceSave(SentenceItem item) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("documentNumber", documentItem.getNumber());
+            json.put("speakTime", item.getSpeakTime());
+            json.put("sentence", item.getSentence());
+            SNLUVolley.getInstance(this).post("modifySentence", json, onSaveListener);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SNLUVolley.OnResponseListener onSaveListener = new SNLUVolley.OnResponseListener() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                if(response.getString("result").equals("0")) {
+                    Snackbar.make(getWindow().getDecorView().getRootView(), "문장이 수정되었습니다.", 2000).show();
+                } else {
+                    Snackbar.make(getWindow().getDecorView().getRootView(), "오류가 발생하였습니다.", 2000).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     // 수정모드일때 아닐때 메뉴를 숨기고 보여주는 함수.
     private void showEditMenu(boolean show) {
@@ -167,6 +222,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     public void onBackPressed() {
         if(!searchView.isIconified()) {
             searchView.setIconified(true);
+            createPaper(sentenceItems, false);
         } else if (editedPosition != -1) {
             setEditedMode(editedPosition, false);
             showEditMenu(false);
@@ -304,21 +360,30 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void addSentence(SentenceItem item) {
-        sentenceItems.add(item);
-        View viewSentence = LayoutInflater.from(DocumentActivity.this).inflate(R.layout.item_sentence, null);
-        TextView textName = (TextView)viewSentence.findViewById(R.id.item_sentence_name);
-        textName.setText(item.getSpeakerName() + ":");
-        TextView textSentence = (TextView)viewSentence.findViewById(R.id.item_sentence_sentence);
-        textSentence.setText(item.getSentence());
-        EditText editSentence = (EditText)viewSentence.findViewById(R.id.edit_sentence);
-        editSentence.setText(item.getSentence());
-        TextView textTime = (TextView)viewSentence.findViewById(R.id.item_sentence_time);
-        String time = item.getSpeakTime();
-        textTime.setText(String.format("%s시 %s분 %s초", time.substring(11,13), time.substring(14,16), time.substring(17,19)));
-        viewSentence.setOnLongClickListener(this);
-        viewSentence.setTag(sentenceItems.size() - 1);
-        paper.addView(viewSentence);
+    private void createPaper(ArrayList<SentenceItem> items, boolean highlight) {
+        paper.removeAllViews();
+        for(int i=0; i<items.size(); i++) {
+            SentenceItem item = items.get(i);
+            View viewSentence = LayoutInflater.from(DocumentActivity.this).inflate(R.layout.item_sentence, null);
+            TextView textName = (TextView) viewSentence.findViewById(R.id.item_sentence_name);
+            textName.setText(item.getSpeakerName() + ":");
+            TextView textSentence = (TextView) viewSentence.findViewById(R.id.item_sentence_sentence);
+            EditText editSentence = (EditText) viewSentence.findViewById(R.id.edit_sentence);
+            if (highlight) {
+                textSentence.setText(Html.fromHtml(item.getSentence()));
+                editSentence.setText(searchItems.get(i).getSentence());
+            }
+            else {
+                textSentence.setText(item.getSentence());
+                editSentence.setText(item.getSentence());
+            }
+            TextView textTime = (TextView) viewSentence.findViewById(R.id.item_sentence_time);
+            String time = item.getSpeakTime();
+            textTime.setText(String.format("%s시 %s분 %s초", time.substring(11, 13), time.substring(14, 16), time.substring(17, 19)));
+            viewSentence.setOnLongClickListener(this);
+            viewSentence.setTag(i);
+            paper.addView(viewSentence);
+        }
     }
 
     private SNLUVolley.OnResponseListener requestDocumentListener = new SNLUVolley.OnResponseListener() {
@@ -335,12 +400,25 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                         item.setSpeakerName(array.getJSONObject(i).getString("name"));
                         item.setSpeakTime(array.getJSONObject(i).getString("speakTime"));
                         item.setSentence(array.getJSONObject(i).getString("sentence"));
-                        addSentence(item);
+                        sentenceItems.add(item);
                     }
+                    createPaper(sentenceItems, false);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
 }
