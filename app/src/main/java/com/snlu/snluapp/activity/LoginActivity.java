@@ -193,13 +193,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     try {
                         int result = response.getInt("result");
                         if(result == 0) {
-                            storeLoginInform(phoneNumber, name);
-                            startMainActivity();
+                            Toast.makeText(LoginActivity.this, "환영합니다 " + name + "님!", Toast.LENGTH_LONG).show();
                         } else {
-                            LoginManager.getInstance().logOut();
-                            Session.getCurrentSession().close();
-                            Snackbar.make(rootView, "회원가입에 실패하였습니다", 3000).show();
+                            Toast.makeText(LoginActivity.this, "또 뵙네요 " + name + "님!", Toast.LENGTH_LONG).show();
                         }
+                        storeLoginInform(phoneNumber, name);
+                        startMainActivity();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
