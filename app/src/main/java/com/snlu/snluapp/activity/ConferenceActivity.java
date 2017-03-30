@@ -154,12 +154,12 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         sentenceItems.add(item);
         View viewSentence = LayoutInflater.from(ConferenceActivity.this).inflate(R.layout.item_sentence, null);
         TextView textName = (TextView)viewSentence.findViewById(R.id.item_sentence_name);
-        textName.setText(item.getSpeakerName());
+        textName.setText(item.getSpeakerName() + ":");
         TextView textSentence = (TextView)viewSentence.findViewById(R.id.item_sentence_sentence);
         textSentence.setText(item.getSentence());
         TextView textTime = (TextView)viewSentence.findViewById(R.id.item_sentence_time);
         String time = item.getSpeakTime();
-        textTime.setText(String.format("%s시 %s분", time.substring(11,13), time.substring(14,16)));
+        textTime.setText(String.format("%s시 %s분 %s초", time.substring(11,13), time.substring(14,16), time.substring(17,19)));
         paper.addView(viewSentence);
         if(focus) {
             // 최근에 발언한 문장이 보이도록 스크롤을 내려준다.

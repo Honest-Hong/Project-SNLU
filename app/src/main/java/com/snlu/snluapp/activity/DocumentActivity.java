@@ -1,7 +1,6 @@
 package com.snlu.snluapp.activity;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -17,16 +16,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.SearchView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.SentenceItem;
@@ -38,8 +37,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class DocumentActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
@@ -47,8 +44,11 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     private ArrayList<SentenceItem> sentenceItems;
     private LinearLayout paper;
     private FloatingActionButton fab;
-    private LinearLayout linearDocument, linearStatistic, linearSummary;
+    private LinearLayout linearPdf, linearWord, linearStatistic, linearSummary;
     private long downloadId;
+    private SearchView searchView;
+    private MenuItem menuSave, menuCancel;
+    private int editedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +63,16 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         // 임의의 데이터
         paper =  (LinearLayout)findViewById(R.id.document_paper);
         fab = (FloatingActionButton)findViewById(R.id.fab);
-        linearDocument = (LinearLayout)findViewById(R.id.linear_document);
+        linearPdf = (LinearLayout)findViewById(R.id.linear_pdf);
+        linearWord = (LinearLayout)findViewById(R.id.linear_word);
         linearStatistic = (LinearLayout)findViewById(R.id.linear_statistic);
         linearSummary = (LinearLayout)findViewById(R.id.linear_summary);
 
         fab.setOnClickListener(this);
-        findViewById(R.id.fab_document).setOnClickListener(this);
+        findViewById(R.id.fab_pdf).setOnClickListener(this);
         findViewById(R.id.fab_statistic).setOnClickListener(this);
         findViewById(R.id.fab_summary).setOnClickListener(this);
+        findViewById(R.id.fab_word).setOnClickListener(this);
 
         registerReceiver(broadcastReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
@@ -87,6 +89,93 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_document, menu);
+        menuSave = menu.findItem(R.id.menu_save);
+        menuCancel = menu.findItem(R.id.menu_cancel);
+
+        searchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
+        searchView.setQueryHint("검색할 내용을 입력하세요.");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_save:
+                if(editedPosition != -1) setEditedMode(editedPosition, false);
+                showEditMenu(false);
+                return true;
+            case R.id.menu_cancel:
+                if(editedPosition != -1) setEditedMode(editedPosition, false);
+                showEditMenu(false);
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    // 수정모드일때 아닐때 메뉴를 숨기고 보여주는 함수.
+    private void showEditMenu(boolean show) {
+        if(show) {
+            menuCancel.setVisible(true);
+            menuSave.setVisible(true);
+            searchView.setVisibility(View.GONE);
+            fab.hide();
+        } else {
+            menuCancel.setVisible(false);
+            menuSave.setVisible(false);
+            searchView.setVisibility(View.VISIBLE);
+            fab.show();
+        }
+    }
+
+    // 해당 문장을 수정모드일때 아닐때 변환해주는 함수.
+    private void setEditedMode(int position, boolean edited) {
+        View view = paper.getChildAt(position);
+        TextView textView = (TextView)view.findViewById(R.id.item_sentence_sentence);
+        EditText editText = (EditText)view.findViewById(R.id.edit_sentence);
+        if(edited) {
+            editedPosition = position;
+            textView.setVisibility(View.GONE);
+            editText.setVisibility(View.VISIBLE);
+        } else {
+            editedPosition = -1;
+            textView.setVisibility(View.VISIBLE);
+            editText.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!searchView.isIconified()) {
+            searchView.setIconified(true);
+        } else if (editedPosition != -1) {
+            setEditedMode(editedPosition, false);
+            showEditMenu(false);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.fab:
@@ -94,18 +183,24 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                     fab.animate().rotation(45f);
                     linearSummary.animate().translationX(0);
                     linearStatistic.animate().translationX(0);
-                    linearDocument.animate().translationX(0);
+                    linearPdf.animate().translationX(0);
+                    linearWord.animate().translationX(0);
                 } else {
                     fab.animate().rotation(0f);
                     float dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
                     linearSummary.animate().translationX(dp);
                     linearStatistic.animate().translationX(dp);
-                    linearDocument.animate().translationX(dp);
+                    linearPdf.animate().translationX(dp);
+                    linearWord.animate().translationX(dp);
                 }
                 break;
-            case R.id.fab_document:
-                Snackbar.make(getWindow().getDecorView().getRootView(), "문서를 다운로드합니다.", 3000).show();
-                downloadFile(1);
+            case R.id.fab_pdf:
+                Snackbar.make(getWindow().getDecorView().getRootView(), "pdf파일을 다운로드합니다.", 2000).show();
+                downloadFile(3);
+                break;
+            case R.id.fab_word:
+                Snackbar.make(getWindow().getDecorView().getRootView(), "word파일을 다운로드합니다.", 2000).show();
+                downloadFile(2);
                 break;
             case R.id.fab_statistic:
                 Intent intentStatistic = new Intent(this, StatistcActivity.class);
@@ -123,9 +218,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     private void downloadFile(int type) {
         String fileName = "아이편회_회의록_" + documentItem.getDate();
         switch(type) {
-            case 1: fileName += ".txt"; break;
             case 2: fileName += ".doc"; break;
-            case 3: fileName += ".hwp"; break;
+            case 3: fileName += ".pdf"; break;
         }
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse("http://52.78.92.129:8000/downloadDocument?documentNumber=" + documentItem.getNumber() + "&documentType=" + type))
                 .setAllowedOverRoaming(false)
@@ -194,9 +288,9 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public boolean onLongClick(View v) {
-        int position = (int)v.getTag();
-        v.findViewById(R.id.item_sentence_sentence).setVisibility(View.GONE);
-        v.findViewById(R.id.edit_sentence).setVisibility(View.VISIBLE);
+        if(editedPosition != -1) setEditedMode(editedPosition, false);
+        setEditedMode((int)v.getTag(), true);
+        showEditMenu(true);
         return false;
     }
 
@@ -214,11 +308,14 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         sentenceItems.add(item);
         View viewSentence = LayoutInflater.from(DocumentActivity.this).inflate(R.layout.item_sentence, null);
         TextView textName = (TextView)viewSentence.findViewById(R.id.item_sentence_name);
-        textName.setText(item.getSpeakerName());
+        textName.setText(item.getSpeakerName() + ":");
         TextView textSentence = (TextView)viewSentence.findViewById(R.id.item_sentence_sentence);
         textSentence.setText(item.getSentence());
         EditText editSentence = (EditText)viewSentence.findViewById(R.id.edit_sentence);
         editSentence.setText(item.getSentence());
+        TextView textTime = (TextView)viewSentence.findViewById(R.id.item_sentence_time);
+        String time = item.getSpeakTime();
+        textTime.setText(String.format("%s시 %s분 %s초", time.substring(11,13), time.substring(14,16), time.substring(17,19)));
         viewSentence.setOnLongClickListener(this);
         viewSentence.setTag(sentenceItems.size() - 1);
         paper.addView(viewSentence);
