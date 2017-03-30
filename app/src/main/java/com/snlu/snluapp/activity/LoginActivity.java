@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onSessionOpenFailed(KakaoException exception) {
-        Snackbar.make(rootView, "onSessionOpenFailed: " + exception, 3000);
+        Toast.makeText(LoginActivity.this, "onSessionOpenFailed: " + exception, Toast.LENGTH_LONG).show();
         Log.e("Kakao", "onSessionOpenFailed: " + exception);
     }
 
