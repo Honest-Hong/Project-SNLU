@@ -31,15 +31,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="회의자 목록"/>
-
-                <ImageView
-                    android:id="@+id/room_add_user"
-                    android:layout_width="@dimen/content_icon_size_big"
-                    android:layout_height="@dimen/content_icon_size_big"
-                    android:padding="@dimen/content_icon_padding"
-                    android:src="@drawable/icon_add_user"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"/>
             </LinearLayout>
 
             <!-- 회의자 목록 리스트 -->

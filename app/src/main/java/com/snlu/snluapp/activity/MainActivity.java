@@ -21,11 +21,9 @@ import android.widget.TextView;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.data.LoginInformation;
-import com.snlu.snluapp.dialog.CreateRoomDialog;
 import com.snlu.snluapp.item.RoomItem;
 import com.snlu.snluapp.util.SNLULog;
 import com.snlu.snluapp.util.SNLUVolley;
-import com.snlu.snluapp.util.SNLUPermission;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,14 +51,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateRoomDialog dialog = new CreateRoomDialog(MainActivity.this);
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        loadRoomList();
-                    }
-                });
-                dialog.show();
+                startActivity(new Intent(MainActivity.this, CreateRoomActivity.class));
             }
         });
 

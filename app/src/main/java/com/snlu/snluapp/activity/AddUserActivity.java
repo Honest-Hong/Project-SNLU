@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.snlu.snluapp.item.PhoneNumItem;
@@ -153,11 +155,27 @@ public class AddUserActivity extends AppCompatActivity implements TextWatcher {
 
     ProgressDialog dialog;
     public void getContactList() {
-        dialog = ProgressDialog.show(this, "", "사용자를 불러오는 중입니다.", false, false);
+        if(dialog == null) dialog = ProgressDialog.show(this, "", "사용자를 불러오는 중입니다.", false, false);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Cursor cursor = getURI();
+                if(cursor == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(AddUserActivity.this, "전화번호부 목록을 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            }, 3000);
+                        }
+                    });
+                    return;
+                }
                 int size = cursor.getCount();
                 String[] name = new String[size];
                 String[] phoneNum = new String[size];
@@ -170,9 +188,10 @@ public class AddUserActivity extends AppCompatActivity implements TextWatcher {
                         String phoneChk = cursor.getString(2);
                         if (phoneChk.equals("1")) {
                             Cursor phone = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + id, null, null);
-                            while (phone.moveToNext()) {
-                                phoneNum[count] = formatPhoneNumber(phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
-                            }
+                            if(phone != null)
+                                while (phone.moveToNext())
+                                    phoneNum[count] = formatPhoneNumber(phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+
                         }
                         name[count] = cursor.getString(1);
                         phoneNumItems.add(new PhoneNumItem(phoneNum[count], name[count], false));

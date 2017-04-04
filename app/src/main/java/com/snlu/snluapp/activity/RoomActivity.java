@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -56,20 +58,8 @@ public class RoomActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(room.getTitle());
 
         if(!isChief) {
-            // 방장이 아닌 경우 회의자 추가 버튼과 회의 시작 버튼을 감춘다.
-            findViewById(R.id.room_add_user).setVisibility(View.GONE);
             findViewById(R.id.room_start_new_conference).setVisibility(View.GONE);
         } else {
-            // 새로운 회의자 추가
-            findViewById(R.id.room_add_user).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(RoomActivity.this, AddUserActivity.class);
-                    intent.putExtra("roomNumber", room.getNumber());
-                    startActivityForResult(intent, REQUEST_ADD_USER);
-                }
-            });
-
             // 새로운 회의 시작
             findViewById(R.id.room_start_new_conference).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -313,5 +303,25 @@ public class RoomActivity extends AppCompatActivity {
         view.setLayoutParams(params);
         view.setBackgroundColor(color);
         return view;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_room, menu);
+        if(!isChief) menu.getItem(R.id.menu_invite).setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_invite:
+                Intent intent = new Intent(RoomActivity.this, AddUserActivity.class);
+                intent.putExtra("roomNumber", room.getNumber());
+                startActivityForResult(intent, REQUEST_ADD_USER);
+                return true;
+            default:
+                return false;
+        }
     }
 }
