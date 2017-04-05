@@ -185,7 +185,7 @@ public class RoomActivity extends AppCompatActivity {
         }
     };
 
-    // 유저 목록 생성성
+    // 유저 목록 생성
     private void showUserList(final ArrayList<UserItem> users) {
         // 사용자 목록에 띄우기
         LinearLayout listUser = (LinearLayout)findViewById(R.id.room_user_list);
@@ -316,8 +316,9 @@ public class RoomActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_invite:
-                Intent intent = new Intent(RoomActivity.this, AddUserActivity.class);
-                intent.putExtra("roomNumber", room.getNumber());
+                Intent intent = new Intent(RoomActivity.this, CreateRoomActivity.class);
+                intent.putExtra("roomNumber", Integer.parseInt(room.getNumber()));
+                intent.putExtra("roomTitle", room.getTitle());
                 startActivityForResult(intent, REQUEST_ADD_USER);
                 return true;
             default:

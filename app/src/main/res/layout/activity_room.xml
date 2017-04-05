@@ -30,6 +30,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textSize="@dimen/font_normal"
+                    android:textColor="@color/colorBlack"
                     android:text="회의자 목록"/>
             </LinearLayout>
 
@@ -57,6 +59,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textSize="@dimen/font_normal"
+                    android:textColor="@color/colorBlack"
                     android:text="회의록 목록"/>
             </LinearLayout>
 

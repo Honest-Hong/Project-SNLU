@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="5dp"
-        android:text="회의자 구성"
+        android:text="사용자 검색"
         android:textColor="@color/colorRedPink"/>
 
     <LinearLayout
@@ -88,15 +88,6 @@
             android:textColor="@color/colorBlack"
             android:background="?attr/selectableItemBackground"/>
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:text="검색 결과"
-        android:textColor="@color/colorRedPink"/>
 
     <include layout="@layout/item_invite"/>
 

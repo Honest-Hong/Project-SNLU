@@ -17,5 +17,7 @@
         android:id="@+id/item_room_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+        android:textSize="@dimen/font_normal"
+        android:textColor="@color/colorBlack"/>
 </LinearLayout>
