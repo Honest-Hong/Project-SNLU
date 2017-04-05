@@ -55,6 +55,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
 
         ArrayList<InviteItem> inviteItems = new ArrayList<>();
         roomNumber = getIntent().getIntExtra("roomNumber", 0);
+        userItem = LoginInformation.getUserItem();
         if(roomNumber != 0) {
             getSupportActionBar().setTitle("회의자 추가");
             buttonCreate.setText("회의자 추가하기");
@@ -65,7 +66,6 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         } else {
             getSupportActionBar().setTitle("회의방 생성");
             buttonCreate.setText("회의방 생성하기");
-            userItem = LoginInformation.getUserItem();
             inviteItems.add(new InviteItem(userItem.getPhoneNumber(), userItem.getName(), false));
         }
         adapter = new ListAdapter(inviteItems);
@@ -110,7 +110,15 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.button:
                 // 회의자를 리사이클러 뷰에 추가하는 과정
-                adapter.addItem(searchItem);
+                boolean isExisted = false;
+                for(int i=0; i<adapter.data.size(); i++) {
+                    if(adapter.data.get(i).userId.equals(searchItem.userId)) {
+                        isExisted = true;
+                        break;
+                    }
+                }
+                if(isExisted) Snackbar.make(getWindow().getDecorView().getRootView(), "이미 회의자로 등록되어있습니다.", 2000).show();
+                else adapter.addItem(searchItem);
                 setSearchResult(null);
                 break;
         }
@@ -191,7 +199,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 public void onResponse(JSONObject response) {
                     if(CreateRoomActivity.this.roomNumber == 0) {
                         Intent intent = new Intent(CreateRoomActivity.this, RoomActivity.class);
-                        intent.putExtra("roomNumber", roomNumber);
+                        intent.putExtra("roomNumber", roomNumber + "");
                         intent.putExtra("roomTitle", editTitle.getText().toString());
                         intent.putExtra("roomChief", userItem.getPhoneNumber());
                         startActivity(intent);
@@ -249,7 +257,9 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder vh = (ViewHolder)holder;
-            vh.textView.setText(data.get(position).userId + "\t\t" + data.get(position).userName);
+            String text = data.get(position).userId + "\t\t" + data.get(position).userName;
+            if(data.get(position).userId.equals(userItem.getPhoneNumber())) text += "(방장)";
+            vh.textView.setText(text);
             vh.button.setTag(position);
             vh.button.setOnClickListener(this);
             if(data.get(position).canDelete) vh.button.setVisibility(View.VISIBLE);

@@ -44,7 +44,7 @@ public class RoomActivity extends AppCompatActivity {
 
         // 회의방의 정보를 저장한다.
         room = new RoomItem();
-        room.setNumber(getIntent().getStringExtra("roomNumber"));
+        room.setNumber(getIntent().getStringExtra("roomNumber") + "");
         room.setTitle(getIntent().getStringExtra("roomTitle"));
         room.setChief(getIntent().getStringExtra("roomChief"));
 
