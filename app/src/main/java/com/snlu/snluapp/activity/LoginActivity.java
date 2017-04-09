@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.button_kakao).setOnClickListener(this);
         findViewById(R.id.button_facebook).setOnClickListener(this);
 
-//        getAppKeyHash();
+        getAppKeyHash();
         Session.getCurrentSession().addCallback(this);
         Session.getCurrentSession().checkAndImplicitOpen();
         facebookCallbackManager = CallbackManager.Factory.create();

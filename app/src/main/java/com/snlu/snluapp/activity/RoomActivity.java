@@ -171,7 +171,7 @@ public class RoomActivity extends AppCompatActivity {
                 if(result.equals("0")) {
                     JSONArray array = response.getJSONArray("data");
                     ArrayList<DocumentItem> documentItems = new ArrayList<>();
-                    for(int i=0; i<array.length(); i++) {
+                        for(int i=0; i<array.length(); i++) {
                         DocumentItem item = new DocumentItem();
                         item.setNumber(array.getJSONObject(i).getString("documentNumber"));
                         item.setDate(array.getJSONObject(i).getString("date"));

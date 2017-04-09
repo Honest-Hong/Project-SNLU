@@ -2,7 +2,6 @@ package com.snlu.snluapp.activity;
 
 import android.Manifest;
 import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.text.Html;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -260,7 +258,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 downloadFile(2);
                 break;
             case R.id.fab_statistic:
-                Intent intentStatistic = new Intent(this, StatistcActivity.class);
+                Intent intentStatistic = new Intent(this, StatisticActivity.class);
                 intentStatistic.putExtra("documentNumber", documentItem.getNumber());
                 startActivity(intentStatistic);
                 break;
