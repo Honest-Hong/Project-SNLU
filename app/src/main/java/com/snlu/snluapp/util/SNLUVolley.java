@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -56,18 +57,24 @@ public class SNLUVolley {
 
     public void post(final String url, JSONObject json, Response.Listener<JSONObject> listener) {
         SNLULog.v("SNLUVolley post : { url: " + url + " , json: " + json.toString() + " }");
-        requestQueue.add(new JsonObjectRequest(Request.Method.POST, BASE_URL + url, json, listener, new Response.ErrorListener() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, BASE_URL + url, json, listener, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.v("SNLU_LOG", "SNLUVolley post error - " + url + " , detail : " + error);
                 Toast.makeText(context, "서버로 부터 오류가 발생하였습니다.", Toast.LENGTH_SHORT).show();
             }
-        }));
+        });
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                3000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+        requestQueue.add(request);
     }
 
     public void post(final String url, JSONObject json, final OnResponseListener onResponseListener) {
         SNLULog.v("SNLUVolley post : { url: " + url + " , json: " + json.toString() + " }");
-        requestQueue.add(new JsonObjectRequest(Request.Method.POST, BASE_URL + url, json, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, BASE_URL + url, json, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 SNLULog.v("SNLUVolley post response : { url: " + url + ", response :" + response.toString() + " }");
@@ -79,7 +86,14 @@ public class SNLUVolley {
                 Log.v("SNLU_LOG", "SNLUVolley post error - " + url + " , detail : " + error);
                 Toast.makeText(context, "서버로 부터 오류가 발생하였습니다.", Toast.LENGTH_SHORT).show();
             }
-        }));
+        });
+
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                3000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+        requestQueue.add(request);
     }
 
     public void get(final String url, JSONObject json, Response.Listener<JSONObject> listener) {

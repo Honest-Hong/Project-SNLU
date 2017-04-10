@@ -28,8 +28,8 @@ import java.util.ArrayList;
 public class StatisticActivity extends AppCompatActivity {
 
     private static String TAG = "StatisticActivity";
-    private float[] yData = {10,20,10,15,15,30};
-    private String[] xData = {"1","2","3","4","5","6"};
+    private float[] yData;
+    private String[] xData;
     private DocumentItem document;
     PieChart pieChart;
 
@@ -39,6 +39,9 @@ public class StatisticActivity extends AppCompatActivity {
         setContentView(R.layout.activity_statistc);
         Log.d(TAG,"onCreate starting to create chart");
 
+        document = new DocumentItem();
+        document.setNumber(getIntent().getStringExtra("documentNumber"));
+
         pieChart=(PieChart)findViewById(R.id.statistic_pie_chart);
         pieChart.setHoleRadius(25f);
         pieChart.setCenterText("단어통계");
@@ -47,8 +50,8 @@ public class StatisticActivity extends AppCompatActivity {
         pieChart.setUsePercentValues(true);
         pieChart.setRotationEnabled(false);
 
-        //requestStatistic();
-        addDataSet();
+        requestStatistic();
+//        addDataSet();
 
         pieChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
 
@@ -62,9 +65,36 @@ public class StatisticActivity extends AppCompatActivity {
         legend.setXEntrySpace(7f);
         legend.setYEntrySpace(0f);
         legend.setYOffset(0f);
-
     }
 
+    private void requestStatistic(){
+        JSONObject json = new JSONObject();
+        try{
+            json.put("documentNumber",document.getNumber());
+            SNLUVolley.getInstance(this).post("analyze", json, new SNLUVolley.OnResponseListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.v("TAG", response.toString());
+                    try {
+                        int result = response.getInt("result");
+                        if(result==0) {
+                            JSONArray array = response.getJSONArray("data");
+                            int count = array.getJSONObject(0).getInt("count");
+                            String name = array.getJSONObject(0).getString("name");
+                            Log.v("TAG", count + name);
+                        } else {
+                            Log.v("TAG", "error");
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     private void addDataSet() {
         Log.d(TAG,"addDataSet started");
 

@@ -308,7 +308,7 @@ public class RoomActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_room, menu);
-        if(!isChief) menu.getItem(R.id.menu_invite).setVisible(false);
+//        if(!isChief) menu.getItem(R.id.menu_invite).setVisible(false);
         return true;
     }
 
