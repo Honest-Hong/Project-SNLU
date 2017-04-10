@@ -78,10 +78,11 @@ public class StatisticActivity extends AppCompatActivity {
                     try {
                         int result = response.getInt("result");
                         if(result==0) {
-                            JSONArray array = response.getJSONArray("data");
+                            String str = response.getString("data");
+                            JSONArray array = new JSONArray(str);
+                            
                             int count = array.getJSONObject(0).getInt("count");
                             String name = array.getJSONObject(0).getString("name");
-                            Log.v("TAG", count + name);
                         } else {
                             Log.v("TAG", "error");
                         }
