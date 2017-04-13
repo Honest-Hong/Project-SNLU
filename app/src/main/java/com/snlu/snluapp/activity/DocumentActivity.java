@@ -141,9 +141,9 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 if(editedPosition != -1) {
                     SentenceItem sentenceItem = sentenceItems.get(editedPosition);
                     View parent = paper.getChildAt(editedPosition);
-                    EditText editText = (EditText)parent.findViewById(R.id.edit_sentence);
+                    EditText editText = (EditText)parent.findViewById(R.id.edit_text);
                     sentenceItem.setSentence(editText.getText().toString());
-                    TextView textView = (TextView)parent.findViewById(R.id.item_sentence_sentence);
+                    TextView textView = (TextView)parent.findViewById(R.id.text_sentence);
                     textView.setText(sentenceItem.getSentence());
                     requestSentenceSave(sentenceItem);
                     setEditedMode(editedPosition, false);
@@ -204,8 +204,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     // 해당 문장을 수정모드일때 아닐때 변환해주는 함수.
     private void setEditedMode(int position, boolean edited) {
         View view = paper.getChildAt(position);
-        TextView textView = (TextView)view.findViewById(R.id.item_sentence_sentence);
-        EditText editText = (EditText)view.findViewById(R.id.edit_sentence);
+        TextView textView = (TextView)view.findViewById(R.id.text_sentence);
+        EditText editText = (EditText)view.findViewById(R.id.edit_text);
         if(edited) {
             editedPosition = position;
             textView.setVisibility(View.GONE);
@@ -358,10 +358,10 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         for(int i=0; i<items.size(); i++) {
             SentenceItem item = items.get(i);
             View viewSentence = LayoutInflater.from(DocumentActivity.this).inflate(R.layout.item_sentence, null);
-            TextView textName = (TextView) viewSentence.findViewById(R.id.item_sentence_name);
+            TextView textName = (TextView) viewSentence.findViewById(R.id.text_name);
             textName.setText(item.getSpeakerName() + ":");
-            TextView textSentence = (TextView) viewSentence.findViewById(R.id.item_sentence_sentence);
-            EditText editSentence = (EditText) viewSentence.findViewById(R.id.edit_sentence);
+            TextView textSentence = (TextView) viewSentence.findViewById(R.id.text_sentence);
+            EditText editSentence = (EditText) viewSentence.findViewById(R.id.edit_text);
             if (highlight) {
                 textSentence.setText(Html.fromHtml(item.getSentence()));
                 editSentence.setText(searchItems.get(i).getSentence());
@@ -370,7 +370,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 textSentence.setText(item.getSentence());
                 editSentence.setText(item.getSentence());
             }
-            TextView textTime = (TextView) viewSentence.findViewById(R.id.item_sentence_time);
+            TextView textTime = (TextView) viewSentence.findViewById(R.id.text_time);
             String time = item.getSpeakTime();
             textTime.setText(String.format("%s시 %s분 %s초", time.substring(11, 13), time.substring(14, 16), time.substring(17, 19)));
             viewSentence.setOnLongClickListener(this);

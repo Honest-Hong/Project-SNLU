@@ -7,19 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.data.LoginInformation;
 import com.snlu.snluapp.item.UserItem;
-import com.snlu.snluapp.util.SNLULog;
 import com.snlu.snluapp.util.SNLUVolley;
 
 import org.json.JSONArray;
@@ -48,7 +45,6 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
 
         buttonCreate.setOnClickListener(this);
         findViewById(R.id.button_search).setOnClickListener(this);
-        findViewById(R.id.button).setOnClickListener(this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -71,7 +67,8 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         adapter = new ListAdapter(inviteItems);
         recyclerView.setAdapter(adapter);
 
-        ImageView button = (ImageView)findViewById(R.id.button);
+        ImageView button = (ImageView)findViewById(R.id.button_del);
+        button.setOnClickListener(this);
         button.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_plus));
         setSearchResult(null);
     }
@@ -79,17 +76,19 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
     private void setSearchResult(InviteItem item) {
         searchItem = item;
         ImageView imageView = (ImageView)findViewById(R.id.image_view);
-        TextView textView = (TextView)findViewById(R.id.text_view);
-        ImageView button = (ImageView)findViewById(R.id.button);
+        TextView textName = (TextView)findViewById(R.id.text_name);
+        TextView textId = (TextView)findViewById(R.id.text_id);
+        ImageView button = (ImageView)findViewById(R.id.button_del);
         if(item == null) {
             imageView.setVisibility(View.INVISIBLE);
-            textView.setVisibility(View.INVISIBLE);
+            textName.setVisibility(View.INVISIBLE);
             button.setVisibility(View.INVISIBLE);
         } else {
             imageView.setVisibility(View.VISIBLE);
-            textView.setVisibility(View.VISIBLE);
+            textName.setVisibility(View.VISIBLE);
             button.setVisibility(View.VISIBLE);
-            textView.setText(item.userId + "\t\t"+ item.userName);
+            textName.setText(item.userName);
+            textId.setText("(" + item.userId + ")");
         }
     }
 
@@ -251,15 +250,16 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(getLayoutInflater().inflate(R.layout.item_invite, parent, false));
+            return new ViewHolder(getLayoutInflater().inflate(R.layout.item_user, parent, false));
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder vh = (ViewHolder)holder;
-            String text = data.get(position).userId + "\t\t" + data.get(position).userName;
+            String text = data.get(position).userName;
             if(data.get(position).userId.equals(userItem.getPhoneNumber())) text += "(방장)";
-            vh.textView.setText(text);
+            vh.textName.setText(text);
+            vh.textId.setText("(" + data.get(position).userId + ")");
             vh.button.setTag(position);
             vh.button.setOnClickListener(this);
             if(data.get(position).canDelete) vh.button.setVisibility(View.VISIBLE);
@@ -284,13 +284,14 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView textView;
+            public TextView textName, textId;
             public ImageView button;
 
             public ViewHolder(View view) {
                 super(view);
-                textView = (TextView)view.findViewById(R.id.text_view);
-                button = (ImageView)view.findViewById(R.id.button);
+                textName = (TextView)view.findViewById(R.id.text_name);
+                textId = (TextView)view.findViewById(R.id.text_id);
+                button = (ImageView)view.findViewById(R.id.button_del);
                 button.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_delete));
             }
         }

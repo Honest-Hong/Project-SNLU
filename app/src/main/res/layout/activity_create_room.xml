@@ -89,7 +89,7 @@
             android:background="?attr/selectableItemBackground"/>
     </LinearLayout>
 
-    <include layout="@layout/item_invite"/>
+    <include layout="@layout/item_user"/>
 
     <View
         android:layout_width="match_parent"
