@@ -80,7 +80,7 @@ public class StatisticActivity extends AppCompatActivity {
                         if(result==0) {
                             String str = response.getString("data");
                             JSONArray array = new JSONArray(str);
-                            
+
                             int count = array.getJSONObject(0).getInt("count");
                             String name = array.getJSONObject(0).getString("name");
                         } else {

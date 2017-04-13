@@ -82,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
 
         requestRefreshToken();
         FirebaseMessaging.getInstance().subscribeToTopic("notice");
+
+        findViewById(R.id.button_test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, TestActivity.class));
+            }
+        });
     }
 
     @Override

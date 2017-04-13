@@ -67,7 +67,8 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_key" />
 
-        <activity android:name=".activity.CreateRoomActivity"></activity>
+        <activity android:name=".activity.CreateRoomActivity" />
+        <activity android:name=".activity.TestActivity"></activity>
     </application>
 
 </manifest>

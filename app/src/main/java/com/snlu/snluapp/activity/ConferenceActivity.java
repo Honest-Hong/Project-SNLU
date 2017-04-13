@@ -9,6 +9,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -93,6 +94,8 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+        recognizerIntent.putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR");
+        recognizerIntent.putExtra("android.speech.extra.GET_AUDIO", true);
 
         // 회의방의 정보 저장하기
         roomItem = new RoomItem();
@@ -119,6 +122,8 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
             });
         }
     }
+
+
 
     // 발언 시작
     private void startListening() {
@@ -434,6 +439,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         canSpeak = true;
         ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         if(result != null) processSpeech(result.get(0));
+        Log.v("Bundle", results.toString());
     }
     @Override
     public void onPartialResults(Bundle partialResults) {

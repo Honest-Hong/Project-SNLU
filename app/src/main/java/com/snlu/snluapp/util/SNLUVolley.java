@@ -55,6 +55,27 @@ public class SNLUVolley {
         return imageLoader;
     }
 
+    public void requestSpeech(String url, JSONObject parameter, final OnResponseListener onResponseListener) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, parameter, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                onResponseListener.onResponse(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.v("Volley", "error: " + error.networkResponse.headers);
+                error.printStackTrace();
+            }
+        });
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+        requestQueue.add(request);
+    }
+
     public void post(final String url, JSONObject json, Response.Listener<JSONObject> listener) {
         SNLULog.v("SNLUVolley post : { url: " + url + " , json: " + json.toString() + " }");
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, BASE_URL + url, json, listener, new Response.ErrorListener() {
@@ -65,7 +86,7 @@ public class SNLUVolley {
             }
         });
         request.setRetryPolicy(new DefaultRetryPolicy(
-                3000,
+                5000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         ));
@@ -89,7 +110,7 @@ public class SNLUVolley {
         });
 
         request.setRetryPolicy(new DefaultRetryPolicy(
-                3000,
+                5000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         ));
