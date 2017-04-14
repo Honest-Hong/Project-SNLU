@@ -1,20 +1,31 @@
 package com.snlu.snluapp.activity;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.PaintDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.RoomItem;
+import com.snlu.snluapp.item.SentenceItem;
 import com.snlu.snluapp.item.WordItem;
+import com.snlu.snluapp.util.SNLULog;
 import com.snlu.snluapp.util.SNLUVolley;
 
 import org.json.JSONArray;
@@ -26,18 +37,82 @@ import java.util.ArrayList;
 public class SummaryActivity extends AppCompatActivity {
     private DocumentItem document;
     private ArrayList<WordItem> item;
-    ListView lv;
+    private ArrayList<SentenceItem> sentenceItems;
+    private ArrayList<SentenceItem> searchedSentence;
+    private ProgressDialog loagindDialog; // 로딩화면
+    ListView lv,lv2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
         document = new DocumentItem();
         document.setNumber(getIntent().getStringExtra("documentNumber"));
         lv = (ListView)findViewById(R.id.summary_word);
-        requestStatistic();
+        lv2 = (ListView)findViewById(R.id.summary_sentence);
+        createThreadAndDialog(); // 로딩만들기
+        requestStatistic(); //단어뽑기
+
+
         // set
     }
+    private void loadDocumentInformation(String documentNumber) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("documentNumber", documentNumber);
+            SNLUVolley.getInstance(SummaryActivity.this).post("showDocument", json, requestDocumentListener);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    private SNLUVolley.OnResponseListener requestDocumentListener = new SNLUVolley.OnResponseListener() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                SNLULog.v(response.toString());
+                String result = response.getString("result");
+                if (result.equals("0")) {
+                    JSONArray array = response.getJSONArray("data");
+                    sentenceItems = new ArrayList<>();
+                    for(int i=0; i<array.length(); i++) {
+                        SentenceItem item2 = new SentenceItem();
+                        item2.setSentence(array.getJSONObject(i).getString("sentence"));
+                        sentenceItems.add(item2);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    void createThreadAndDialog() { //로딩만들기
+        loagindDialog = ProgressDialog.show(this, "단어 목록",
+                "불러오는 중.....", true, false);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+            }
+        });
+        thread.start();
+    }
 
+    private class ListViewItemClickListener implements AdapterView.OnItemClickListener   {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+        {
+            lv.setSelector( new PaintDrawable( Color.parseColor("#FFB6C1")));
+                searchedSentence= new ArrayList<>();
+            for(int i = 0; i<sentenceItems.size(); i++) {
+                if(sentenceItems.get(i).getSentence().contains(item.get(position).getName()))
+                {
+                    searchedSentence.add(sentenceItems.get(i));
+                }
+                                                         }
+            lv2.setAdapter(new SentenceAdapter(getApplicationContext(), searchedSentence));
+            lv2.setOnItemClickListener( new ListViewItemClickListener() );
+            //Toast.makeText(getApplicationContext(),sentenceItems.get(position).getSentence()+"입니다",Toast.LENGTH_SHORT ).show();
+        }
+    }
     private void requestStatistic(){
         JSONObject json = new JSONObject();
         try{
@@ -56,6 +131,9 @@ public class SummaryActivity extends AppCompatActivity {
                                 item.add(new WordItem(array.getJSONObject(i).getString("name")));
                             }
                             lv.setAdapter(new WordAdapter(getApplicationContext(), item));
+                            lv.setOnItemClickListener( new ListViewItemClickListener() );
+
+                            loagindDialog.dismiss();
                         } else {
                             Log.v("TAG", "error");
                         }
@@ -72,7 +150,6 @@ public class SummaryActivity extends AppCompatActivity {
     class WordAdapter extends BaseAdapter {
         Context context;
         ArrayList<WordItem> data;
-
         public WordAdapter(Context context, ArrayList<WordItem> data) {
             this.context = context;
             this.data = data;
@@ -99,12 +176,40 @@ public class SummaryActivity extends AppCompatActivity {
             if(convertView==null) convertView = LayoutInflater.from(context).inflate(R.layout.item_summary_word, null);
             TextView text = (TextView)convertView.findViewById(R.id.item_summary_word);
             text.setText(data.get(position).getName());
+
             return convertView;
         }
-
-        public void setData(ArrayList<WordItem> data) {
+    }
+    class SentenceAdapter extends BaseAdapter {
+        Context context;
+        ArrayList<SentenceItem> data;
+        public SentenceAdapter(Context context, ArrayList<SentenceItem> data) {
+            this.context = context;
             this.data = data;
-            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            if(data == null) return 0;
+            return data.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return data.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if(convertView==null) convertView = LayoutInflater.from(context).inflate(R.layout.item_summary_sentence, null);
+            TextView text = (TextView)convertView.findViewById(R.id.item_summary_sentence);
+            text.setText(searchedSentence.get(position).getSentence());
+            return convertView;
         }
     }
 }

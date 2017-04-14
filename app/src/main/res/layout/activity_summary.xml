@@ -21,7 +21,8 @@
             android:id="@+id/summary_word"
             android:layout_width="90dp"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_rectangle_grey"/>
+            android:background="@drawable/shape_rectangle_grey"
+            android:listSelector="#FFB6C1" />
 
         <ListView
             android:id="@+id/summary_sentence"
