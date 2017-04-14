@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -137,6 +138,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                     sentenceItem.setSentence(adapter.getEditedText());
                     adapter.edit();
                     requestSentenceSave(sentenceItem);
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 }
                 showEditMenu(false);
                 return true;
@@ -195,7 +198,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     public void onBackPressed() {
         if(!searchView.isIconified()) {
             searchView.setIconified(true);
-            adapter.setSentenceItems(sentenceItems);
+            adapter.setSearchKeyword("");
         } else if (editedPosition != -1) {
             adapter.setSearchKeyword("");
             showEditMenu(false);
