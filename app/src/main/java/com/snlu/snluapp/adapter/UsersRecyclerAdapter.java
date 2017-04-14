@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,11 +22,13 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
     private Context context;
     private ArrayList<UserItem> userItems;
     private OnItemClickListener onItemClickListener;
+    private boolean isChief;
 
-    public UsersRecyclerAdapter(Context context, ArrayList<UserItem> userItems, OnItemClickListener onItemClickListener) {
+    public UsersRecyclerAdapter(Context context, ArrayList<UserItem> userItems, OnItemClickListener onItemClickListener, boolean isChief) {
         this.context = context;
         this.userItems = userItems;
         this.onItemClickListener = onItemClickListener;
+        this.isChief = isChief;
     }
 
     public UserItem getItem(int position) {
@@ -42,7 +45,11 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
         ViewHolder vh = (ViewHolder)holder;
         vh.textName.setText(userItems.get(position).getName());
         vh.textId.setText("(" + userItems.get(position).getPhoneNumber() + ")");
-        vh.linearLayout.setTag(position);
+        if(isChief) {
+            vh.buttonDel.setVisibility(View.VISIBLE);
+            vh.linearLayout.setTag(position);
+        }
+        else vh.buttonDel.setVisibility(View.GONE);
     }
 
     @Override
@@ -52,18 +59,22 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textName, textId;
+        public ImageView buttonDel;
         public LinearLayout linearLayout;
         public ViewHolder(View itemView) {
             super(itemView);
             textName = (TextView)itemView.findViewById(R.id.text_name);
             textId = (TextView)itemView.findViewById(R.id.text_id);
-            linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
-            linearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClickListener.onItemClick((int)v.getTag());
-                }
-            });
+            buttonDel = (ImageView)itemView.findViewById(R.id.button_del);
+            if(isChief) {
+                linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
+                linearLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onItemClickListener.onItemClick((int) v.getTag());
+                    }
+                });
+            }
         }
     }
 }

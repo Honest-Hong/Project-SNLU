@@ -17,11 +17,11 @@ import java.util.ArrayList;
  * Created by Hong Tae Joon on 2017-04-13.
  */
 
-public class SentecesRecyclerAdapter extends RecyclerView.Adapter {
+public class SentencesAdapter extends RecyclerView.Adapter {
     private Context context;
     private ArrayList<SentenceItem> sentenceItems;
 
-    public SentecesRecyclerAdapter(Context context, ArrayList<SentenceItem> sentenceItems) {
+    public SentencesAdapter(Context context, ArrayList<SentenceItem> sentenceItems) {
         this.context = context;
         this.sentenceItems = sentenceItems;
     }

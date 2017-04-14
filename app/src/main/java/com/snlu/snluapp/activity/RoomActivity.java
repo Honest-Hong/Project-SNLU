@@ -62,10 +62,11 @@ public class RoomActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(room.getTitle());
 
         if(!isChief) {
-            findViewById(R.id.room_start_new_conference).setVisibility(View.GONE);
+            findViewById(R.id.button_start).setVisibility(View.GONE);
+            findViewById(R.id.linear_start).setVisibility(View.GONE);
         } else {
             // 새로운 회의 시작
-            findViewById(R.id.room_start_new_conference).setOnClickListener(new View.OnClickListener() {
+            findViewById(R.id.button_start).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     SNLUAlertDialog dialog = new SNLUAlertDialog(RoomActivity.this);
@@ -165,7 +166,7 @@ public class RoomActivity extends AppCompatActivity {
                             });
                             dialog.show();
                         }
-                    }));
+                    }, isChief));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -253,7 +254,7 @@ public class RoomActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_room, menu);
-//        if(!isChief) menu.getItem(R.id.menu_invite).setVisible(false);
+        if(!isChief) menu.findItem(R.id.menu_invite).setVisible(false);
         return true;
     }
 

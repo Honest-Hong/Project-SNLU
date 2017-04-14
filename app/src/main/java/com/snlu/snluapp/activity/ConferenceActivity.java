@@ -9,26 +9,21 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.snlu.snluapp.R;
-import com.snlu.snluapp.adapter.SentecesRecyclerAdapter;
+import com.snlu.snluapp.adapter.SentencesAdapter;
 import com.snlu.snluapp.data.LoginInformation;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.RoomItem;
@@ -63,7 +58,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
     // 내화 내용
 //    private LinearLayout paper;
     private RecyclerView recyclerView;
-    private SentecesRecyclerAdapter adapter;
+    private SentencesAdapter adapter;
     // 발언이 가능한지를 판단하는 변수
 //    private boolean canSpeak = true;
     // 날짜 형식을 변환해줄 포멧
@@ -92,7 +87,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         // 문장들을 뿌려주는 화면
         recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SentecesRecyclerAdapter(this, new ArrayList<SentenceItem>());
+        adapter = new SentencesAdapter(this, new ArrayList<SentenceItem>());
         recyclerView.setAdapter(adapter);
         // 발언하는 사람의 이름
         textSpeaker = (TextView)findViewById(R.id.conference_speaker_name);
