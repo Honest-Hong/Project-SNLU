@@ -50,6 +50,7 @@ public class SummaryActivity extends AppCompatActivity {
         document.setNumber(getIntent().getStringExtra("documentNumber"));
         lv = (ListView)findViewById(R.id.summary_word);
         lv2 = (ListView)findViewById(R.id.summary_sentence);
+        loadDocumentInformation(document.getNumber());
         createThreadAndDialog(); // 로딩만들기
         requestStatistic(); //단어뽑기
 
@@ -96,7 +97,7 @@ public class SummaryActivity extends AppCompatActivity {
         thread.start();
     }
 
-    private class ListViewItemClickListener implements AdapterView.OnItemClickListener   {
+    private class ListViewItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
@@ -109,8 +110,7 @@ public class SummaryActivity extends AppCompatActivity {
                 }
                                                          }
             lv2.setAdapter(new SentenceAdapter(getApplicationContext(), searchedSentence));
-            lv2.setOnItemClickListener( new ListViewItemClickListener() );
-            //Toast.makeText(getApplicationContext(),sentenceItems.get(position).getSentence()+"입니다",Toast.LENGTH_SHORT ).show();
+
         }
     }
     private void requestStatistic(){
