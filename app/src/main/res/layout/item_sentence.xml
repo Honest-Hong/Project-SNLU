@@ -23,7 +23,7 @@
             android:id="@+id/text_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/font_small"
+            android:textSize="@dimen/font_normal"
             android:textColor="@color/colorBlack"
             android:textStyle="bold"/>
 
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/font_small"/>
+                android:textSize="@dimen/font_normal"/>
 
             <EditText
                 android:id="@+id/edit_sentence"

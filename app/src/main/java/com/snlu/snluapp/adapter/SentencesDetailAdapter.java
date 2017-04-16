@@ -117,6 +117,10 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
         if(searchItems == null) item = sentenceItems.get(position);
         else item = searchItems.get(position);
         ViewHolder vh = (ViewHolder)holder;
+        if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName()))
+            vh.textName.setVisibility(View.INVISIBLE);
+        else
+            vh.textName.setVisibility(View.VISIBLE);
         vh.textName.setText(item.getSpeakerName() + ":");
         if(editedPosition == position) {
             vh.textSentence.setVisibility(View.GONE);
@@ -132,8 +136,13 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
                 vh.textSentence.setText(Html.fromHtml(item.getSentence().replaceAll(keyword, "<font color='red'>" + keyword + "</font>")));
             vh.editSentence.setVisibility(View.GONE);
         }
-        String time = item.getSpeakTime();
-        vh.textTime.setText(String.format("%s시 %s분 %s초", time.substring(11,13), time.substring(14,16), time.substring(17,19)));
+        if(position > 0 && sentenceItems.get(position - 1).getSpeakTime().substring(11,16).equals(item.getSpeakTime().substring(11,16)))
+            vh.textTime.setVisibility(View.GONE);
+        else {
+            vh.textTime.setVisibility(View.VISIBLE);
+            String time = item.getSpeakTime();
+            vh.textTime.setText(String.format("%s시 %s분", time.substring(11,13), time.substring(14,16)));
+        }
         vh.linearLayout.setTag(position);
     }
 
