@@ -1,13 +1,11 @@
 package com.snlu.snluapp.activity;
 
-import android.Manifest;
-import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,9 +30,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private SearchView searchView;
-    private ListView listView;
+    private RecyclerView recyclerView;
     private RoomAdapter roomAdapter;
     private ArrayList<RoomItem> roomItems;
     private ArrayList<RoomItem> searchItems;
@@ -48,40 +47,39 @@ public class MainActivity extends AppCompatActivity {
         LoginInformation.loadLoginInformation(this);
         SNLULog.v("token: " + LoginInformation.getToken(this));
 
-        findViewById(R.id.button_add).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, CreateRoomActivity.class));
-            }
-        });
+        findViewById(R.id.button_add).setOnClickListener(this);
 
-        listView = (ListView)findViewById(R.id.main_listview);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RoomAdapter adapter = (RoomAdapter)parent.getAdapter();
-                RoomItem data = (RoomItem)adapter.getItem(position);
-                if(data.getIsStart().equals("0")) {
-                    Intent intent = new Intent(MainActivity.this, RoomActivity.class);
-                    intent.putExtra("roomNumber", data.getNumber());
-                    intent.putExtra("roomTitle", data.getTitle());
-                    intent.putExtra("roomChief", data.getChief());
-                    intent.putExtra("roomIsStart", data.getIsStart());
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(MainActivity.this, ConferenceActivity.class);
-                    intent.putExtra("documentNumber", data.getStartedDocumentNumber());
-                    intent.putExtra("roomChief", data.getChief());
-                    intent.putExtra("roomNumber", data.getNumber());
-                    startActivity(intent);
-                }
-            }
-        });
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         roomAdapter = new RoomAdapter(this);
-        listView.setAdapter(roomAdapter);
+        recyclerView.setAdapter(roomAdapter);
 
         requestRefreshToken();
         FirebaseMessaging.getInstance().subscribeToTopic("notice");
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.button_add)
+            startActivity(new Intent(MainActivity.this, CreateRoomActivity.class));
+        else {
+            int position = (int)v.getTag();
+            RoomItem data = roomAdapter.getItem(position);
+            if(data.getIsStart().equals("0")) {
+                Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+                intent.putExtra("roomNumber", data.getNumber());
+                intent.putExtra("roomTitle", data.getTitle());
+                intent.putExtra("roomChief", data.getChief());
+                intent.putExtra("roomIsStart", data.getIsStart());
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(MainActivity.this, ConferenceActivity.class);
+                intent.putExtra("documentNumber", data.getStartedDocumentNumber());
+                intent.putExtra("roomChief", data.getChief());
+                intent.putExtra("roomNumber", data.getNumber());
+                startActivity(intent);
+            }
+        }
     }
 
     @Override
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                         searchItems.add(roomItems.get(i));
                     }
                 }
-                roomAdapter.setData(searchItems);
+                roomAdapter.setItems(searchItems);
 
                 return false;
             }
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                roomAdapter.setData(roomItems);
+                roomAdapter.setItems(roomItems);
                 return false;
             }
         });
@@ -147,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     result = response.getString("result");
                     if(result.equals("0")) {
-                        JSONArray array = response.getJSONArray("data");
                         roomItems = new ArrayList<>();
+                        JSONArray array = response.getJSONArray("data");
                         for(int i=0; i<array.length(); i++) {
                             RoomItem item = new RoomItem();
                             item.setNumber(array.getJSONObject(i).getString("roomNumber"));
@@ -158,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                             item.setStartedDocumentNumber(array.getJSONObject(i).getString("documentNumber"));
                             roomItems.add(item);
                         }
-                        roomAdapter.setData(roomItems);
+                        roomAdapter.setItems(roomItems);
                     } else if (result.equals("1")) {
                         // 다른 에러
                     }
@@ -169,42 +167,50 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    class RoomAdapter extends BaseAdapter {
-        Context context;
-        ArrayList<RoomItem> data;
+    class RoomAdapter extends RecyclerView.Adapter {
+        private Context context;
+        private ArrayList<RoomItem> roomItems;
 
         public RoomAdapter(Context context) {
             this.context = context;
-            data = new ArrayList<>();
+            roomItems = new ArrayList<>();
         }
 
-        @Override
-        public int getCount() {
-            if(data == null) return 0;
-            return data.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return data.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if(convertView==null) convertView = LayoutInflater.from(context).inflate(R.layout.item_room, null);
-            TextView text = (TextView)convertView.findViewById(R.id.item_room_text);
-            text.setText(data.get(position).getTitle());
-            return convertView;
-        }
-
-        public void setData(ArrayList<RoomItem> data) {
-            this.data = data;
+        public void setItems(ArrayList<RoomItem> items) {
+            this.roomItems = items;
             notifyDataSetChanged();
+        }
+
+        public RoomItem getItem(int position) {
+            return roomItems.get(position);
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_room, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ViewHolder vh = (ViewHolder)holder;
+            vh.textView.setText(roomItems.get(position).getTitle());
+            vh.linearLayout.setTag(position);
+        }
+
+        @Override
+        public int getItemCount() {
+            return roomItems.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView textView;
+            public LinearLayout linearLayout;
+            public ViewHolder(View itemView) {
+                super(itemView);
+                textView = (TextView)itemView.findViewById(R.id.item_room_text);
+                linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
+                linearLayout.setOnClickListener(MainActivity.this);
+            }
         }
     }
 

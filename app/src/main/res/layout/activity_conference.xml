@@ -17,11 +17,6 @@
             android:layout_margin="@dimen/content_icon_margin"
             android:src="@drawable/icon_speaker"/>
 
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="말하는 사람 :"/>-->
-
         <TextView
             android:id="@+id/conference_speaker_name"
             android:layout_width="wrap_content"
@@ -32,30 +27,44 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorPrimary" />
+        android:background="@color/colorGrey" />
 
-    <ScrollView
-        android:id="@+id/conference_scroll"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_margin="10dp">
+        android:layout_margin="3dp"
+        android:padding="3dp"
+        android:background="@drawable/shape_rectangle_grey"/>
 
-        <LinearLayout
-            android:id="@+id/conference_paper"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:orientation="vertical"/>
-
-    </ScrollView>
-
-    <TextView
-        android:id="@+id/conference_end"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_button_height"
-        android:background="@drawable/selector_bottom_button"
-        android:textColor="#ffffff"
-        android:gravity="center"
-        android:text="회의 종료"/>
+        android:layout_height="wrap_content"
+        android:background="@color/colorPink">
+
+        <TextView
+            android:id="@+id/button_say"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_button_height"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackground"
+            android:text="발언하기"
+            android:textSize="@dimen/font_normal"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorRedPink">
+
+        <TextView
+            android:id="@+id/button_end"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_button_height"
+            android:background="?attr/selectableItemBackground"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:text="회의 종료"/>
+    </FrameLayout>
 </LinearLayout>

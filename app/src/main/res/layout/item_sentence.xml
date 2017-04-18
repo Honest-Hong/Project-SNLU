@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
 
     <TextView
-        android:id="@+id/item_sentence_time"
+        android:id="@+id/text_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
@@ -18,10 +20,10 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/item_sentence_name"
+            android:id="@+id/text_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/font_small"
+            android:textSize="@dimen/font_normal"
             android:textColor="@color/colorBlack"
             android:textStyle="bold"/>
 
@@ -30,12 +32,12 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/item_sentence_sentence"
+                android:id="@+id/text_sentence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/font_small"/>
+                android:textSize="@dimen/font_normal"/>
 
             <EditText
                 android:id="@+id/edit_sentence"

@@ -66,6 +66,7 @@ public class StatisticActivity extends AppCompatActivity {
                         if(result==0) {
                             String str = response.getString("data");
                             JSONArray array = new JSONArray(str);
+
                             int cnt = array.length();
                             yData = new float[cnt];
                             xData = new String[cnt];
@@ -76,6 +77,9 @@ public class StatisticActivity extends AppCompatActivity {
                                 xData[i] = array.getJSONObject(i).getString("name");
                             }
                             addDataSet();
+
+                            int count = array.getJSONObject(0).getInt("count");
+                            String name = array.getJSONObject(0).getString("name");
                         } else {
                             Log.v("TAG", "error");
                         }

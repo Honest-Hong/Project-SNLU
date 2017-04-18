@@ -5,82 +5,85 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="@dimen/content_icon_size"
+                android:layout_height="@dimen/content_icon_size"
+                android:layout_margin="@dimen/content_icon_margin"
+                android:src="@drawable/icon_user"/>
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="@dimen/content_icon_size"
-                    android:layout_height="@dimen/content_icon_size"
-                    android:layout_margin="@dimen/content_icon_margin"
-                    android:src="@drawable/icon_user"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="@dimen/font_normal"
-                    android:textColor="@color/colorBlack"
-                    android:text="회의자 목록"/>
-            </LinearLayout>
-
-            <!-- 회의자 목록 리스트 -->
-            <LinearLayout
-                android:id="@+id/room_user_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="20dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="@dimen/content_icon_size"
-                    android:layout_height="@dimen/content_icon_size"
-                    android:layout_margin="@dimen/content_icon_margin"
-                    android:src="@drawable/icon_document"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="@dimen/font_normal"
-                    android:textColor="@color/colorBlack"
-                    android:text="회의록 목록"/>
-            </LinearLayout>
-
-            <!-- 회의자 목록 리스트 -->
-            <LinearLayout
-                android:id="@+id/room_document_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="20dp"/>
+                android:layout_weight="1"
+                android:textSize="@dimen/font_normal"
+                android:textColor="@color/colorBlack"
+                android:text="회의자 목록"/>
         </LinearLayout>
-    </ScrollView>
+
+        <!-- 회의자 목록 리스트 -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_users"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:padding="3dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_rectangle_grey"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/content_icon_size"
+                android:layout_height="@dimen/content_icon_size"
+                android:layout_margin="@dimen/content_icon_margin"
+                android:src="@drawable/icon_document"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/font_normal"
+                android:textColor="@color/colorBlack"
+                android:text="회의록 목록"/>
+        </LinearLayout>
+
+        <!-- 회의자 목록 리스트 -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_documents"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:padding="3dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_rectangle_grey"/>
+    </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linear_start"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_button_height"
         android:background="@color/colorPink">
 
         <TextView
-            android:id="@+id/room_start_new_conference"
+            android:id="@+id/button_start"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackground"

@@ -13,18 +13,17 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.snlu.snluapp.R;
+import com.snlu.snluapp.adapter.SentencesAdapter;
 import com.snlu.snluapp.data.LoginInformation;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.RoomItem;
@@ -47,7 +46,7 @@ import static android.view.View.GONE;
  * Created by Hong Tae Joon on 2017-03-20.
  */
 
-public class ConferenceActivity extends AppCompatActivity implements SensorEventListener, RecognitionListener {
+public class ConferenceActivity extends AppCompatActivity implements SensorEventListener, RecognitionListener, View.OnClickListener {
     final static int REQUEST_RECORD_AUDIO = 101;
     private final int SNACK_BAR_TIME = 2000;
 
@@ -57,9 +56,11 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
     // 발언자 이름 텍스트 뷰
     private TextView textSpeaker;
     // 내화 내용
-    private LinearLayout paper;
+//    private LinearLayout paper;
+    private RecyclerView recyclerView;
+    private SentencesAdapter adapter;
     // 발언이 가능한지를 판단하는 변수
-    private boolean canSpeak = true;
+//    private boolean canSpeak = true;
     // 날짜 형식을 변환해줄 포멧
     private Timestamp timestamp;
     // 회의록 정보
@@ -72,6 +73,9 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
     private SensorManager sensorManager;
     private Sensor proximitySensor;
     private final static int SENSOR_SENSITIVITY = 4;
+    // 발언하기 버튼
+    private TextView buttonSay;
+    private boolean toggleSay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +85,13 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         getSupportActionBar().setTitle("회의중");
 
         // 문장들을 뿌려주는 화면
-        paper =  (LinearLayout)findViewById(R.id.conference_paper);
+        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new SentencesAdapter(this, new ArrayList<SentenceItem>());
+        recyclerView.setAdapter(adapter);
         // 발언하는 사람의 이름
         textSpeaker = (TextView)findViewById(R.id.conference_speaker_name);
         // 회의 종료 버튼
-        View viewEnd = findViewById(R.id.conference_end);
         // 발언하기 센서
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -93,6 +99,8 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+        recognizerIntent.putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR");
+        recognizerIntent.putExtra("android.speech.extra.GET_AUDIO", true);
 
         // 회의방의 정보 저장하기
         roomItem = new RoomItem();
@@ -108,15 +116,52 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         SNLUPermission.checkPermission(this, Manifest.permission.RECORD_AUDIO, REQUEST_RECORD_AUDIO);
 
         // 회의방의 방장인 경우 회의 종료버튼이 보인다.
+        View viewEnd = findViewById(R.id.button_end);
         if(!roomItem.getChief().equals(LoginInformation.getUserItem().getPhoneNumber())) viewEnd.setVisibility(GONE);
         else {
             viewEnd.setVisibility(View.VISIBLE);
-            findViewById(R.id.conference_end).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    requestEndConference();
+            viewEnd.setOnClickListener(this);
+        }
+
+        buttonSay = (TextView)findViewById(R.id.button_say);
+        buttonSay.setOnClickListener(this);
+        toggleSay = true;
+    }
+
+    private void setButtonSayMode(int mode) {
+        switch(mode) {
+            case 0: // 발언 가능
+                buttonSay.setEnabled(true);
+                buttonSay.setText("발언하기");
+                toggleSay = true;
+                break;
+            case 1: // 발언 중단
+                buttonSay.setEnabled(true);
+                buttonSay.setText("발언중단하기");
+                toggleSay = false;
+                break;
+            case 2: // 발언 불가
+                buttonSay.setEnabled(false);
+                buttonSay.setText("발언할 수 없음");
+                break;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.button_say:
+                if(toggleSay) {
+                    startListening();
+                    setButtonSayMode(1);
+                } else {
+                    stopListening();
+                    setButtonSayMode(0);
                 }
-            });
+                break;
+            case R.id.button_end:
+                requestEndConference();
+                break;
         }
     }
 
@@ -147,36 +192,6 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         item.setSpeakTime(timestamp.toString());
         item.setSentence(sentence);
         requestSayEnd(item);
-    }
-
-    // 회의 내용 화면에 발언을 추가하는 함수
-    private void addSentece(SentenceItem item, boolean focus) {
-        sentenceItems.add(item);
-        View viewSentence = LayoutInflater.from(ConferenceActivity.this).inflate(R.layout.item_sentence, null);
-        TextView textName = (TextView)viewSentence.findViewById(R.id.item_sentence_name);
-        textName.setText(item.getSpeakerName() + ":");
-        TextView textSentence = (TextView)viewSentence.findViewById(R.id.item_sentence_sentence);
-        textSentence.setText(item.getSentence());
-        TextView textTime = (TextView)viewSentence.findViewById(R.id.item_sentence_time);
-        String time = item.getSpeakTime();
-        textTime.setText(String.format("%s시 %s분 %s초", time.substring(11,13), time.substring(14,16), time.substring(17,19)));
-        paper.addView(viewSentence);
-        if(focus) {
-            // 최근에 발언한 문장이 보이도록 스크롤을 내려준다.
-            scrollDown();
-        }
-    }
-
-    // 회의 내용 화면의 스크롤을 아래로 내려주는 함수
-    private void scrollDown() {
-        final ScrollView scrollView = (ScrollView)findViewById(R.id.conference_scroll);
-        scrollView.post(new Runnable() {
-
-            @Override
-            public void run() {
-                scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-            }
-        });
     }
 
     @Override
@@ -219,12 +234,11 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
                     if(roomNumber.equals(roomItem.getNumber())) {
                         // 다른 사람이 말하고 있는 경우에만 표시해줌
                         if(!speakerPhoneNumber.equals(LoginInformation.getUserItem().getPhoneNumber())) {
-                            // todo 다른사람이 말하고 있다고 표시해준다.
                             textSpeaker.setText(speakerName + "님이 발언중입니다.");
-//                            Snackbar.make(getWindow().getDecorView().getRootView(), speakerName + "님이 발언중입니다.", SNACK_BAR_TIME).show();
+                            setButtonSayMode(2);
                         }
                         // 발언이 시작됐으므로 발언권 off
-                        canSpeak = false;
+//                        canSpeak = false;
                     }
                     break;
                 case "04":
@@ -234,13 +248,13 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
                     // 발언이 종료된 방의 번호와 현재 방 번호가 일치할 경우에만 처리해줌
                     if(roomNumber.equals(roomItem.getNumber())) {
                         // 문장을 대화 내용애 추가해줌
-                        addSentece(SentenceItem.make(intent), true);
+                        adapter.addItem(SentenceItem.make(intent));
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
 
-                        //  todo 이제 말할 수 있다고 표시해준다.
                         textSpeaker.setText("");
-//                        Snackbar.make(getWindow().getDecorView().getRootView(), intent.getStringExtra("spekerName") + "님이 발언을 종료하셨습니다.", SNACK_BAR_TIME).show();
+                        setButtonSayMode(0);
                         // 발언권을 활성화함
-                        canSpeak = true;
+//                        canSpeak = true;
                     }
                     break;
             }
@@ -249,18 +263,18 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-            if(event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
-                // start listening
-                if(canSpeak) startListening();
-                else {
-                    Snackbar.make(getWindow().getDecorView().getRootView(), "지금은 발언하실 수 없습니다.", SNACK_BAR_TIME).show();
-                }
-            } else {
-                stopListening();
-                Snackbar.make(getWindow().getDecorView().getRootView(), "음성인식을 종료합니다.", SNACK_BAR_TIME).show();
-            }
-        }
+//        if(event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+//            if(event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
+//                // start listening
+//                if(canSpeak) startListening();
+//                else {
+//                    Snackbar.make(getWindow().getDecorView().getRootView(), "지금은 발언하실 수 없습니다.", SNACK_BAR_TIME).show();
+//                }
+//            } else {
+//                stopListening();
+//                Snackbar.make(getWindow().getDecorView().getRootView(), "음성인식을 종료합니다.", SNACK_BAR_TIME).show();
+//            }
+//        }
     }
 
     @Override
@@ -379,8 +393,8 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
                 if (result.equals("0")) {
                     JSONArray array = response.getJSONArray("data");
                     sentenceItems = new ArrayList<>();
-                    for(int i=0; i<array.length(); i++) addSentece(SentenceItem.make(array.getJSONObject(i)), false);
-                    scrollDown();
+                    for(int i=0; i<array.length(); i++) adapter.addItem(SentenceItem.make(array.getJSONObject(i)));
+                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -416,7 +430,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
     }
     @Override
     public void onError(int error) {
-        canSpeak = true;
+//        canSpeak = true;
         switch (error) {
             case SpeechRecognizer.ERROR_NO_MATCH:
                 Toast.makeText(this, "일치하는 문장이 없습니다.", Toast.LENGTH_SHORT).show();
@@ -428,12 +442,15 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
                 Toast.makeText(this, "이미 인식중입니다.", Toast.LENGTH_SHORT).show();
                 break;
         }
+        setButtonSayMode(0);
     }
     @Override
     public void onResults(Bundle results) {
-        canSpeak = true;
+//        canSpeak = true;
         ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         if(result != null) processSpeech(result.get(0));
+        Log.v("Bundle", results.toString());
+        setButtonSayMode(0);
     }
     @Override
     public void onPartialResults(Bundle partialResults) {
@@ -449,8 +466,8 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(SNLUMessageController.BROADCAST_END_CONFERENCE));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(SNLUMessageController.BROADCAST_START_SPEAK));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(SNLUMessageController.BROADCAST_END_SPEAK));
-        // 센서 등록
-        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+//        // 센서 등록
+//        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -458,7 +475,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         super.onStop();
         // 브로드 캐스트 해제
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-        // 센서 해제
-        sensorManager.unregisterListener(this);
+//        // 센서 해제
+//        sensorManager.unregisterListener(this);
     }
 }

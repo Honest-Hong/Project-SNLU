@@ -49,14 +49,12 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, ISessionCallback, FacebookCallback<LoginResult> {
     private final static int REQUEST_READ_PHONE_STATE_PERMISSION = 100;
     private CallbackManager facebookCallbackManager;
-    private View rootView;
     private String phoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        rootView = getWindow().getDecorView().getRootView();
 
         getSupportActionBar().setTitle("회원가입 및 로그인");
 
