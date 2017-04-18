@@ -77,9 +77,6 @@ public class StatisticActivity extends AppCompatActivity {
                                 xData[i] = array.getJSONObject(i).getString("name");
                             }
                             addDataSet();
-
-                            int count = array.getJSONObject(0).getInt("count");
-                            String name = array.getJSONObject(0).getString("name");
                         } else {
                             Log.v("TAG", "error");
                         }
@@ -100,19 +97,15 @@ public class StatisticActivity extends AppCompatActivity {
 
         ArrayList<PieEntry> yEntrys = new ArrayList<PieEntry>();
         for(int i = 0; i<yData.length;i++)
-            yEntrys.add(new PieEntry(yData[i], i));
+            yEntrys.add(new PieEntry(yData[i], xData[i]));
 
         // drawPieChart();
         PieDataSet dataSet = new PieDataSet(yEntrys,"");
         dataSet.setSliceSpace(3);
         dataSet.setSelectionShift(5);
 
-        ArrayList<String> xEntrys = new ArrayList<String>();
-        for(int i=0; i<xData.length;i++)
-            xEntrys.add(xData[i]);
-
         legend.setEnabled(true);
-        PieData data = new PieData();
+        PieData data = new PieData(dataSet);
 
         //add colors to dataset
         ArrayList<Integer> colors = new ArrayList<Integer>();
