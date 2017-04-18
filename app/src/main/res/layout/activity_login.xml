@@ -80,12 +80,12 @@
         android:orientation="horizontal"
         android:background="@color/com_facebook_blue">
 
-        <!--<ImageView
+        <ImageView
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginLeft="10dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/com_facebook_button_login_logo"/>-->
+            android:src="@drawable/com_facebook_button_login_logo"/>
 
         <TextView
             android:id="@+id/button_facebook"

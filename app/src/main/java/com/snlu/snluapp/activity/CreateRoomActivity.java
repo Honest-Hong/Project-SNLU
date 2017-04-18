@@ -82,6 +82,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         if(item == null) {
             imageView.setVisibility(View.INVISIBLE);
             textName.setVisibility(View.INVISIBLE);
+            textId.setVisibility(View.INVISIBLE);
             button.setVisibility(View.INVISIBLE);
         } else {
             imageView.setVisibility(View.VISIBLE);
@@ -107,7 +108,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 EditText editText = (EditText)findViewById(R.id.edit_search);
                 requestSearch(editText.getText().toString());
                 break;
-            case R.id.button:
+            case R.id.button_del:
                 // 회의자를 리사이클러 뷰에 추가하는 과정
                 boolean isExisted = false;
                 for(int i=0; i<adapter.data.size(); i++) {
