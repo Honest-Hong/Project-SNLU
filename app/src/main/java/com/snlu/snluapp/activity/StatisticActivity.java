@@ -10,8 +10,8 @@ import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -43,28 +43,14 @@ public class StatisticActivity extends AppCompatActivity {
         document.setNumber(getIntent().getStringExtra("documentNumber"));
 
         pieChart=(PieChart)findViewById(R.id.statistic_pie_chart);
-        pieChart.setHoleRadius(25f);
+        pieChart.setHoleRadius(20f);
         pieChart.setCenterText("단어통계");
         pieChart.setCenterTextSize(10);
         pieChart.setDrawEntryLabels(true);
         pieChart.setUsePercentValues(true);
-        pieChart.setRotationEnabled(false);
+        pieChart.setRotationEnabled(true);
 
         requestStatistic();
-//        addDataSet();
-
-        pieChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
-
-        //add legend to chart
-        Legend legend = pieChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setForm(Legend.LegendForm.CIRCLE);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-        legend.setDrawInside(false);
-        legend.setXEntrySpace(7f);
-        legend.setYEntrySpace(0f);
-        legend.setYOffset(0f);
     }
 
     private void requestStatistic(){
@@ -80,9 +66,16 @@ public class StatisticActivity extends AppCompatActivity {
                         if(result==0) {
                             String str = response.getString("data");
                             JSONArray array = new JSONArray(str);
-                            
-                            int count = array.getJSONObject(0).getInt("count");
-                            String name = array.getJSONObject(0).getString("name");
+                            int cnt = array.length();
+                            yData = new float[cnt];
+                            xData = new String[cnt];
+                            for(int i=0; i<cnt ;i++){
+                                yData[i]=array.getJSONObject(i).getInt("count");
+                            }
+                            for(int i =0; i<cnt; i++){
+                                xData[i] = array.getJSONObject(i).getString("name");
+                            }
+                            addDataSet();
                         } else {
                             Log.v("TAG", "error");
                         }
@@ -99,19 +92,23 @@ public class StatisticActivity extends AppCompatActivity {
     private void addDataSet() {
         Log.d(TAG,"addDataSet started");
 
-        ArrayList<PieEntry> yEntrys = new ArrayList<>();
-        ArrayList<String> xEntrys = new ArrayList<>();
+        Legend legend = pieChart.getLegend();
 
-
-        for(int i = 0; i<yData.length;i++) {
+        ArrayList<PieEntry> yEntrys = new ArrayList<PieEntry>();
+        for(int i = 0; i<yData.length;i++)
             yEntrys.add(new PieEntry(yData[i], i));
-        }
-        for(int i=0; i<xData.length;i++) {
+
+        // drawPieChart();
+        PieDataSet dataSet = new PieDataSet(yEntrys,"");
+        dataSet.setSliceSpace(3);
+        dataSet.setSelectionShift(5);
+
+        ArrayList<String> xEntrys = new ArrayList<String>();
+        for(int i=0; i<xData.length;i++)
             xEntrys.add(xData[i]);
-        }
 
-        PieDataSet pieDataSet = new PieDataSet(yEntrys,"");
-
+        legend.setEnabled(true);
+        PieData data = new PieData();
 
         //add colors to dataset
         ArrayList<Integer> colors = new ArrayList<Integer>();
@@ -132,17 +129,25 @@ public class StatisticActivity extends AppCompatActivity {
 
         colors.add(ColorTemplate.getHoloBlue());
 
-        pieDataSet.setColors(colors);
+        dataSet.setColors(colors);
 
-
-        //create pie data object
-        PieData pieData = new PieData(pieDataSet);
-        pieData.setValueFormatter(new PercentFormatter());
-        pieData.setValueTextSize(11f);
-        pieData.setValueTextColor(Color.WHITE);
-        pieChart.setData(pieData);
+        data.setValueFormatter(new PercentFormatter());
+        data.setValueTextSize(11f);
+        data.setValueTextColor(Color.WHITE);
+        pieChart.setData(data);
 
         pieChart.invalidate();
 
+        pieChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+
+        //add legend to chart
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setForm(Legend.LegendForm.CIRCLE);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+        legend.setDrawInside(false);
+        legend.setXEntrySpace(7);
+        legend.setYEntrySpace(5);
+        legend.setYOffset(0f);
     }
 }
