@@ -8,14 +8,13 @@
     tools:context="com.snlu.snluapp.activity.SummaryActivity">
 
     <EditText
-        android:id="@+id/summary_docu"
+        android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:inputType="textMultiLine"
         android:background="@drawable/shape_rectangle_grey"/>
     <LinearLayout
-        android:id="@+id/word_sentence_area"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -33,8 +32,7 @@
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_rectangle_grey"
-            android:listSelector="#FFB6C1"/>
+            android:background="@drawable/shape_rectangle_grey"/>
     </LinearLayout>
 
 </LinearLayout>
