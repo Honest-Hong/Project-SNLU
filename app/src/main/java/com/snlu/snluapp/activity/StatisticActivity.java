@@ -7,8 +7,15 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -31,11 +38,26 @@ public class StatisticActivity extends AppCompatActivity {
     private float[] yData;
     private String[] xData;
     private DocumentItem document;
-    PieChart pieChart;
+    //PieChart pieChart;
+    protected BarChart barChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_statistc);
+
+        document = new DocumentItem();
+        document.setNumber(getIntent().getStringExtra("documentNumber"));
+
+        barChart = (BarChart) findViewById(R.id.statistic_bar_chart);
+
+        barChart.setMaxVisibleValueCount(60);
+        barChart.setDrawBarShadow(true);
+        barChart.setDrawValueAboveBar(true);
+
+        requestStatistic();
+    }
+  /*          super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistc);
         Log.d(TAG,"onCreate starting to create chart");
 
@@ -146,5 +168,82 @@ public class StatisticActivity extends AppCompatActivity {
         legend.setXEntrySpace(7);
         legend.setYEntrySpace(5);
         legend.setYOffset(0f);
+    }*/
+
+    private void requestStatistic() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("documentNumber", document.getNumber());
+            SNLUVolley.getInstance(this).post("analyze", json, new SNLUVolley.OnResponseListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.v("TAG", response.toString());
+                    try {
+                        int result = response.getInt("result");
+                        if (result == 0) {
+                            String str = response.getString("data");
+                            JSONArray array = new JSONArray(str);
+
+                            int cnt = array.length();
+                            yData = new float[cnt];
+                            xData = new String[cnt];
+                            for (int i = 0; i < cnt; i++) {
+                                yData[i] = array.getJSONObject(i).getInt("count");
+                            }
+                            for (int i = 0; i < cnt; i++) {
+                                xData[i] = array.getJSONObject(i).getString("name");
+                            }
+                            addDataSet();
+
+                            int count = array.getJSONObject(0).getInt("count");
+                            String name = array.getJSONObject(0).getString("name");
+                        } else {
+                            Log.v("TAG", "error");
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addDataSet() {
+        BarDataSet dataSet;
+        BarData data;
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelCount(7);
+
+        YAxis yAxis = barChart.getAxisLeft();
+        yAxis.setLabelCount(8, false);
+        yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        yAxis.setSpaceTop(15f);
+        yAxis.setAxisMinimum(0f);
+
+        Legend l = barChart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+        l.setForm(Legend.LegendForm.CIRCLE);
+        l.setFormSize(9f);
+        l.setTextSize(11f);
+        l.setXEntrySpace(4f);
+
+        ArrayList<BarEntry> yEntrys = new ArrayList<BarEntry>();
+       for (int i = 0; i < yData.length; i++) {
+            yEntrys.add(new BarEntry(yData[i],i));
+       }
+       for(int i = 0; i<yData.length;i++) {
+           dataSet = new BarDataSet(yEntrys,xData[i]);
+       }
+       data = new BarData(xAxis,dataSet);
+       barChart.setData(data);
     }
 }
