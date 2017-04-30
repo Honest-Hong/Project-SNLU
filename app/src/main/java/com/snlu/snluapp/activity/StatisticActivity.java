@@ -40,6 +40,8 @@ public class StatisticActivity extends AppCompatActivity {
     private DocumentItem document;
     //PieChart pieChart;
     protected BarChart barChart;
+    BarDataSet dataSet;
+    BarData barData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +119,12 @@ public class StatisticActivity extends AppCompatActivity {
 
         Legend legend = pieChart.getLegend();
 
-        ArrayList<PieEntry> yEntrys = new ArrayList<PieEntry>();
+        ArrayList<PieEntry> yEntry = new ArrayList<PieEntry>();
         for(int i = 0; i<yData.length;i++)
-            yEntrys.add(new PieEntry(yData[i], xData[i]));
+            yEntry.add(new PieEntry(yData[i], xData[i]));
 
         // drawPieChart();
-        PieDataSet dataSet = new PieDataSet(yEntrys,"");
+        PieDataSet dataSet = new PieDataSet(yEntry,"");
         dataSet.setSliceSpace(3);
         dataSet.setSelectionShift(5);
 
@@ -212,7 +214,6 @@ public class StatisticActivity extends AppCompatActivity {
     }
 
     private void addDataSet() {
-        BarDataSet dataSet;
         BarData data;
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -236,14 +237,13 @@ public class StatisticActivity extends AppCompatActivity {
         l.setTextSize(11f);
         l.setXEntrySpace(4f);
 
-        ArrayList<BarEntry> yEntrys = new ArrayList<BarEntry>();
+        ArrayList<BarEntry> yEntry = new ArrayList<BarEntry>();
        for (int i = 0; i < yData.length; i++) {
-            yEntrys.add(new BarEntry(yData[i],i));
+            yEntry.add(new BarEntry(yData[i],i));
+           dataSet = new BarDataSet(yEntry,xData[i]);
+           dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
        }
-       for(int i = 0; i<yData.length;i++) {
-           dataSet = new BarDataSet(yEntrys,xData[i]);
-       }
-       data = new BarData(xAxis,dataSet);
-       barChart.setData(data);
+       barData = new BarData(yEntry,dataSet);
+       barChart.setData(barData);
     }
 }
