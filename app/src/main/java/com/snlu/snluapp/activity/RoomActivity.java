@@ -2,21 +2,14 @@ package com.snlu.snluapp.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.android.volley.Response;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.adapter.DocumentsRecyclerAdapter;
 import com.snlu.snluapp.adapter.OnItemClickListener;
@@ -56,7 +49,7 @@ public class RoomActivity extends AppCompatActivity {
         if(LoginInformation.getUserItem() == null) LoginInformation.loadLoginInformation(this);
 
         // 현재 사용자가 방장인지를 저장한다.
-        isChief = room.getChief().equals(LoginInformation.getUserItem().getPhoneNumber());
+        isChief = room.getChief().equals(LoginInformation.getUserItem().getId());
 
         // 회의방의 제목 지정
         getSupportActionBar().setTitle(room.getTitle());
@@ -140,13 +133,9 @@ public class RoomActivity extends AppCompatActivity {
                 SNLULog.v(response.toString());
                 if(result.equals("0")) {
                     JSONArray array = response.getJSONArray("data");
-                    ArrayList<UserItem> userItems = new ArrayList<UserItem>();
-                    for(int i=0; i<array.length(); i++) {
-                        UserItem item = new UserItem();
-                        item.setPhoneNumber(array.getJSONObject(i).getString("phoneNumber"));
-                        item.setName(array.getJSONObject(i).getString("name"));
-                        userItems.add(item);
-                    }
+                    ArrayList<UserItem> userItems = new ArrayList<>();
+                    for(int i=0; i<array.length(); i++)
+                        userItems.add(new UserItem(array.getJSONObject(i)));
                     recyclerViewUsers.setAdapter(new UsersRecyclerAdapter(RoomActivity.this, userItems, new OnItemClickListener() {
                         @Override
                         public void onItemClick(int position) {
@@ -160,7 +149,7 @@ public class RoomActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     SNLUAlertDialog snluAlertDialog = (SNLUAlertDialog)dialog;
                                     UserItem item = (UserItem)snluAlertDialog.getItem();
-                                    requestDelUser(item.getPhoneNumber());
+                                    requestDelUser(item.getId());
                                     dialog.dismiss();
                                 }
                             });

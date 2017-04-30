@@ -30,8 +30,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
     private ListAdapter adapter;
     private EditText editTitle;
     private TextView buttonCreate;
-    private InviteItem searchItem;
-    private UserItem userItem;
+    private UserItem userItem, searchItem;
     private int roomNumber;
 
     @Override
@@ -49,7 +48,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
 
-        ArrayList<InviteItem> inviteItems = new ArrayList<>();
+        ArrayList<UserItem> userItems = new ArrayList<>();
         roomNumber = getIntent().getIntExtra("roomNumber", 0);
         userItem = LoginInformation.getUserItem();
         if(roomNumber != 0) {
@@ -62,9 +61,9 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         } else {
             getSupportActionBar().setTitle("회의방 생성");
             buttonCreate.setText("회의방 생성하기");
-            inviteItems.add(new InviteItem(userItem.getPhoneNumber(), userItem.getName(), false));
+            userItems.add(userItem);
         }
-        adapter = new ListAdapter(inviteItems);
+        adapter = new ListAdapter(userItems);
         recyclerView.setAdapter(adapter);
 
         ImageView button = (ImageView)findViewById(R.id.button_del);
@@ -73,7 +72,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         setSearchResult(null);
     }
 
-    private void setSearchResult(InviteItem item) {
+    private void setSearchResult(UserItem item) {
         searchItem = item;
         ImageView imageView = (ImageView)findViewById(R.id.image_view);
         TextView textName = (TextView)findViewById(R.id.text_name);
@@ -88,8 +87,8 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
             imageView.setVisibility(View.VISIBLE);
             textName.setVisibility(View.VISIBLE);
             button.setVisibility(View.VISIBLE);
-            textName.setText(item.userName);
-            textId.setText("(" + item.userId + ")");
+            textName.setText(item.getName());
+            textId.setText("(" + item.getId() + ")");
         }
     }
 
@@ -97,10 +96,10 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.button_create:
-                if(roomNumber == 0) requestCreateRoom(editTitle.getText().toString(), userItem.getPhoneNumber());
+                if(roomNumber == 0) requestCreateRoom(editTitle.getText().toString(), userItem.getId());
                 else {
-                    ArrayList<InviteItem> inviteItems = new ArrayList<>();
-                    for(int i=0; i<adapter.data.size(); i++) if(adapter.data.get(i).canDelete) inviteItems.add(adapter.data.get(i));
+                    ArrayList<UserItem> inviteItems = new ArrayList<>();
+                    for(int i=0; i<adapter.data.size(); i++) if(adapter.data.get(i).isSelected()) inviteItems.add(adapter.data.get(i));
                     requestInvite(roomNumber, inviteItems);
                 }
                 break;
@@ -112,7 +111,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 // 회의자를 리사이클러 뷰에 추가하는 과정
                 boolean isExisted = false;
                 for(int i=0; i<adapter.data.size(); i++) {
-                    if(adapter.data.get(i).userId.equals(searchItem.userId)) {
+                    if(adapter.data.get(i).getId().equals(searchItem.getId())) {
                         isExisted = true;
                         break;
                     }
@@ -142,7 +141,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 if(result == 0) {
                     JSONArray data = response.getJSONArray("data");
                     JSONObject user = data.getJSONObject(0);
-                    setSearchResult(new InviteItem(user.getString("phoneNumber"), user.getString("name"), true));
+                    setSearchResult(new UserItem(user));
                 } else {
                     Snackbar.make(getWindow().getDecorView().getRootView(), "존재하지 않는 번호 또는 이메일입니다.", 2000).show();
                     setSearchResult(null);
@@ -164,10 +163,10 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                     try {
                         int result = response.getInt("result");
                         if(result == 0) {
-                            ArrayList<InviteItem> inviteItems = new ArrayList<>();
+                            ArrayList<UserItem> userItems = new ArrayList<>();
                             for(int i=0; i<adapter.data.size(); i++)
-                                if(adapter.data.get(i).canDelete) inviteItems.add(adapter.data.get(i));
-                            requestInvite(response.getInt("roomNumber"), inviteItems);
+                                if(adapter.data.get(i).isSelected()) userItems.add(adapter.data.get(i));
+                            requestInvite(response.getInt("roomNumber"), userItems);
                         } else {
                             Snackbar.make(getWindow().getDecorView().getRootView(), "방을 생성하는데 실패하였습니다.", 2000).show();
                         }
@@ -181,15 +180,15 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void requestInvite(final int roomNumber, ArrayList<InviteItem> inviteItems) {
+    private void requestInvite(final int roomNumber, ArrayList<UserItem> userItems) {
         try {
             JSONObject json = new JSONObject();
             json.put("roomNumber",roomNumber);
             String str = "[";
-            for (int i = 0; i < inviteItems.size(); i++) {
+            for (int i = 0; i < userItems.size(); i++) {
                 if(i!=0) str += ",";
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("phoneNumber", inviteItems.get(i).userId.replace("-", ""));
+                jsonObject.put("phoneNumber", userItems.get(i).getId().replace("-", ""));
                 str += jsonObject.toString();
             }
             str += "]";
@@ -201,7 +200,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                         Intent intent = new Intent(CreateRoomActivity.this, RoomActivity.class);
                         intent.putExtra("roomNumber", roomNumber + "");
                         intent.putExtra("roomTitle", editTitle.getText().toString());
-                        intent.putExtra("roomChief", userItem.getPhoneNumber());
+                        intent.putExtra("roomChief", userItem.getId());
                         startActivity(intent);
                     } else {
                         setResult(RESULT_OK);
@@ -227,10 +226,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                             ArrayList<InviteItem> inviteItems = new ArrayList<>();
                             JSONArray array = response.getJSONArray("data");
                             for(int i=0; i<array.length(); i++)
-                                adapter.addItem(new InviteItem(
-                                        array.getJSONObject(i).getString("phoneNumber"),
-                                        array.getJSONObject(i).getString("name"),
-                                        false));
+                                adapter.addItem(new UserItem(array.getJSONObject(i)));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -243,9 +239,9 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
     }
 
     class ListAdapter extends RecyclerView.Adapter implements View.OnClickListener {
-        private ArrayList<InviteItem> data;
+        private ArrayList<UserItem> data;
 
-        public ListAdapter(ArrayList<InviteItem> data) {
+        public ListAdapter(ArrayList<UserItem> data) {
             this.data = data;
         }
 
@@ -257,13 +253,13 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder vh = (ViewHolder)holder;
-            String text = data.get(position).userName;
-            if(data.get(position).userId.equals(userItem.getPhoneNumber())) text += "(방장)";
+            String text = data.get(position).getName();
+            if(data.get(position).getId().equals(userItem.getId())) text += "(방장)";
             vh.textName.setText(text);
-            vh.textId.setText("(" + data.get(position).userId + ")");
+            vh.textId.setText("(" + data.get(position).getId() + ")");
             vh.button.setTag(position);
             vh.button.setOnClickListener(this);
-            if(data.get(position).canDelete) vh.button.setVisibility(View.VISIBLE);
+            if(data.get(position).isSelected()) vh.button.setVisibility(View.VISIBLE);
             else vh.button.setVisibility(View.GONE);
         }
 
@@ -279,7 +275,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
             notifyItemRemoved(pos);
         }
 
-        public void addItem(InviteItem item) {
+        public void addItem(UserItem item) {
             data.add(item);
             notifyItemInserted(data.size() - 1);
         }

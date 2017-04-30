@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void loadRoomList() {
         JSONObject json = new JSONObject();
         try {
-            json.put("phoneNumber", LoginInformation.getUserItem().getPhoneNumber());
+            json.put("phoneNumber", LoginInformation.getUserItem().getId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -218,8 +218,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LoginInformation.setToken(this);
         JSONObject json = new JSONObject();
         try {
-            json.put("phoneNumber", LoginInformation.getUserItem().getPhoneNumber());
+            json.put("phoneNumber", LoginInformation.getUserItem().getId());
             json.put("token", LoginInformation.getToken(this));
+            json.put("imgaeurl", LoginInformation.getUserItem().getImagePath());
             SNLUVolley.getInstance(this).post("dong", json, requestRefreshTokenListener);
         } catch (JSONException e) {
             e.printStackTrace();

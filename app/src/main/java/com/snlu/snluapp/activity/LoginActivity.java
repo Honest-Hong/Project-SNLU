@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,7 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.kakao.auth.AuthType;
@@ -108,10 +110,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void requestKaKaoInformation() {
-        List<String> propertyKeys = new ArrayList<String>();
-        propertyKeys.add("kaccount_email");
-        propertyKeys.add("nickname");
-
         UserManagement.requestMe(new MeResponseCallback() {
             @Override
             public void onSessionClosed(ErrorResult errorResult) {
@@ -129,36 +127,62 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onSuccess(UserProfile result) {
                 String userName = result.getNickname();
                 String userEmail = result.getEmail();
+                String userImage = result.getProfileImagePath();
                 Log.d("Kakao", String.format("userName(%s), userEmail(%s)", userName, userEmail));
-                if(phoneNumber == null) requestSignUp(userEmail, userName);
-                else requestSignUp(phoneNumber, userName);
+                if(phoneNumber == null) requestSignUp(userEmail, userName, userImage);
+                else requestSignUp(phoneNumber, userName, userImage);
             }
-        }, propertyKeys, false);
+        });
     }
     // 카카오 로그인 처리
 
     // 페이스북 로그인 처리
+    private ProfileTracker mProfileTracker;
     @Override
     public void onSuccess(LoginResult loginResult) {
         Profile.fetchProfileForCurrentAccessToken();
-        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-                try {
-                    String userName = object.getString("name");
-                    String userEmail = object.getString("email");
-                    Log.d("Facebook", String.format("userName(%s), userEmail(%s)", userName, userEmail));
-                    if(phoneNumber == null) requestSignUp(userEmail, userName);
-                    else requestSignUp(phoneNumber, userName);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if(Profile.getCurrentProfile() == null) {
+            mProfileTracker = new ProfileTracker() {
+                @Override
+                protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+                    // profile2 is the new profile
+                    String userEmail = profile2.getId();
+                    String userName = profile2.getName();
+                    Uri uri = profile2.getProfilePictureUri(400,400);
+                    String userImagePath = uri.toString();
+                    if(phoneNumber == null) requestSignUp(userEmail, userName, userImagePath);
+                    else requestSignUp(phoneNumber, userName, userImagePath);
+                    mProfileTracker.stopTracking();
                 }
-            }
-        });
-        Bundle arguments = new Bundle();
-        arguments.putString("fields", "id,name,email");
-        request.setParameters(arguments);
-        request.executeAsync();
+            };
+        }
+        else {
+            Profile profile = Profile.getCurrentProfile();
+            String userEmail = profile.getId();
+            String userName = profile.getName();
+            Uri uri = profile.getProfilePictureUri(400,400);
+            String userImagePath = uri.toString();
+            if(phoneNumber == null) requestSignUp(userEmail, userName, userImagePath);
+            else requestSignUp(phoneNumber, userName, userImagePath);
+        }
+//        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+//            @Override
+//            public void onCompleted(JSONObject object, GraphResponse response) {
+//                try {
+//                    String userName = object.getString("name");
+//                    String userEmail = object.getString("email");
+//                    Log.d("Facebook", String.format("userName(%s), userEmail(%s)", userName, userEmail));
+//                    if(phoneNumber == null) requestSignUp(userEmail, userName);
+//                    else requestSignUp(phoneNumber, userName);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        Bundle arguments = new Bundle();
+//        arguments.putString("fields", "id,name,email");
+//        request.setParameters(arguments);
+//        request.executeAsync();
     }
 
     @Override
@@ -181,11 +205,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void requestSignUp(final String phoneNumber, final String name) {
+    private void requestSignUp(final String phoneNumber, final String name, final String image) {
         try {
             JSONObject json = new JSONObject();
             json.put("phoneNumber", phoneNumber);
             json.put("name", name);
+            json.put("imageurl", image);
             SNLUVolley.getInstance(this).post("join", json, new Response.Listener<JSONObject>() {
                 public void onResponse(JSONObject response) {
                     try {
@@ -195,7 +220,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         } else {
                             Toast.makeText(LoginActivity.this, "또 뵙네요 " + name + "님!", Toast.LENGTH_LONG).show();
                         }
-                        storeLoginInform(phoneNumber, name);
+                        storeLoginInform(phoneNumber, name, image);
                         startMainActivity();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -207,10 +232,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void storeLoginInform(String phoneNumber, String name) {
+    private void storeLoginInform(String phoneNumber, String name, String image) {
         SNLUSharedPreferences.put(LoginActivity.this, "logined", "Y");
         SNLUSharedPreferences.put(LoginActivity.this, "user_phone_number", phoneNumber);
         SNLUSharedPreferences.put(LoginActivity.this, "user_name", name);
+        SNLUSharedPreferences.put(LoginActivity.this, "user_image_path", image);
     }
 
     private void startMainActivity() {
@@ -226,7 +252,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Session.getCurrentSession().open(AuthType.KAKAO_LOGIN_ALL, this);
                 break;
             case R.id.button_facebook:
-                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
                 break;
         }
     }

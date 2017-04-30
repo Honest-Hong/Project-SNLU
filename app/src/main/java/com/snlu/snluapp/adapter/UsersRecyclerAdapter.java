@@ -1,7 +1,9 @@
 package com.snlu.snluapp.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +45,10 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder vh = (ViewHolder)holder;
+        if(!userItems.get(position).getImagePath().equals("null"))
+            vh.imageView.setImageURI(Uri.parse(userItems.get(position).getImagePath()));
         vh.textName.setText(userItems.get(position).getName());
-        vh.textId.setText("(" + userItems.get(position).getPhoneNumber() + ")");
+        vh.textId.setText("(" + userItems.get(position).getId() + ")");
         if(isChief) {
             vh.buttonDel.setVisibility(View.VISIBLE);
             vh.linearLayout.setTag(position);
@@ -59,12 +63,13 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textName, textId;
-        public ImageView buttonDel;
+        public ImageView imageView, buttonDel;
         public LinearLayout linearLayout;
         public ViewHolder(View itemView) {
             super(itemView);
             textName = (TextView)itemView.findViewById(R.id.text_name);
             textId = (TextView)itemView.findViewById(R.id.text_id);
+            imageView = (ImageView)itemView.findViewById(R.id.image_view);
             buttonDel = (ImageView)itemView.findViewById(R.id.button_del);
             if(isChief) {
                 linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);

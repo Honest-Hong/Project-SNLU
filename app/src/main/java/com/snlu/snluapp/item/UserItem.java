@@ -1,35 +1,64 @@
 package com.snlu.snluapp.item;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
- * Created by Hong Tae Joon on 2016-11-14.
+ * Created by Garden on 2016-11-25.
  */
 
 public class UserItem {
-    private String phoneNumber;
+    private String id;
     private String name;
+    private String imagePath;
+    private boolean selected;
 
     public UserItem() {
     }
 
-    public UserItem(String phoneNumber, String name) {
-        this.phoneNumber = phoneNumber;
+    public UserItem(String id, String name, String imagePath, boolean selected) {
+        this.id = id;
         this.name = name;
+        this.imagePath = imagePath;
+        this.selected = selected;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public UserItem(JSONObject json) throws JSONException {
+        id = json.getString("phoneNumber");
+        name = json.getString("name");
+        imagePath = json.getString("imageurl");
+        selected = false;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getPhoneNumber() {
-
-        return phoneNumber;
+    public boolean isSelected() {
+        return selected;
     }
 
-    public String getName() {
-        return name;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

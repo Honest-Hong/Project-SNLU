@@ -117,7 +117,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
 
         // 회의방의 방장인 경우 회의 종료버튼이 보인다.
         View viewEnd = findViewById(R.id.button_end);
-        if(!roomItem.getChief().equals(LoginInformation.getUserItem().getPhoneNumber())) viewEnd.setVisibility(GONE);
+        if(!roomItem.getChief().equals(LoginInformation.getUserItem().getId())) viewEnd.setVisibility(GONE);
         else {
             viewEnd.setVisibility(View.VISIBLE);
             viewEnd.setOnClickListener(this);
@@ -167,7 +167,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
 
     // 발언 시작
     private void startListening() {
-        requestSayStart(LoginInformation.getUserItem().getPhoneNumber());
+        requestSayStart(LoginInformation.getUserItem().getId());
         timestamp = new Timestamp(System.currentTimeMillis());
 
         recognizer = SpeechRecognizer.createSpeechRecognizer(this);
@@ -184,7 +184,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
 
     // 음성 인식 내용 처리
     private void processSpeech(String sentence) {
-        String speakerPhoneNumber = LoginInformation.getUserItem().getPhoneNumber();
+        String speakerPhoneNumber = LoginInformation.getUserItem().getId();
         String speakerName = LoginInformation.getUserItem().getName();
         SentenceItem item = new SentenceItem();
         item.setSpeakerPhoneNumber(speakerPhoneNumber);
@@ -233,7 +233,7 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
                     // 서버로부터 전달받은 방 번호가 일치하면 처리해줌
                     if(roomNumber.equals(roomItem.getNumber())) {
                         // 다른 사람이 말하고 있는 경우에만 표시해줌
-                        if(!speakerPhoneNumber.equals(LoginInformation.getUserItem().getPhoneNumber())) {
+                        if(!speakerPhoneNumber.equals(LoginInformation.getUserItem().getId())) {
                             textSpeaker.setText(speakerName + "님이 발언중입니다.");
                             setButtonSayMode(2);
                         }
