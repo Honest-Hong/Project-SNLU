@@ -136,6 +136,9 @@ public class RoomActivity extends AppCompatActivity {
                     ArrayList<UserItem> userItems = new ArrayList<>();
                     for(int i=0; i<array.length(); i++)
                         userItems.add(new UserItem(array.getJSONObject(i)));
+                    for(int i=0; i<array.length(); i++)
+                        if(userItems.get(i).getId().equals(room.getChief()))
+                            userItems.get(i).setSelected(true);
                     recyclerViewUsers.setAdapter(new UsersRecyclerAdapter(RoomActivity.this, userItems, new OnItemClickListener() {
                         @Override
                         public void onItemClick(int position) {

@@ -273,8 +273,8 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ViewHolder vh = (ViewHolder)holder;
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+            final ViewHolder vh = (ViewHolder)holder;
             String text = data.get(position).getName();
             if(data.get(position).getId().equals(userItem.getId())) text += "(방장)";
             vh.textName.setText(text);
@@ -283,6 +283,32 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
             vh.button.setOnClickListener(this);
             if(data.get(position).isSelected()) vh.button.setVisibility(View.VISIBLE);
             else vh.button.setVisibility(View.GONE);
+
+            if(!data.get(position).getImagePath().equals("null")) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            URL url = new URL(data.get(position).getImagePath());
+                            final Bitmap bitmap = BitmapFactory.decodeStream(url.openStream());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    vh.imageView.setImageBitmap(bitmap);
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    vh.imageView.setImageDrawable(ContextCompat.getDrawable(CreateRoomActivity.this, R.drawable.icon_user));
+                                }
+                            });
+                        }
+                    }
+                }).start();
+            }
         }
 
         @Override
@@ -304,7 +330,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
 
         class ViewHolder extends RecyclerView.ViewHolder {
             public TextView textName, textId;
-            public ImageView button;
+            public ImageView button, imageView;
 
             public ViewHolder(View view) {
                 super(view);
@@ -312,17 +338,8 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 textId = (TextView)view.findViewById(R.id.text_id);
                 button = (ImageView)view.findViewById(R.id.button_del);
                 button.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_delete));
+                imageView = (ImageView)view.findViewById(R.id.image_view);
             }
-        }
-    }
-
-    class InviteItem {
-        public String userId, userName;
-        public boolean canDelete;
-        public InviteItem(String userId, String userName, boolean canDelete) {
-            this.userId = userId;
-            this.userName = userName;
-            this.canDelete = canDelete;
         }
     }
 }

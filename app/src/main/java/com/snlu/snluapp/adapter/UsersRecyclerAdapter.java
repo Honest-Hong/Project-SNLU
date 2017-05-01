@@ -79,12 +79,20 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
             }).start();
         }
         vh.textName.setText(userItems.get(position).getName());
-        vh.textId.setText("(" + userItems.get(position).getId() + ")");
-        if(isChief) {
-            vh.buttonDel.setVisibility(View.VISIBLE);
+
+        if(userItems.get(position).isSelected())
+            vh.textId.setText(String.format("(%s)(방장)", userItems.get(position).getId()));
+        else
+            vh.textId.setText("(" + userItems.get(position).getId() + ")");
+
+        if(isChief && !userItems.get(position).isSelected()) {
+            vh.linearLayout.setOnClickListener(onUserClickListener);
             vh.linearLayout.setTag(position);
+            vh.buttonDel.setVisibility(View.VISIBLE);
+        } else {
+            vh.linearLayout.setOnClickListener(null);
+            vh.buttonDel.setVisibility(View.GONE);
         }
-        else vh.buttonDel.setVisibility(View.GONE);
     }
 
     @Override
@@ -104,13 +112,14 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
             buttonDel = (ImageView)itemView.findViewById(R.id.button_del);
             if(isChief) {
                 linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
-                linearLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onItemClickListener.onItemClick((int) v.getTag());
-                    }
-                });
             }
         }
     }
+
+    private View.OnClickListener onUserClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onItemClickListener.onItemClick((int)v.getTag());
+        }
+    };
 }
