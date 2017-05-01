@@ -51,6 +51,8 @@ public class StatisticActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistc);
 
+        getSupportActionBar().setTitle("단어 통계");
+
         document = new DocumentItem();
         document.setNumber(getIntent().getStringExtra("documentNumber"));
 
