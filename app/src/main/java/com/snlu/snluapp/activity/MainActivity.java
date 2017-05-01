@@ -11,10 +11,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -193,8 +190,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder vh = (ViewHolder)holder;
-            vh.textView.setText(roomItems.get(position).getTitle());
+            vh.textTitle.setText(roomItems.get(position).getTitle());
             vh.linearLayout.setTag(position);
+            if(roomItems.get(position).getIsStart().equals("1"))
+                vh.textProceed.setVisibility(View.VISIBLE);
+            else
+                vh.textProceed.setVisibility(View.GONE);
         }
 
         @Override
@@ -203,11 +204,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView textView;
+            public TextView textTitle, textProceed;
             public LinearLayout linearLayout;
             public ViewHolder(View itemView) {
                 super(itemView);
-                textView = (TextView)itemView.findViewById(R.id.item_room_text);
+                textTitle = (TextView)itemView.findViewById(R.id.item_room_text);
+                textProceed = (TextView)itemView.findViewById(R.id.text_proceed);
                 linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
                 linearLayout.setOnClickListener(MainActivity.this);
             }
