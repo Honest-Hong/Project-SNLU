@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onSuccess(UserProfile result) {
                 String userName = result.getNickname();
                 String userEmail = result.getEmail();
-                String userImage = result.getProfileImagePath();
+                String userImage = result.getThumbnailImagePath();
                 if(phoneNumber == null) requestSignUp(userEmail, userName, userImage);
                 else requestSignUp(phoneNumber, userName, userImage);
             }

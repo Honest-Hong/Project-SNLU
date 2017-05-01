@@ -1,6 +1,8 @@
 package com.snlu.snluapp.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +25,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class CreateRoomActivity extends AppCompatActivity implements View.OnClickListener{
@@ -72,9 +76,9 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         setSearchResult(null);
     }
 
-    private void setSearchResult(UserItem item) {
+    private void setSearchResult(final UserItem item) {
         searchItem = item;
-        ImageView imageView = (ImageView)findViewById(R.id.image_view);
+        final ImageView imageView = (ImageView)findViewById(R.id.image_view);
         TextView textName = (TextView)findViewById(R.id.text_name);
         TextView textId = (TextView)findViewById(R.id.text_id);
         ImageView button = (ImageView)findViewById(R.id.button_del);
@@ -84,7 +88,26 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
             textId.setVisibility(View.INVISIBLE);
             button.setVisibility(View.INVISIBLE);
         } else {
+            item.setSelected(true);
             imageView.setVisibility(View.VISIBLE);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(item.getImagePath());
+                        final Bitmap bitmap = BitmapFactory.decodeStream(url.openStream());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                imageView.setImageBitmap(bitmap);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        imageView.setImageDrawable(ContextCompat.getDrawable(CreateRoomActivity.this, R.drawable.icon_user));
+                    }
+                }
+            }).start();
             textName.setVisibility(View.VISIBLE);
             button.setVisibility(View.VISIBLE);
             textName.setText(item.getName());
@@ -223,7 +246,6 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                     try {
                         String result = response.getString("result");
                         if(result.equals("0")) {
-                            ArrayList<InviteItem> inviteItems = new ArrayList<>();
                             JSONArray array = response.getJSONArray("data");
                             for(int i=0; i<array.length(); i++)
                                 adapter.addItem(new UserItem(array.getJSONObject(i)));

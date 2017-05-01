@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,6 +68,12 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
                         });
                     } catch (Exception e) {
                         e.printStackTrace();
+                        imageHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                vh.imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_user));
+                            }
+                        });
                     }
                 }
             }).start();
