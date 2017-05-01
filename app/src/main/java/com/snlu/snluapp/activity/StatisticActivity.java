@@ -9,6 +9,7 @@ import android.util.Log;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -19,6 +20,7 @@ import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -36,7 +38,7 @@ import java.util.ArrayList;
 public class StatisticActivity extends AppCompatActivity {
 
     private static String TAG = "StatisticActivity";
-    private float[] yData;
+    private int[] yData;
     private String[] xData;
     private DocumentItem document;
     //PieChart pieChart;
@@ -188,7 +190,7 @@ public class StatisticActivity extends AppCompatActivity {
                             JSONArray array = new JSONArray(str);
 
                             int cnt = array.length();
-                            yData = new float[cnt];
+                            yData = new int[cnt];
                             xData = new String[cnt];
                             for (int i = 0; i < cnt; i++) {
                                 yData[i] = array.getJSONObject(i).getInt("count");
@@ -197,9 +199,6 @@ public class StatisticActivity extends AppCompatActivity {
                                 xData[i] = array.getJSONObject(i).getString("name");
                             }
                             addDataSet();
-
-                            int count = array.getJSONObject(0).getInt("count");
-                            String name = array.getJSONObject(0).getString("name");
                         } else {
                             Log.v("TAG", "error");
                         }
@@ -222,10 +221,24 @@ public class StatisticActivity extends AppCompatActivity {
         xAxis.setLabelCount(7);
 
         YAxis yAxis = barChart.getAxisLeft();
-        yAxis.setLabelCount(8, false);
+//        yAxis.setLabelCount(8, false);
         yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        yAxis.setSpaceTop(15f);
+//        yAxis.setSpaceTop(15f);
         yAxis.setAxisMinimum(0f);
+        ////// 추가한 부분
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return xData[(int)value];
+            }
+        });
+        yAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return (int)value + "개";
+            }
+        });
+        ////// 추가한 부분
 
         Legend l = barChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
@@ -237,18 +250,22 @@ public class StatisticActivity extends AppCompatActivity {
         l.setTextSize(11f);
         l.setXEntrySpace(4f);
 
+        ////// 수정한 부분
         ArrayList<BarEntry> yEntry = new ArrayList<BarEntry>();
         for (int i = 0; i < yData.length; i++) {
-            yEntry.add(new BarEntry(i, yData[i],xData[i]));
+            yEntry.add(new BarEntry(i, yData[i]));
         }
         barDataSet = new BarDataSet(yEntry, "단어");
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        barDataSet.setStackLabels(xData);
 
         barData = new BarData(barDataSet);
-        barData.setBarWidth(0.5f);
+        barData.setBarWidth(0.9f);
 
         barChart.setData(barData);
         barChart.setFitBars(true);
+        barChart.setVisibleXRangeMaximum(6);
         barChart.invalidate();
+        ////// 수정한 부분
     }
 }
