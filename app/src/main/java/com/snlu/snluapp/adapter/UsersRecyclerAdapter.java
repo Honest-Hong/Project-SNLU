@@ -90,7 +90,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
             vh.linearLayout.setTag(position);
             vh.buttonDel.setVisibility(View.VISIBLE);
         } else {
-            vh.linearLayout.setOnClickListener(null);
+            vh.linearLayout.setOnClickListener(emptyClickListener);
             vh.buttonDel.setVisibility(View.GONE);
         }
     }
@@ -120,6 +120,11 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
         @Override
         public void onClick(View v) {
             onItemClickListener.onItemClick((int)v.getTag());
+        }
+    };
+    private View.OnClickListener emptyClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
         }
     };
 }
