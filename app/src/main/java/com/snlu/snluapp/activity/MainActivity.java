@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             json.put("phoneNumber", LoginInformation.getUserItem().getId());
             json.put("token", LoginInformation.getToken(this));
-            json.put("imgaeurl", LoginInformation.getUserItem().getImagePath());
+            json.put("imageurl", LoginInformation.getUserItem().getImagePath());
             SNLUVolley.getInstance(this).post("dong", json, requestRefreshTokenListener);
         } catch (JSONException e) {
             e.printStackTrace();

@@ -1,7 +1,10 @@
 package com.snlu.snluapp.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,8 @@ import android.widget.TextView;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.UserItem;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -25,12 +30,14 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
     private ArrayList<UserItem> userItems;
     private OnItemClickListener onItemClickListener;
     private boolean isChief;
+    private Handler imageHandler;
 
     public UsersRecyclerAdapter(Context context, ArrayList<UserItem> userItems, OnItemClickListener onItemClickListener, boolean isChief) {
         this.context = context;
         this.userItems = userItems;
         this.onItemClickListener = onItemClickListener;
         this.isChief = isChief;
+        imageHandler = new Handler();
     }
 
     public UserItem getItem(int position) {
@@ -43,10 +50,27 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ViewHolder vh = (ViewHolder)holder;
-        if(!userItems.get(position).getImagePath().equals("null"))
-            vh.imageView.setImageURI(Uri.parse(userItems.get(position).getImagePath()));
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        final ViewHolder vh = (ViewHolder)holder;
+        if(!userItems.get(position).getImagePath().equals("null")) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(userItems.get(position).getImagePath());
+                        final Bitmap bitmap = BitmapFactory.decodeStream(url.openStream());
+                        imageHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                vh.imageView.setImageBitmap(bitmap);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
         vh.textName.setText(userItems.get(position).getName());
         vh.textId.setText("(" + userItems.get(position).getId() + ")");
         if(isChief) {

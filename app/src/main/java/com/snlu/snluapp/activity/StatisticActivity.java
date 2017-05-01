@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import com.snlu.snluapp.R;
@@ -40,7 +41,7 @@ public class StatisticActivity extends AppCompatActivity {
     private DocumentItem document;
     //PieChart pieChart;
     protected BarChart barChart;
-    BarDataSet dataSet;
+    BarDataSet barDataSet;
     BarData barData;
 
     @Override
@@ -214,7 +215,6 @@ public class StatisticActivity extends AppCompatActivity {
     }
 
     private void addDataSet() {
-        BarData data;
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
@@ -238,12 +238,17 @@ public class StatisticActivity extends AppCompatActivity {
         l.setXEntrySpace(4f);
 
         ArrayList<BarEntry> yEntry = new ArrayList<BarEntry>();
-       for (int i = 0; i < yData.length; i++) {
-            yEntry.add(new BarEntry(yData[i],i));
-           dataSet = new BarDataSet(yEntry,xData[i]);
-           dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-       }
-       barData = new BarData(yEntry,dataSet);
-       barChart.setData(barData);
+        for (int i = 0; i < yData.length; i++) {
+            yEntry.add(new BarEntry(i, yData[i],xData[i]));
+        }
+        barDataSet = new BarDataSet(yEntry, "단어");
+        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+
+        barData = new BarData(barDataSet);
+        barData.setBarWidth(0.5f);
+
+        barChart.setData(barData);
+        barChart.setFitBars(true);
+        barChart.invalidate();
     }
 }
