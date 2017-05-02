@@ -214,7 +214,6 @@ public class StatisticActivity extends AppCompatActivity {
     }
 
     private void addDataSet() {
-        BarData data;
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
@@ -243,7 +242,6 @@ public class StatisticActivity extends AppCompatActivity {
            dataSet = new BarDataSet(yEntry,xData[i]);
            dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
        }
-       barData = new BarData(yEntry,dataSet);
        barChart.setData(barData);
     }
 }
