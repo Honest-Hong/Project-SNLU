@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.button_kakao).setOnClickListener(this);
         findViewById(R.id.button_facebook).setOnClickListener(this);
 
-        getAppKeyHash();
+//        getAppKeyHash();
         Session.getCurrentSession().addCallback(this);
         Session.getCurrentSession().checkAndImplicitOpen();
         facebookCallbackManager = CallbackManager.Factory.create();
@@ -110,6 +110,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void requestKaKaoInformation() {
+        List<String> propertyKeys = new ArrayList<>();
+        propertyKeys.add("kaccount_email");
+        propertyKeys.add("nickname");
+        propertyKeys.add("thumbnail_image");
+
         UserManagement.requestMe(new MeResponseCallback() {
             @Override
             public void onSessionClosed(ErrorResult errorResult) {
@@ -127,62 +132,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onSuccess(UserProfile result) {
                 String userName = result.getNickname();
                 String userEmail = result.getEmail();
-                String userImage = result.getProfileImagePath();
-                Log.d("Kakao", String.format("userName(%s), userEmail(%s)", userName, userEmail));
+                String userImage = result.getThumbnailImagePath();
                 if(phoneNumber == null) requestSignUp(userEmail, userName, userImage);
                 else requestSignUp(phoneNumber, userName, userImage);
             }
-        });
+        }, propertyKeys, false);
     }
     // 카카오 로그인 처리
 
     // 페이스북 로그인 처리
-    private ProfileTracker mProfileTracker;
+//    private ProfileTracker mProfileTracker;
     @Override
     public void onSuccess(LoginResult loginResult) {
         Profile.fetchProfileForCurrentAccessToken();
-        if(Profile.getCurrentProfile() == null) {
-            mProfileTracker = new ProfileTracker() {
-                @Override
-                protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
-                    // profile2 is the new profile
-                    String userEmail = profile2.getId();
-                    String userName = profile2.getName();
-                    Uri uri = profile2.getProfilePictureUri(400,400);
-                    String userImagePath = uri.toString();
-                    if(phoneNumber == null) requestSignUp(userEmail, userName, userImagePath);
-                    else requestSignUp(phoneNumber, userName, userImagePath);
-                    mProfileTracker.stopTracking();
+        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                try {
+                    String userName = object.getString("name");
+                    String userEmail = object.getString("email");
+                    JSONObject picture = object.getJSONObject("picture");
+                    String userImage = picture.getJSONObject("data").getString("url");
+                    if(phoneNumber == null) requestSignUp(userEmail, userName, userImage);
+                    else requestSignUp(phoneNumber, userName, userImage);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            };
-        }
-        else {
-            Profile profile = Profile.getCurrentProfile();
-            String userEmail = profile.getId();
-            String userName = profile.getName();
-            Uri uri = profile.getProfilePictureUri(400,400);
-            String userImagePath = uri.toString();
-            if(phoneNumber == null) requestSignUp(userEmail, userName, userImagePath);
-            else requestSignUp(phoneNumber, userName, userImagePath);
-        }
-//        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-//            @Override
-//            public void onCompleted(JSONObject object, GraphResponse response) {
-//                try {
-//                    String userName = object.getString("name");
-//                    String userEmail = object.getString("email");
-//                    Log.d("Facebook", String.format("userName(%s), userEmail(%s)", userName, userEmail));
-//                    if(phoneNumber == null) requestSignUp(userEmail, userName);
-//                    else requestSignUp(phoneNumber, userName);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        Bundle arguments = new Bundle();
-//        arguments.putString("fields", "id,name,email");
-//        request.setParameters(arguments);
-//        request.executeAsync();
+            }
+        });
+        Bundle arguments = new Bundle();
+        arguments.putString("fields", "name,email,picture");
+        request.setParameters(arguments);
+        request.executeAsync();
     }
 
     @Override
@@ -206,6 +187,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void requestSignUp(final String phoneNumber, final String name, final String image) {
+        Log.d("SignUp", String.format("userName(%s), userEmail(%s), userImage(%s)", name, phoneNumber, image));
         try {
             JSONObject json = new JSONObject();
             json.put("phoneNumber", phoneNumber);

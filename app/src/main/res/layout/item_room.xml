@@ -27,10 +27,20 @@
             android:layout_margin="5dp"
             android:textSize="@dimen/font_normal"
             android:textColor="@color/colorBlack"/>
+
+        <TextView
+            android:id="@+id/text_proceed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="@dimen/font_small"
+            android:textColor="@color/colorRedPink"
+            android:text="회의중"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1px"
         android:background="@color/colorGrey" />
 </LinearLayout>

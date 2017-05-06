@@ -24,7 +24,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.PhoneActivity" />
         <activity android:name=".activity.InfoUserActivity" />
         <activity android:name=".activity.RoomActivity">
             <intent-filter>
