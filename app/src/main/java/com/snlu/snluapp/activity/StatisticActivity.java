@@ -5,6 +5,9 @@ import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -33,9 +36,10 @@ import com.snlu.snluapp.util.SNLUVolley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-public class StatisticActivity extends AppCompatActivity {
+public class StatisticActivity extends AppCompatActivity implements OnSeekBarChangeListener{
 
     private static String TAG = "StatisticActivity";
     private int[] yData;
@@ -44,6 +48,8 @@ public class StatisticActivity extends AppCompatActivity {
     protected BarChart barChart;
     BarDataSet barDataSet;
     BarData barData;
+    private TextView tvX;
+    private SeekBar seekBarX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +61,19 @@ public class StatisticActivity extends AppCompatActivity {
         document = new DocumentItem();
         document.setNumber(getIntent().getStringExtra("documentNumber"));
 
-        barChart = (BarChart) findViewById(R.id.statistic_bar_chart);
+        tvX = (TextView)findViewById(R.id.tvXMax);
 
+        seekBarX = (SeekBar)findViewById(R.id.seekBar);
+
+        barChart = (BarChart) findViewById(R.id.statistic_bar_chart);
         barChart.setMaxVisibleValueCount(60);
-        barChart.setDrawBarShadow(true);
+        barChart.setDrawBarShadow(false);
         barChart.setDrawValueAboveBar(true);
+        barChart.setDrawGridBackground(false);
+
+
+        seekBarX.getProgress();
+        seekBarX.setOnSeekBarChangeListener(this);
 
         requestStatistic();
     }
@@ -103,31 +117,29 @@ public class StatisticActivity extends AppCompatActivity {
     }
 
     private void addDataSet() {
+
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);
         xAxis.setLabelCount(7);
 
-        YAxis yAxis = barChart.getAxisLeft();
-//        yAxis.setLabelCount(8, false);
-        yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-//        yAxis.setSpaceTop(15f);
-        yAxis.setAxisMinimum(0f);
-        ////// 추가한 부분
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 return xData[(int)value];
             }
         });
+        YAxis yAxis = barChart.getAxisLeft();
+        yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        yAxis.setAxisMinimum(0f);
+
         yAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 return (int)value + "개";
             }
         });
-        ////// 추가한 부분
 
         Legend l = barChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
@@ -139,17 +151,30 @@ public class StatisticActivity extends AppCompatActivity {
         l.setTextSize(11f);
         l.setXEntrySpace(4f);
 
-        ////// 수정한 부분
+        setData(5);
+
+    }
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+        tvX.setText(""+(seekBarX.getProgress()+1));
+
+        setData(seekBarX.getProgress()+1);
+        barChart.invalidate();
+    }
+
+    private void setData(int count){
+
         ArrayList<BarEntry> yEntry = new ArrayList<BarEntry>();
 
-       for (int i = 0; i < yData.length; i++) {
-            yEntry.add(new BarEntry(yData[i],i));
-           //dataSet = new BarDataSet(yEntry,xData[i]);
-           //dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-       }
-       barChart.setData(barData);
-        for (int i = 0; i < yData.length; i++) {
-            yEntry.add(new BarEntry(i, yData[i]));
+        barChart.setData(barData);
+        if(yData.length<count) {
+            for (int i = 0; i < yData.length; i++) {
+                yEntry.add(new BarEntry(i, yData[i]));
+            }
+        }
+
+        else{
+            for(int i =0; i<count;i++)
+                yEntry.add(new BarEntry(i,yData[i]));
         }
         barDataSet = new BarDataSet(yEntry, "단어");
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
@@ -164,4 +189,6 @@ public class StatisticActivity extends AppCompatActivity {
         barChart.invalidate();
         ////// 수정한 부분
     }
+    public void onStartTrackingTouch(SeekBar seekBar){}
+    public void onStopTrackingTouch(SeekBar seekBar){}
 }
