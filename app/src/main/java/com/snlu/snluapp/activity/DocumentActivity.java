@@ -248,7 +248,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void downloadFile(int type) {
-        String fileName = "아이편회_회의록_" + documentItem.getDate();
+        String fileName = "썰록_회의록_" + documentItem.getDate();
         switch(type) {
             case 2: fileName += ".doc"; break;
             case 3: fileName += ".pdf"; break;

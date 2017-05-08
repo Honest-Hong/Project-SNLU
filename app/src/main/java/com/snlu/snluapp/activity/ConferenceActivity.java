@@ -5,10 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -46,9 +42,8 @@ import static android.view.View.GONE;
  * Created by Hong Tae Joon on 2017-03-20.
  */
 
-public class ConferenceActivity extends AppCompatActivity implements SensorEventListener, RecognitionListener, View.OnClickListener {
+public class ConferenceActivity extends AppCompatActivity implements RecognitionListener, View.OnClickListener {
     final static int REQUEST_RECORD_AUDIO = 101;
-    private final int SNACK_BAR_TIME = 2000;
 
     // 음성인식 인텐트와 서비스
     private Intent recognizerIntent;
@@ -56,23 +51,14 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
     // 발언자 이름 텍스트 뷰
     private TextView textSpeaker;
     // 내화 내용
-//    private LinearLayout paper;
     private RecyclerView recyclerView;
     private SentencesAdapter adapter;
-    // 발언이 가능한지를 판단하는 변수
-//    private boolean canSpeak = true;
     // 날짜 형식을 변환해줄 포멧
     private Timestamp timestamp;
     // 회의록 정보
     private DocumentItem documentItem;
-    // 문장 정보
-    private ArrayList<SentenceItem> sentenceItems;
     // 방 정보
     private RoomItem roomItem;
-    // 근접센서 변수들
-    private SensorManager sensorManager;
-    private Sensor proximitySensor;
-    private final static int SENSOR_SENSITIVITY = 4;
     // 발언하기 버튼
     private TextView buttonSay;
     private boolean toggleSay;
@@ -91,16 +77,10 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         recyclerView.setAdapter(adapter);
         // 발언하는 사람의 이름
         textSpeaker = (TextView)findViewById(R.id.conference_speaker_name);
-        // 회의 종료 버튼
-        // 발언하기 센서
-        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         // 음성인식 인텐트
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-        recognizerIntent.putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR");
-        recognizerIntent.putExtra("android.speech.extra.GET_AUDIO", true);
 
         // 회의방의 정보 저장하기
         roomItem = new RoomItem();
@@ -174,7 +154,6 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         recognizer.setRecognitionListener(this);
         recognizer.startListening(recognizerIntent);
         textSpeaker.setText("음성인식이 시작되었습니다.");
-//        Snackbar.make(getWindow().getDecorView().getRootView(), "음성인식이 시작되었습니다.", SNACK_BAR_TIME).show();
     }
 
     // 발언 중단
@@ -237,8 +216,6 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
                             textSpeaker.setText(speakerName + "님이 발언중입니다.");
                             setButtonSayMode(2);
                         }
-                        // 발언이 시작됐으므로 발언권 off
-//                        canSpeak = false;
                     }
                     break;
                 case "04":
@@ -253,33 +230,11 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
 
                         textSpeaker.setText("");
                         setButtonSayMode(0);
-                        // 발언권을 활성화함
-//                        canSpeak = true;
                     }
                     break;
             }
         }
     };
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-//        if(event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-//            if(event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
-//                // start listening
-//                if(canSpeak) startListening();
-//                else {
-//                    Snackbar.make(getWindow().getDecorView().getRootView(), "지금은 발언하실 수 없습니다.", SNACK_BAR_TIME).show();
-//                }
-//            } else {
-//                stopListening();
-//                Snackbar.make(getWindow().getDecorView().getRootView(), "음성인식을 종료합니다.", SNACK_BAR_TIME).show();
-//            }
-//        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
 
     // 회의 종료 요청
     private void requestEndConference() {
@@ -392,7 +347,6 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
                 String result = response.getString("result");
                 if (result.equals("0")) {
                     JSONArray array = response.getJSONArray("data");
-                    sentenceItems = new ArrayList<>();
                     for(int i=0; i<array.length(); i++) adapter.addItem(SentenceItem.make(array.getJSONObject(i)));
                     recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                 }
@@ -446,7 +400,6 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
     }
     @Override
     public void onResults(Bundle results) {
-//        canSpeak = true;
         ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         if(result != null) processSpeech(result.get(0));
         Log.v("Bundle", results.toString());
@@ -466,8 +419,6 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(SNLUMessageController.BROADCAST_END_CONFERENCE));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(SNLUMessageController.BROADCAST_START_SPEAK));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(SNLUMessageController.BROADCAST_END_SPEAK));
-//        // 센서 등록
-//        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -475,7 +426,5 @@ public class ConferenceActivity extends AppCompatActivity implements SensorEvent
         super.onStop();
         // 브로드 캐스트 해제
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-//        // 센서 해제
-//        sensorManager.unregisterListener(this);
     }
 }
