@@ -30,7 +30,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="회의 다시 시작하기"
-                android:textColor="@color/colorRedPink"/>
+                android:textStyle="bold"
+                android:textColor="@color/colorRedPink"
+                android:background="@color/colorWhite"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_resume"
@@ -47,7 +49,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="PDF로 다운로드"
-                android:textColor="@color/colorRedPink"/>
+                android:textStyle="bold"
+                android:textColor="@color/colorRedPink"
+                android:background="@color/colorWhite"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_pdf"
@@ -64,7 +68,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Word로 다운로드"
-                android:textColor="@color/colorRedPink"/>
+                android:textStyle="bold"
+                android:textColor="@color/colorRedPink"
+                android:background="@color/colorWhite"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_word"
@@ -81,7 +87,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="단어 통계 보기"
-                android:textColor="@color/colorRedPink"/>
+                android:textStyle="bold"
+                android:textColor="@color/colorRedPink"
+                android:background="@color/colorWhite"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_statistic"
@@ -98,7 +106,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="요약하기"
-                android:textColor="@color/colorRedPink"/>
+                android:textStyle="bold"
+                android:textColor="@color/colorRedPink"
+                android:background="@color/colorWhite"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_summary"

@@ -15,8 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        android:text="아..\n이렇게\n편리한\n회의록이!"
-        android:textColor="@color/colorRedPink"
-        android:textSize="@dimen/font_bigest"
+        android:text="-썰록-"
+        android:textColor="@color/colorBlack"
+        android:textSize="45dp"
         android:textStyle="bold"/>
 </LinearLayout>

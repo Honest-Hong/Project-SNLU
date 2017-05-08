@@ -36,6 +36,7 @@ import com.snlu.snluapp.R;
 import com.snlu.snluapp.adapter.OnEditListener;
 import com.snlu.snluapp.adapter.SentencesDetailAdapter;
 import com.snlu.snluapp.dialog.SNLUAlertDialog;
+import com.snlu.snluapp.dialog.SNLUInputDialog;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.SentenceItem;
 import com.snlu.snluapp.util.SNLULog;
@@ -59,6 +60,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     private SearchView searchView;
     private MenuItem menuEdit, menuSave, menuCancel;
     private int editedPosition = -1;
+    private boolean isChief = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         documentItem.setNumber(getIntent().getStringExtra("documentNumber"));
         documentItem.setDate(getIntent().getStringExtra("documentDate"));
         roomNumber = getIntent().getStringExtra("roomNumber");
+        isChief = getIntent().getBooleanExtra("isChief", false);
         getSupportActionBar().setTitle(documentItem.getTitle());
         loadDocumentInformation(documentItem.getNumber());
 
@@ -92,6 +95,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         adapter = new SentencesDetailAdapter(this, this);
         recyclerView.setAdapter(adapter);
         SNLUPermission.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
+        if(isChief) linearResume.setVisibility(View.VISIBLE);
+        else linearResume.setVisibility(View.GONE);
     }
 
     @Override
@@ -109,6 +114,9 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         menuEdit = menu.findItem(R.id.menu_edit);
         menuSave = menu.findItem(R.id.menu_save);
         menuCancel = menu.findItem(R.id.menu_cancel);
+
+        if(isChief) menuEdit.setVisible(true);
+        else menuEdit.setVisible(false);
 
         searchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
         searchView.setQueryHint("검색할 내용을 입력하세요.");
@@ -138,7 +146,15 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_edit:
-                requestEdit("테스트 제목입니다");
+                SNLUInputDialog dialog = new SNLUInputDialog(this);
+                dialog.setTitleText("회의록의 제목을 입력하세요")
+                        .setContent(documentItem.getTitle())
+                        .setOnConfirmListener(new SNLUInputDialog.OnConfirmListener() {
+                            @Override
+                            public void onConfirm(String text) {
+                                requestEdit(text);
+                            }
+                        }).show();
                 return true;
             case R.id.menu_save:
                 if(adapter.getEditedPosition() != -1) {
@@ -160,7 +176,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void requestEdit(String title) {
+    private void requestEdit(final String title) {
         try {
             JSONObject parameter = new JSONObject();
             parameter.put("title", title);
@@ -171,7 +187,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 public void onResponse(JSONObject response) {
                     try {
                         if (response.getInt("result") == 0) {
-                            Toast.makeText(DocumentActivity.this, "수정 성공", Toast.LENGTH_SHORT).show();
+                            getSupportActionBar().setTitle(title);
+                            documentItem.setTitle(title);
                         } else {
                             Toast.makeText(DocumentActivity.this, "수정 실패", Toast.LENGTH_SHORT).show();
                         }
@@ -224,7 +241,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
             menuCancel.setVisible(false);
             menuSave.setVisible(false);
             searchView.setVisibility(View.VISIBLE);
-            menuEdit.setVisible(true);
+            if(isChief) menuEdit.setVisible(true);
             fab.show();
         }
     }

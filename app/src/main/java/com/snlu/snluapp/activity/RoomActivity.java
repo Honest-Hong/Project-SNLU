@@ -202,6 +202,7 @@ public class RoomActivity extends AppCompatActivity {
                             intent.putExtra("documentNumber", adapter.getItem(position).getNumber());
                             intent.putExtra("documentTitle", adapter.getItem(position).getTitle());
                             intent.putExtra("roomNumber", room.getNumber());
+                            intent.putExtra("isChief", isChief);
                             startActivity(intent);
                         }
                     }));
