@@ -70,14 +70,9 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         barChart.setDrawBarShadow(false);
         barChart.setDrawValueAboveBar(true);
         barChart.setDrawGridBackground(false);
-
-<<<<<<< HEAD
-=======
-
         seekBarX.getProgress();
         seekBarX.setOnSeekBarChangeListener(this);
 
->>>>>>> f44c0bbb796163a44af05d244835823686ca7a9f
         requestStatistic();
     }
 

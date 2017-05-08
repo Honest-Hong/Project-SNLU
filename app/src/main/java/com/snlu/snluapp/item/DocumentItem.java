@@ -7,13 +7,9 @@ package com.snlu.snluapp.item;
 public class DocumentItem {
     private String number;
     private String date;
+    private String title;
 
     public DocumentItem() {
-    }
-
-    public DocumentItem(String number, String date) {
-        this.number = number;
-        this.date = date;
     }
 
     public void setNumber(String number) {
@@ -30,5 +26,13 @@ public class DocumentItem {
 
     public String getDate() {
         return date;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

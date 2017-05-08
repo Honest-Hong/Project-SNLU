@@ -40,7 +40,7 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder vh = (ViewHolder)holder;
-        vh.textView.setText(documentItems.get(position).getDate());
+        vh.textView.setText(documentItems.get(position).getTitle());
         vh.linearLayout.setTag(position);
     }
 

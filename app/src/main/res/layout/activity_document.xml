@@ -22,6 +22,23 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/linear_resume"
+            style="@style/AppTheme.Fab_Menu_Linear">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="회의 다시 시작하기"
+                android:textColor="@color/colorRedPink"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_resume"
+                style="@style/AppTheme.Fab_Menu_Fab"
+                app:backgroundTint="@color/colorRedPink"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/linear_pdf"
             style="@style/AppTheme.Fab_Menu_Linear">
 

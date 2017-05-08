@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -29,10 +30,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.adapter.OnEditListener;
 import com.snlu.snluapp.adapter.SentencesDetailAdapter;
+import com.snlu.snluapp.dialog.SNLUAlertDialog;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.SentenceItem;
 import com.snlu.snluapp.util.SNLULog;
@@ -46,17 +49,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class DocumentActivity extends AppCompatActivity implements View.OnClickListener, OnEditListener{
+    private String roomNumber;
     private DocumentItem documentItem;
-    private ArrayList<SentenceItem> sentenceItems;
-    private ArrayList<SentenceItem> searchItems;
     private RecyclerView recyclerView;
     private SentencesDetailAdapter adapter;
-//    private LinearLayout paper;
     private FloatingActionButton fab;
-    private LinearLayout linearPdf, linearWord, linearStatistic, linearSummary;
+    private LinearLayout linearResume, linearPdf, linearWord, linearStatistic, linearSummary;
     private long downloadId;
     private SearchView searchView;
-    private MenuItem menuSave, menuCancel;
+    private MenuItem menuEdit, menuSave, menuCancel;
     private int editedPosition = -1;
 
     @Override
@@ -64,21 +65,24 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document);
         documentItem = new DocumentItem();
+        documentItem.setTitle(getIntent().getStringExtra("documentTitle"));
         documentItem.setNumber(getIntent().getStringExtra("documentNumber"));
         documentItem.setDate(getIntent().getStringExtra("documentDate"));
-        getSupportActionBar().setTitle(documentItem.getDate());
+        roomNumber = getIntent().getStringExtra("roomNumber");
+        getSupportActionBar().setTitle(documentItem.getTitle());
         loadDocumentInformation(documentItem.getNumber());
 
         // 임의의 데이터
-//        paper =  (LinearLayout)findViewById(R.id.document_paper);
         recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         fab = (FloatingActionButton)findViewById(R.id.fab);
+        linearResume = (LinearLayout)findViewById(R.id.linear_resume);
         linearPdf = (LinearLayout)findViewById(R.id.linear_pdf);
         linearWord = (LinearLayout)findViewById(R.id.linear_word);
         linearStatistic = (LinearLayout)findViewById(R.id.linear_statistic);
         linearSummary = (LinearLayout)findViewById(R.id.linear_summary);
 
         fab.setOnClickListener(this);
+        findViewById(R.id.fab_resume).setOnClickListener(this);
         findViewById(R.id.fab_pdf).setOnClickListener(this);
         findViewById(R.id.fab_statistic).setOnClickListener(this);
         findViewById(R.id.fab_summary).setOnClickListener(this);
@@ -102,6 +106,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_document, menu);
+        menuEdit = menu.findItem(R.id.menu_edit);
         menuSave = menu.findItem(R.id.menu_save);
         menuCancel = menu.findItem(R.id.menu_cancel);
 
@@ -132,6 +137,9 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
+            case R.id.menu_edit:
+                requestEdit("테스트 제목입니다");
+                return true;
             case R.id.menu_save:
                 if(adapter.getEditedPosition() != -1) {
                     SentenceItem sentenceItem = adapter.getItem(adapter.getEditedPosition());
@@ -149,6 +157,31 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 return true;
             default:
                 return true;
+        }
+    }
+
+    private void requestEdit(String title) {
+        try {
+            JSONObject parameter = new JSONObject();
+            parameter.put("title", title);
+            parameter.put("roomNumber", roomNumber);
+            parameter.put("documentNumber", documentItem.getNumber());
+            SNLUVolley.getInstance(this).post("modifyDocumentName", parameter, new SNLUVolley.OnResponseListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        if (response.getInt("result") == 0) {
+                            Toast.makeText(DocumentActivity.this, "수정 성공", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(DocumentActivity.this, "수정 실패", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -185,11 +218,13 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
             menuCancel.setVisible(true);
             menuSave.setVisible(true);
             searchView.setVisibility(View.GONE);
+            menuEdit.setVisible(false);
             fab.hide();
         } else {
             menuCancel.setVisible(false);
             menuSave.setVisible(false);
             searchView.setVisibility(View.VISIBLE);
+            menuEdit.setVisible(true);
             fab.show();
         }
     }
@@ -213,6 +248,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
             case R.id.fab:
                 if(fab.getRotation() != 45) {
                     fab.animate().rotation(45f);
+                    linearResume.animate().translationX(0);
                     linearSummary.animate().translationX(0);
                     linearStatistic.animate().translationX(0);
                     linearPdf.animate().translationX(0);
@@ -220,11 +256,25 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 } else {
                     fab.animate().rotation(0f);
                     float dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+                    linearResume.animate().translationX(dp);
                     linearSummary.animate().translationX(dp);
                     linearStatistic.animate().translationX(dp);
                     linearPdf.animate().translationX(dp);
                     linearWord.animate().translationX(dp);
                 }
+                break;
+            case R.id.fab_resume:
+                SNLUAlertDialog dialog = new SNLUAlertDialog(this);
+                dialog.setTitle("알림");
+                dialog.setMessage("회의를 다시 시작 하시겠습니까?");
+                dialog.setOnYesClickListener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestResume();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
                 break;
             case R.id.fab_pdf:
                 Snackbar.make(getWindow().getDecorView().getRootView(), "pdf파일을 다운로드합니다.", 2000).show();
@@ -244,6 +294,35 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 intentSummary.putExtra("documentNumber", documentItem.getNumber());
                 startActivity(intentSummary);
                 break;
+        }
+    }
+
+    private void requestResume() {
+        try {
+            JSONObject parameter = new JSONObject();
+            parameter.put("roomNumber", roomNumber);
+            parameter.put("documentNumber", documentItem.getNumber());
+            SNLUVolley.getInstance(this).post("resume", parameter, new SNLUVolley.OnResponseListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        SNLULog.v(response.toString());
+                        String result = response.getString("result");
+                        if(result.equals("0")) {
+                            Intent intent = new Intent(DocumentActivity.this, ConferenceActivity.class);
+                            intent.putExtra("documentNumber", documentItem.getNumber());
+                            intent.putExtra("roomNumber", roomNumber);
+                            intent.putExtra("roomChief", response.getJSONArray("data").getJSONObject(0).getString("chiefPhoneNumber"));
+                            startActivity(intent);
+                            finish();
+                        }
+                    } catch(JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
