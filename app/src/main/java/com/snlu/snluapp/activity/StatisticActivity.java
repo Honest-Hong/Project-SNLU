@@ -131,13 +131,12 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
             }
         });
 
-       /* YAxis yAxis = barChart.getAxisLeft();
+        YAxis yAxis = barChart.getAxisLeft();
         yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         yAxis.setAxisMinimum(0f);
         yAxis.setDrawGridLines(false);
         yAxis.setDrawAxisLine(false);
-        yAxis.setDrawLabels(false);*/
-       barChart.getAxisLeft().setEnabled(false);
+        yAxis.setDrawLabels(false);
 
 
         barChart.getAxisRight().setEnabled(false);
