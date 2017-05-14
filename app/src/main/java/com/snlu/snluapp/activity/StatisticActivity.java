@@ -28,6 +28,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.util.SNLULog;
@@ -70,6 +71,7 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         barChart.setDrawBarShadow(false);
         barChart.setDrawValueAboveBar(true);
         barChart.setDrawGridBackground(false);
+        barChart.setPinchZoom(true);
 
 
         seekBarX.getProgress();
@@ -118,11 +120,11 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
 
     private void addDataSet() {
 
+
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);
-        xAxis.setLabelCount(7);
 
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
@@ -130,16 +132,17 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
                 return xData[(int)value];
             }
         });
-        YAxis yAxis = barChart.getAxisLeft();
+
+       /* YAxis yAxis = barChart.getAxisLeft();
         yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         yAxis.setAxisMinimum(0f);
+        yAxis.setDrawGridLines(false);
+        yAxis.setDrawAxisLine(false);
+        yAxis.setDrawLabels(false);*/
+       barChart.getAxisLeft().setEnabled(false);
 
-        yAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return (int)value + "개";
-            }
-        });
+
+        barChart.getAxisRight().setEnabled(false);
 
         Legend l = barChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
