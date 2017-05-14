@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:background="@android:color/transparent"
-                android:textSize="@dimen/font_small"
+                android:textSize="@dimen/font_big"
                 android:textColor="@color/colorRedPink"
                 android:inputType="textMultiLine"
                 android:visibility="gone"/>

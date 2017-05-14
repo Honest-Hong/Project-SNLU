@@ -72,8 +72,6 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         barChart.setDrawValueAboveBar(true);
         barChart.setDrawGridBackground(false);
         barChart.setPinchZoom(true);
-
-
         seekBarX.getProgress();
         seekBarX.setOnSeekBarChangeListener(this);
 
@@ -181,8 +179,7 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         }
         barDataSet = new BarDataSet(yEntry, "단어");
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        barDataSet.setStackLabels(xData);
-
+//        barDataSet.setStackLabels(xData);
         barData = new BarData(barDataSet);
         barData.setBarWidth(0.9f);
 

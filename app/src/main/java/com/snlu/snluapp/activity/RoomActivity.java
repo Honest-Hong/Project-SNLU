@@ -97,7 +97,6 @@ public class RoomActivity extends AppCompatActivity {
                 SNLULog.v(response.toString());
                 String result = response.getString("result");
                 if(result.equals("0")) {
-                    requestDocumentList();
                     String documentNumber = response.getString("documentNumber");
                     Intent intent = new Intent(RoomActivity.this, ConferenceActivity.class);
                     intent.putExtra("documentNumber", documentNumber);
@@ -187,10 +186,11 @@ public class RoomActivity extends AppCompatActivity {
                 if(result.equals("0")) {
                     JSONArray array = response.getJSONArray("data");
                     ArrayList<DocumentItem> documentItems = new ArrayList<>();
-                        for(int i=0; i<array.length(); i++) {
+                    for(int i=0; i<array.length(); i++) {
                         DocumentItem item = new DocumentItem();
                         item.setNumber(array.getJSONObject(i).getString("documentNumber"));
                         item.setDate(array.getJSONObject(i).getString("date"));
+                        item.setTitle(array.getJSONObject(i).getString("title"));
                         documentItems.add(item);
                     }
                     recyclerViewDocuments.setAdapter(new DocumentsRecyclerAdapter(RoomActivity.this, documentItems, new OnItemClickListener() {
@@ -200,6 +200,9 @@ public class RoomActivity extends AppCompatActivity {
                             Intent intent = new Intent(RoomActivity.this, DocumentActivity.class);
                             intent.putExtra("documentDate", adapter.getItem(position).getDate());
                             intent.putExtra("documentNumber", adapter.getItem(position).getNumber());
+                            intent.putExtra("documentTitle", adapter.getItem(position).getTitle());
+                            intent.putExtra("roomNumber", room.getNumber());
+                            intent.putExtra("isChief", isChief);
                             startActivity(intent);
                         }
                     }));
