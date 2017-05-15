@@ -40,15 +40,32 @@
             android:text="회의록 목록"/>
 
         <!-- 회의자 목록 리스트 -->
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view_documents"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_margin="3dp"
-            android:padding="3dp"
-            android:orientation="vertical"
-            android:background="@drawable/shape_rectangle_grey"/>
+            android:background="@drawable/shape_rectangle_grey">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_documents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="3dp"
+                android:orientation="vertical"/>
+
+            <TextView
+                android:id="@+id/text_help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textSize="@dimen/font_normal"
+                android:textColor="@color/colorPink"
+                android:text="회의록이 존재하지 않습니다.\n방장이시면 회의 시작버튼을 눌러서 시작하시고\n아니시면 회의 시작을 기다려주세요."/>
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout

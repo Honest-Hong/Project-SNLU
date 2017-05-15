@@ -21,11 +21,19 @@
             android:id="@+id/imageView" />
 
         <TextView
-            android:id="@+id/text_date"
+            android:id="@+id/text_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_small"
             android:textColor="@color/colorBlack" />
+
+        <TextView
+            android:id="@+id/text_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="@dimen/font_small"
+            android:textColor="@color/colorGrey"/>
     </LinearLayout>
 
     <View

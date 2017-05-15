@@ -40,7 +40,8 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder vh = (ViewHolder)holder;
-        vh.textView.setText(documentItems.get(position).getTitle());
+        vh.textTitle.setText(documentItems.get(position).getTitle());
+        vh.textDate.setText("(" + documentItems.get(position).getDate().substring(0, 16) + ")");
         vh.linearLayout.setTag(position);
     }
 
@@ -50,11 +51,12 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
+        public TextView textTitle, textDate;
         public LinearLayout linearLayout;
         public ViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView)itemView.findViewById(R.id.text_date);
+            textTitle = (TextView)itemView.findViewById(R.id.text_title);
+            textDate = (TextView)itemView.findViewById(R.id.text_date);
             linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override

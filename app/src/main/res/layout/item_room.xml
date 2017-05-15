@@ -33,10 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:textSize="@dimen/font_small"
-            android:textColor="@color/colorRedPink"
-            android:text="회의중"
-            android:visibility="gone"/>
+            android:textSize="@dimen/font_small"/>
     </LinearLayout>
 
     <View

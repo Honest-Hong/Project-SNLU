@@ -2,6 +2,7 @@ package com.snlu.snluapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -154,6 +155,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             roomItems.add(item);
                         }
                         roomAdapter.setItems(roomItems);
+                        if(roomItems.size() == 0) {
+                            findViewById(R.id.text_help).setVisibility(View.VISIBLE);
+                        } else {
+                            findViewById(R.id.text_help).setVisibility(View.GONE);
+                        }
                     } else if (result.equals("1")) {
                         // 다른 에러
                     }
@@ -192,10 +198,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ViewHolder vh = (ViewHolder)holder;
             vh.textTitle.setText(roomItems.get(position).getTitle());
             vh.linearLayout.setTag(position);
-            if(roomItems.get(position).getIsStart().equals("1"))
-                vh.textProceed.setVisibility(View.VISIBLE);
-            else
-                vh.textProceed.setVisibility(View.GONE);
+            if(roomItems.get(position).getIsStart().equals("1")) {
+                vh.textProceed.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorRedPink));
+                vh.textProceed.setText("회의 진행중");
+            }
+            else {
+                vh.textProceed.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorGrey));
+                vh.textProceed.setText("회의 휴식중");
+            }
         }
 
         @Override

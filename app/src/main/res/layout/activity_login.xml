@@ -60,8 +60,15 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/kakao_login_symbol"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="25dp"
+            android:background="@color/com_kakao_brown"
+            android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/button_kakao"
@@ -84,8 +91,15 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/com_facebook_button_login_logo"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="25dp"
+            android:background="@color/colorWhite"
+            android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/button_facebook"

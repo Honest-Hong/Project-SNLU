@@ -8,7 +8,7 @@
     tools:context="com.snlu.snluapp.activity.SummaryActivity">
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/summary_docu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"

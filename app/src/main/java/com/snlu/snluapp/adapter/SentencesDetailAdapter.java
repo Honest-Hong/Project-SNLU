@@ -29,8 +29,9 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
     private OnEditListener editListener;
     private ArrayList<SentenceItem> searchItems;
     private String keyword;
+    private boolean isCheif;
 
-    public SentencesDetailAdapter(Context context, OnEditListener editListener) {
+    public SentencesDetailAdapter(Context context, OnEditListener editListener, boolean isCheif) {
         this.context = context;
         this.sentenceItems = new ArrayList<>();
         this.editListener = editListener;
@@ -38,6 +39,7 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
         editText = null;
         searchItems = null;
         keyword = "";
+        this.isCheif = isCheif;
     }
 
     public void setSearchKeyword(String keyword) {
@@ -163,7 +165,7 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
             textSentence = (TextView)itemView.findViewById(R.id.text_sentence);
             editSentence = (EditText)itemView.findViewById(R.id.edit_sentence);
             linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
-            linearLayout.setOnLongClickListener(listener);
+            if(isCheif) linearLayout.setOnLongClickListener(listener);
         }
         private View.OnLongClickListener listener = new View.OnLongClickListener() {
             @Override

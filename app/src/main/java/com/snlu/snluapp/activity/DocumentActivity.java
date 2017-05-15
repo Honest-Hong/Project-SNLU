@@ -59,13 +59,13 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     private long downloadId;
     private SearchView searchView;
     private MenuItem menuEdit, menuSave, menuCancel;
-    private int editedPosition = -1;
     private boolean isChief = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document);
+
         documentItem = new DocumentItem();
         documentItem.setTitle(getIntent().getStringExtra("documentTitle"));
         documentItem.setNumber(getIntent().getStringExtra("documentNumber"));
@@ -75,28 +75,30 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setTitle(documentItem.getTitle());
         loadDocumentInformation(documentItem.getNumber());
 
-        // 임의의 데이터
         recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-        fab = (FloatingActionButton)findViewById(R.id.fab);
         linearResume = (LinearLayout)findViewById(R.id.linear_resume);
         linearPdf = (LinearLayout)findViewById(R.id.linear_pdf);
         linearWord = (LinearLayout)findViewById(R.id.linear_word);
         linearStatistic = (LinearLayout)findViewById(R.id.linear_statistic);
         linearSummary = (LinearLayout)findViewById(R.id.linear_summary);
 
+        // FAB 설정
+        fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(this);
         findViewById(R.id.fab_resume).setOnClickListener(this);
         findViewById(R.id.fab_pdf).setOnClickListener(this);
         findViewById(R.id.fab_statistic).setOnClickListener(this);
         findViewById(R.id.fab_summary).setOnClickListener(this);
         findViewById(R.id.fab_word).setOnClickListener(this);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SentencesDetailAdapter(this, this);
-        recyclerView.setAdapter(adapter);
-        SNLUPermission.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
         if(isChief) linearResume.setVisibility(View.VISIBLE);
         else linearResume.setVisibility(View.GONE);
+
+        // 회의 내용 리사이클러뷰 설정
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new SentencesDetailAdapter(this, this, isChief);
+        recyclerView.setAdapter(adapter);
+
+        SNLUPermission.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
     }
 
     @Override
@@ -235,7 +237,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
             menuCancel.setVisible(true);
             menuSave.setVisible(true);
             searchView.setVisibility(View.GONE);
-            menuEdit.setVisible(false);
+            if(isChief) menuEdit.setVisible(false);
             fab.hide();
         } else {
             menuCancel.setVisible(false);
@@ -248,11 +250,13 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        if(!searchView.isIconified()) {
+        if(fab.getRotation() == 45) {
+            hideFabs();
+        } else if(!searchView.isIconified()) {
             searchView.setIconified(true);
             adapter.setSearchKeyword("");
-        } else if (editedPosition != -1) {
-            adapter.setSearchKeyword("");
+        } else if (adapter.getEditedPosition() != -1) {
+            adapter.returnEditedPosition();
             showEditMenu(false);
         } else {
             super.onBackPressed();
@@ -264,20 +268,9 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         switch(v.getId()) {
             case R.id.fab:
                 if(fab.getRotation() != 45) {
-                    fab.animate().rotation(45f);
-                    linearResume.animate().translationX(0);
-                    linearSummary.animate().translationX(0);
-                    linearStatistic.animate().translationX(0);
-                    linearPdf.animate().translationX(0);
-                    linearWord.animate().translationX(0);
+                    showFabs();
                 } else {
-                    fab.animate().rotation(0f);
-                    float dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
-                    linearResume.animate().translationX(dp);
-                    linearSummary.animate().translationX(dp);
-                    linearStatistic.animate().translationX(dp);
-                    linearPdf.animate().translationX(dp);
-                    linearWord.animate().translationX(dp);
+                    hideFabs();
                 }
                 break;
             case R.id.fab_resume:
@@ -312,6 +305,25 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(intentSummary);
                 break;
         }
+    }
+
+    public void showFabs() {
+        fab.animate().rotation(45f);
+        linearResume.animate().translationX(0);
+        linearSummary.animate().translationX(0);
+        linearStatistic.animate().translationX(0);
+        linearPdf.animate().translationX(0);
+        linearWord.animate().translationX(0);
+    }
+
+    public void hideFabs() {
+        fab.animate().rotation(0f);
+        float dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+        linearResume.animate().translationX(dp);
+        linearSummary.animate().translationX(dp);
+        linearStatistic.animate().translationX(dp);
+        linearPdf.animate().translationX(dp);
+        linearWord.animate().translationX(dp);
     }
 
     private void requestResume() {

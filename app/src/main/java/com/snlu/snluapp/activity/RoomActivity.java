@@ -206,6 +206,11 @@ public class RoomActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                     }));
+                    if(documentItems.size() == 0) {
+                        findViewById(R.id.text_help).setVisibility(View.VISIBLE);
+                    } else {
+                        findViewById(R.id.text_help).setVisibility(View.GONE);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

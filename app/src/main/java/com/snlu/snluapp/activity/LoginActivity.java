@@ -80,9 +80,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         phoneNumber = telephonyManager.getLine1Number();
         if(phoneNumber != null) {
             phoneNumber = "0" + phoneNumber.substring(3);
-            textPhone.setText(phoneNumber);
+            String str = phoneNumber.substring(0,3) + "-" + phoneNumber.substring(3, 7) + "-" + phoneNumber.substring(7, 11);
+            textPhone.setText(str);
         } else {
-            phoneNumber = null;
             textPhone.setText("존재하지 않음");
         }
     }

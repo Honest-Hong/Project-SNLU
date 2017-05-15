@@ -10,6 +10,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <TextView
+        android:id="@+id/text_help"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textSize="@dimen/font_big"
+        android:text="아직 참가하고 있는 방이 없습니다.\n+ 버튼을 눌러서 방을 생성하거나\n방장의 초대를 기다려주세요."
+        android:textColor="@color/colorPink"/>
+
     <android.support.design.widget.FloatingActionButton
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/button_add"

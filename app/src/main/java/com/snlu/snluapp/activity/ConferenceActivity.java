@@ -402,8 +402,10 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
     @Override
     public void onResults(Bundle results) {
         ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        if(result != null) processSpeech(result.get(0));
-        Log.v("Bundle", results.toString());
+        //float scores[] = results.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES);
+        if(result != null) {
+            processSpeech(result.get(0));
+        }
         setButtonSayMode(0);
     }
     @Override
