@@ -63,20 +63,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {
             int position = (int)v.getTag();
             RoomItem data = roomAdapter.getItem(position);
-            if(data.getIsStart().equals("0")) {
-                Intent intent = new Intent(MainActivity.this, RoomActivity.class);
-                intent.putExtra("roomNumber", data.getNumber());
-                intent.putExtra("roomTitle", data.getTitle());
-                intent.putExtra("roomChief", data.getChief());
-                intent.putExtra("roomIsStart", data.getIsStart());
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent(MainActivity.this, ConferenceActivity.class);
-                intent.putExtra("documentNumber", data.getStartedDocumentNumber());
-                intent.putExtra("roomChief", data.getChief());
-                intent.putExtra("roomNumber", data.getNumber());
-                startActivity(intent);
-            }
+            Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+            intent.putExtra("roomNumber", data.getNumber());
+            intent.putExtra("roomTitle", data.getTitle());
+            intent.putExtra("roomChief", data.getChief());
+            intent.putExtra("roomIsStart", data.getIsStart());
+            intent.putExtra("documentNumber", data.getStartedDocumentNumber());
+            startActivity(intent);
         }
     }
 

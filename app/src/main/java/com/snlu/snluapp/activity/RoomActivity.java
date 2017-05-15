@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.adapter.DocumentsRecyclerAdapter;
@@ -33,6 +34,7 @@ public class RoomActivity extends AppCompatActivity {
     private RoomItem room;
     private boolean isChief;
     private RecyclerView recyclerViewUsers, recyclerViewDocuments;
+    private View viewStart, viewEnter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,16 @@ public class RoomActivity extends AppCompatActivity {
         room.setNumber(getIntent().getStringExtra("roomNumber") + "");
         room.setTitle(getIntent().getStringExtra("roomTitle"));
         room.setChief(getIntent().getStringExtra("roomChief"));
+        room.setIsStart(getIntent().getStringExtra("roomIsStart"));
+
+        viewStart = findViewById(R.id.linear_start);
+        viewEnter = findViewById(R.id.linear_enter);
+        if(room.getIsStart() != null && room.getIsStart().equals("1")) {
+            viewEnter.setVisibility(View.VISIBLE);
+            viewStart.setVisibility(View.GONE);
+            room.setStartedDocumentNumber(getIntent().getStringExtra("documentNumber"));
+            startConferenceActivity(room.getStartedDocumentNumber());
+        }
 
         // 로그인 정보가 없는경우 (알림창으로 접속)
         if(LoginInformation.getUserItem() == null) LoginInformation.loadLoginInformation(this);
@@ -55,8 +67,7 @@ public class RoomActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(room.getTitle());
 
         if(!isChief) {
-            findViewById(R.id.button_start).setVisibility(View.GONE);
-            findViewById(R.id.linear_start).setVisibility(View.GONE);
+            viewStart.setVisibility(View.GONE);
         } else {
             // 새로운 회의 시작
             findViewById(R.id.button_start).setOnClickListener(new View.OnClickListener() {
@@ -83,10 +94,26 @@ public class RoomActivity extends AppCompatActivity {
             });
         }
 
+        findViewById(R.id.button_enter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startConferenceActivity(room.getStartedDocumentNumber());
+            }
+        });
+
         recyclerViewUsers = (RecyclerView)findViewById(R.id.recycler_view_users);
         recyclerViewUsers.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewDocuments = (RecyclerView)findViewById(R.id.recycler_view_documents);
         recyclerViewDocuments.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void startConferenceActivity(String documentNumber) {
+        Intent intent = new Intent(RoomActivity.this, ConferenceActivity.class);
+        intent.putExtra("documentNumber", documentNumber);
+        intent.putExtra("roomNumber", room.getNumber());
+        intent.putExtra("roomChief", room.getChief());
+        intent.putExtra("roomTitle", room.getTitle());
+        startActivity(intent);
     }
 
     // 회의 시작 요청 결과 리스너
@@ -98,13 +125,9 @@ public class RoomActivity extends AppCompatActivity {
                 String result = response.getString("result");
                 if(result.equals("0")) {
                     String documentNumber = response.getString("documentNumber");
-                    Intent intent = new Intent(RoomActivity.this, ConferenceActivity.class);
-                    intent.putExtra("documentNumber", documentNumber);
-                    intent.putExtra("roomNumber", room.getNumber());
-                    intent.putExtra("roomChief", room.getChief());
-                    intent.putExtra("roomTitle", room.getTitle());
-                    startActivity(intent);
-                    finish();
+                    viewEnter.setVisibility(View.VISIBLE);
+                    viewStart.setVisibility(View.GONE);
+                    startConferenceActivity(documentNumber);
                 }
             } catch(JSONException e) {
                 e.printStackTrace();

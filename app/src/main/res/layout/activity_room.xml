@@ -83,4 +83,21 @@
             android:gravity="center"
             android:text="새로운 회의 시작"/>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_enter"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_button_height"
+        android:visibility="gone"
+        android:background="@color/colorPink">
+
+        <TextView
+            android:id="@+id/button_enter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackground"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:text="현재 회의 참가하기"/>
+    </LinearLayout>
 </LinearLayout>
