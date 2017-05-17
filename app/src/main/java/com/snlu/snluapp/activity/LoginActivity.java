@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
@@ -24,7 +22,6 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
-import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.kakao.auth.AuthType;
@@ -79,7 +76,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         phoneNumber = telephonyManager.getLine1Number();
         if(phoneNumber != null) {
-            phoneNumber = "0" + phoneNumber.substring(3);
+            if(phoneNumber.charAt(0) == '+')
+                phoneNumber = "0" + phoneNumber.substring(3);
             String str = phoneNumber.substring(0,3) + "-" + phoneNumber.substring(3, 7) + "-" + phoneNumber.substring(7, 11);
             textPhone.setText(str);
         } else {
