@@ -78,6 +78,7 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         barChart.setDrawGridBackground(false);
         barChart.getLegend().setEnabled(false);
         barChart.setPinchZoom(true);
+        barChart.setDescription(null);
 
         seekBarX.getProgress();
         seekBarX.setOnSeekBarChangeListener(this);
@@ -95,7 +96,7 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
 
             findViewById(R.id.icon_plus).setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if (seekBarX.getProgress() > 0) {
+                    if (seekBarX.getProgress() >= 0) {
                         seekBarX.setProgress(seekBarX.getProgress() + 1);
                         tvX.setText("" + (seekBarX.getProgress()));
                         setData(seekBarX.getProgress());
@@ -168,13 +169,16 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         yAxis.setDrawLabels(false);
 
         barChart.getAxisRight().setEnabled(false);
+
         setData(5);
     }
 
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-        tvX.setText(""+(seekBarX.getProgress()+1));
-        setData(seekBarX.getProgress()+1);
-        barChart.invalidate();
+        if (seekBarX.getProgress() >= 1) {
+            tvX.setText("" + (seekBarX.getProgress()));
+            setData(seekBarX.getProgress());
+            barChart.invalidate();
+        }
     }
 
     private void setData(int count){
@@ -191,7 +195,8 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
             for(int i =0; i<count;i++)
                 yEntry.add(new BarEntry(i,yData[i]));
         }
-seekBarX.setMax(yData.length);
+
+        seekBarX.setMax(yData.length);
         barDataSet = new BarDataSet(yEntry, "");
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         barData = new BarData(barDataSet);
