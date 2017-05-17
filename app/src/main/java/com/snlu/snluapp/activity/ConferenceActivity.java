@@ -254,11 +254,11 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
             try {
                 String result = response.getString("result");
                 if(result.equals("0")) {
-                    Intent intent = new Intent(ConferenceActivity.this, RoomActivity.class);
-                    intent.putExtra("roomNumber", roomItem.getNumber());
-                    intent.putExtra("roomTitle", roomItem.getTitle());
-                    intent.putExtra("roomChief", roomItem.getChief());
-                    startActivity(intent);
+//                    Intent intent = new Intent(ConferenceActivity.this, RoomActivity.class);
+//                    intent.putExtra("roomNumber", roomItem.getNumber());
+//                    intent.putExtra("roomTitle", roomItem.getTitle());
+//                    intent.putExtra("roomChief", roomItem.getChief());
+//                    startActivity(intent);
                     finish();
                 }
             } catch (JSONException e) {
