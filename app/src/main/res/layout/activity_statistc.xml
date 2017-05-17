@@ -1,40 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.snlu.snluapp.activity.StatisticActivity">
 
     <com.github.mikephil.charting.charts.BarChart
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/statistic_bar_chart"
-        android:layout_above="@+id/seekBar">
+        >
     </com.github.mikephil.charting.charts.BarChart>
 
-    <SeekBar
-        android:id="@+id/seekBar"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="8dp"
-        android:layout_toLeftOf="@+id/tvXMax"
-        android:layout_marginRight="5dp"
-        android:max="99"
-        android:paddingBottom="15dp" />
+        android:layout_below="@+id/statistic_bar_chart"
+        android:gravity="center"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tvXMax"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/seekBar"
-        android:layout_alignParentRight="true"
-        android:text="100"
-        android:layout_marginBottom="20dp"
-        android:layout_marginRight="10dp"
-        android:gravity="right"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        />
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tvWord"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="단어수"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="5dp"
+            android:textAppearance="?android:attr/textAppearanceSmall">
+        </TextView>
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="3dp"
+            android:src="@drawable/icon_minus"
+            android:id="@+id/icon_minus"/>
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:progress="5"
+            android:max="99" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/icon_plus"
+            android:id="@+id/icon_plus"/>
+
+        <TextView
+            android:id="@+id/tvXMax"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="7dp"
+            android:text="5"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            />
+    </LinearLayout>
+</LinearLayout>
