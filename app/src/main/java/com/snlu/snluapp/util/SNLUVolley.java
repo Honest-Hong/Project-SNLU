@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 public class SNLUVolley {
     private static SNLUVolley instance;
-    private static String BASE_URL = "http://52.78.92.129:8000/";
+    private static String BASE_URL = "http://52.79.186.237:8000/";
     private RequestQueue requestQueue;
     private LruCache<String, Bitmap> cache;
     private ImageLoader imageLoader;
