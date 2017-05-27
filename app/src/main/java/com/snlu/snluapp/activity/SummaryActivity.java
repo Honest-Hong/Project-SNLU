@@ -3,8 +3,11 @@ package com.snlu.snluapp.activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.PaintDrawable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.snlu.snluapp.R;
+import com.snlu.snluapp.dialog.SNLUAlertDialog;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.SentenceItem;
 import com.snlu.snluapp.item.WordItem;
@@ -113,6 +117,7 @@ public class SummaryActivity extends AppCompatActivity {
                 case DragEvent.ACTION_DRAG_EXITED:
                     break;
                 case DragEvent.ACTION_DROP:
+
                     EditText ed = (EditText)findViewById(R.id.summary_docu);
                     ed.setText(ed.getText().toString()+" "+event.getClipData().getItemAt(0).getText().toString());
                     et.setSelection(et.length());
@@ -241,12 +246,10 @@ public class SummaryActivity extends AppCompatActivity {
             convertView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    int selected = position;
 
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         ClipData copy = ClipData.newPlainText("text", data.get(position).getSentence());
-                        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-                                v);
+                        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                         v.startDrag(copy, shadowBuilder, v, 0);
 
                         return true;
