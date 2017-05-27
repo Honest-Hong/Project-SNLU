@@ -7,18 +7,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.PaintDrawable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,28 +44,40 @@ public class SummaryActivity extends AppCompatActivity {
     private ArrayList<WordItem> item;
     private ArrayList<SentenceItem> sentenceItems;
     private ArrayList<SentenceItem> searchedSentence;
+    private FloatingActionButton fab;
     private ProgressDialog loagindDialog; // 로딩화면
     ListView lv,lv2;
-    EditText et;
+    LinearLayout llo;
+    TextView et;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
-
+        fab = (FloatingActionButton)findViewById(R.id.fab);
         getSupportActionBar().setTitle("요약하기");
         document = new DocumentItem();
         document.setNumber(getIntent().getStringExtra("documentNumber"));
+        llo = (LinearLayout)findViewById(R.id.summary_downside);
         lv = (ListView)findViewById(R.id.summary_word);
         lv2 = (ListView)findViewById(R.id.summary_sentence);
-        et=(EditText)findViewById(R.id.summary_docu);
+        et=(TextView) findViewById(R.id.summary_docu);
         loadDocumentInformation(document.getNumber());
         createThreadAndDialog(); // 로딩만들기
         requestStatistic(); //단어뽑기
-
-        findViewById(R.id.summary_docu).setOnDragListener(new MyDragListener());
+        et.setOnDragListener(new MyDragListener());
         // set
     }
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab:
+                if (fab.getRotation() != 45) {
 
+                } else {
+
+                }
+                break;
+        }
+    }
     private void loadDocumentInformation(String documentNumber) {
         JSONObject json = new JSONObject();
         try {
@@ -106,10 +121,10 @@ public class SummaryActivity extends AppCompatActivity {
 
         @Override
         public boolean onDrag(View v, DragEvent event) {
-            int action = event.getAction();
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     et.setBackgroundColor(Color.parseColor("#5cf78282"));
+                    llo.setVisibility(View.GONE);
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     et.requestFocus();
@@ -117,13 +132,11 @@ public class SummaryActivity extends AppCompatActivity {
                 case DragEvent.ACTION_DRAG_EXITED:
                     break;
                 case DragEvent.ACTION_DROP:
-
-                    EditText ed = (EditText)findViewById(R.id.summary_docu);
-                    ed.setText(ed.getText().toString()+" "+event.getClipData().getItemAt(0).getText().toString());
-                    et.setSelection(et.length());
+                    et.setText(et.getText().toString()+" "+event.getClipData().getItemAt(0).getText().toString());
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     et.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    llo.setVisibility(View.VISIBLE);
                 default:
                     break;
             }
@@ -147,7 +160,9 @@ public class SummaryActivity extends AppCompatActivity {
             lv2.setAdapter(new SentenceAdapter(getApplicationContext(), searchedSentence));
         }
     }
+private void fillAll(){
 
+}
     private void requestStatistic(){
         JSONObject json = new JSONObject();
         try{
@@ -167,7 +182,6 @@ public class SummaryActivity extends AppCompatActivity {
                             }
                             lv.setAdapter(new WordAdapter(getApplicationContext(), item));
                             lv.setOnItemClickListener( new ListViewItemClickListener() );
-
                             loagindDialog.dismiss();
                         } else {
                             Log.v("TAG", "error");
@@ -182,6 +196,13 @@ public class SummaryActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_summary, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     class WordAdapter extends BaseAdapter {
         Context context;
         ArrayList<WordItem> data;
