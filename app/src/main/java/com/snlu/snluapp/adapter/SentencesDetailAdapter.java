@@ -165,16 +165,15 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
             textSentence = (TextView)itemView.findViewById(R.id.text_sentence);
             editSentence = (EditText)itemView.findViewById(R.id.edit_sentence);
             linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
-            if(isCheif) linearLayout.setOnLongClickListener(listener);
+            if(isCheif) linearLayout.setOnClickListener(listener);
         }
-        private View.OnLongClickListener listener = new View.OnLongClickListener() {
+        private View.OnClickListener listener = new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public void onClick(View v) {
                 int position = (int)v.getTag();
                 if(editedPosition != -1) returnEditedPosition();
                 setEditedPosition(position);
                 editListener.onEdit();
-                return true;
             }
         };
     }
