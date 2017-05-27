@@ -15,6 +15,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -212,7 +213,7 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
 
         barChart.setData(barData);
         barChart.setFitBars(true);
-        barChart.setVisibleXRangeMaximum(6);
+        barChart.setVisibleXRangeMaximum(5);
         barChart.invalidate();
     }
     public void onStartTrackingTouch(SeekBar seekBar){}

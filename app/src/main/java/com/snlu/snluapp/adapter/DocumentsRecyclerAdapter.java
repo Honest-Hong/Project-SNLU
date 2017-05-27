@@ -41,7 +41,8 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder vh = (ViewHolder)holder;
         vh.textTitle.setText(documentItems.get(position).getTitle());
-        vh.textDate.setText("(" + documentItems.get(position).getDate().substring(0, 16) + ")");
+        String date = documentItems.get(position).getDate();
+        vh.textDate.setText(String.format("(%s년 %s월 %s일 %s시 %s분에 진행함)", date.substring(0,4), date.substring(5,7), date.substring(8,10), date.substring(11,13), date.substring(14,16)));
         vh.linearLayout.setTag(position);
     }
 

@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         searchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
-        searchView.setQueryHint("방 제목 또는 방장의 이름을 입력하세요.");
+        searchView.setQueryHint("방 제목을 입력하세요.");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
