@@ -4,21 +4,85 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.snlu.snluapp.activity.SummaryActivity">
+    tools:context="com.snlu.snluapp.activity.SummaryActivity"
+    android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/summary_docu"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/summary_time"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:background="@drawable/shape_rectangle_grey"
+            android:paddingRight="5px"
+            android:text="회의일시 : "
+            android:windowSoftInputMode="adjustPan"/>
+        <EditText
+        android:id="@+id/summary_department"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
         android:layout_weight="1"
         android:inputType="textMultiLine"
-        android:background="@drawable/shape_rectangle_grey"/>
+        android:background="@drawable/shape_rectangle_grey"
+            android:paddingRight="5px"
+            android:text="부서"
+            android:windowSoftInputMode="adjustPan"/>
+        <EditText
+            android:id="@+id/summary_writer"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:background="@drawable/shape_rectangle_grey"
+            android:paddingRight="5px"
+            android:text="회의인원"
+            android:windowSoftInputMode="adjustPan"/>
+        <EditText
+            android:id="@+id/summary_member"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:background="@drawable/shape_rectangle_grey"
+            android:paddingRight="5px"
+            android:text="참석자"
+            android:windowSoftInputMode="adjustPan"/>
+        <EditText
+            android:id="@+id/summary_topic"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:background="@drawable/shape_rectangle_grey"
+            android:paddingRight="5px"
+            android:text="주제"
+            android:windowSoftInputMode="adjustPan"/>
+        <EditText
+            android:id="@+id/summary_docu"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:background="@drawable/shape_rectangle_grey"
+            android:paddingRight="5px"
+            android:hint="회의내용"
+            android:windowSoftInputMode="adjustPan"/>
+
+</LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+
+        >
+
         <ListView
             android:id="@+id/summary_word"
             android:layout_weight="3"
@@ -33,6 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/shape_rectangle_grey"/>
+
     </LinearLayout>
 
 </LinearLayout>
