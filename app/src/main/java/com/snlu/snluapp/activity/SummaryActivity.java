@@ -3,12 +3,9 @@ package com.snlu.snluapp.activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.PaintDrawable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,39 +41,26 @@ public class SummaryActivity extends AppCompatActivity {
     private ArrayList<WordItem> item;
     private ArrayList<SentenceItem> sentenceItems;
     private ArrayList<SentenceItem> searchedSentence;
-    private FloatingActionButton fab;
     private ProgressDialog loagindDialog; // 로딩화면
     ListView lv,lv2;
     LinearLayout llo;
-    TextView et;
+    EditText et;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
-        fab = (FloatingActionButton)findViewById(R.id.fab);
         getSupportActionBar().setTitle("요약하기");
         document = new DocumentItem();
         document.setNumber(getIntent().getStringExtra("documentNumber"));
         llo = (LinearLayout)findViewById(R.id.summary_downside);
-        lv = (ListView)findViewById(R.id.summary_word);
+        lv = (ListView)findViewById(R.id.summary_sentence);
         lv2 = (ListView)findViewById(R.id.summary_sentence);
-        et=(TextView) findViewById(R.id.summary_docu);
+        et=(EditText) findViewById(R.id.summary_docu);
         loadDocumentInformation(document.getNumber());
         createThreadAndDialog(); // 로딩만들기
         requestStatistic(); //단어뽑기
         et.setOnDragListener(new MyDragListener());
         // set
-    }
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.fab:
-                if (fab.getRotation() != 45) {
-
-                } else {
-
-                }
-                break;
-        }
     }
     private void loadDocumentInformation(String documentNumber) {
         JSONObject json = new JSONObject();

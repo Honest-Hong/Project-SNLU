@@ -43,6 +43,8 @@
         <activity android:name=".activity.StatisticActivity" />
         <activity android:name=".activity.SummaryActivity"
                   android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity android:name=".activity.MakedocumentActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity android:name=".activity.LoginActivity" />
 
         <service android:name=".service.SNLUFirebaseMessagingService">

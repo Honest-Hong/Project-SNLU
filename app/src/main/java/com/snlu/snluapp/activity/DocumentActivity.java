@@ -303,7 +303,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(intentStatistic);
                 break;
             case R.id.fab_summary:
-                Intent intentSummary = new Intent(this, SummaryActivity.class);
+                Intent intentSummary = new Intent(this, MakedocumentActivity.class);
                 intentSummary.putExtra("documentNumber", documentItem.getNumber());
                 startActivity(intentSummary);
                 break;
