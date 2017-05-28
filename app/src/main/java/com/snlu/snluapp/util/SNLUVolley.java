@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 public class SNLUVolley {
     private static SNLUVolley instance;
-    private static String BASE_URL = "http://52.79.186.237:8000/";
+    public static String BASE_URL = "http://52.79.186.237:8000/";
     private RequestQueue requestQueue;
     private LruCache<String, Bitmap> cache;
     private ImageLoader imageLoader;
@@ -49,31 +49,6 @@ public class SNLUVolley {
     public static SNLUVolley getInstance(Context context) {
         if(instance == null) instance = new SNLUVolley(context);
         return instance;
-    }
-
-    public ImageLoader getImageLoader() {
-        return imageLoader;
-    }
-
-    public void requestSpeech(String url, JSONObject parameter, final OnResponseListener onResponseListener) {
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, parameter, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                onResponseListener.onResponse(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("Volley", "error: " + error.networkResponse.headers);
-                error.printStackTrace();
-            }
-        });
-        request.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-        ));
-        requestQueue.add(request);
     }
 
     public void post(final String url, JSONObject json, Response.Listener<JSONObject> listener) {

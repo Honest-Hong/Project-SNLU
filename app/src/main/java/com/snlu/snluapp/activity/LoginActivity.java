@@ -31,6 +31,7 @@ import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
+import com.kakao.util.KakaoParameterException;
 import com.kakao.util.exception.KakaoException;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.util.SNLUPermission;
@@ -166,7 +167,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onCancel() {
-        Toast.makeText(LoginActivity.this, "onCancel", Toast.LENGTH_LONG).show();
         Log.e("Facebook", "onCancel");
     }
 

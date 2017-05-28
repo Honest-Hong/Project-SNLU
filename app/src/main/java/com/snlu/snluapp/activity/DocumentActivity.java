@@ -26,6 +26,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -356,12 +359,12 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void downloadFile(int type) {
-        String fileName = "썰록_회의록_" + documentItem.getDate();
+        String fileName = "썰록_회의록_" + documentItem.getTitle();
         switch(type) {
             case 2: fileName += ".doc"; break;
             case 3: fileName += ".pdf"; break;
         }
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse("http://52.78.92.129:8000/downloadDocument?documentNumber=" + documentItem.getNumber() + "&documentType=" + type))
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(SNLUVolley.BASE_URL + "downloadDocument?documentNumber=" + documentItem.getNumber() + "&documentType=" + type))
                 .setAllowedOverRoaming(false)
                 .setTitle(fileName)
                 .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
