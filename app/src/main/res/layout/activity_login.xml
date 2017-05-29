@@ -93,7 +93,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/com_facebook_button_login_logo"/>
+            android:src="@drawable/ic_facebook"/>
 
         <View
             android:layout_width="1dp"
