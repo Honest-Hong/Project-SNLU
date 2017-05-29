@@ -241,6 +241,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
             menuSave.setVisible(true);
             searchView.setVisibility(View.GONE);
             if(isChief) menuEdit.setVisible(false);
+            if(fab.getRotation() == 45)
+                hideFabs();
             fab.hide();
         } else {
             menuCancel.setVisible(false);
