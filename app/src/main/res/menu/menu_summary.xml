@@ -7,7 +7,7 @@
         android:title="저장"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/menu_load"
+        android:id="@+id/menu_download"
         android:icon="@drawable/ic_file_download_black_24dp"
         android:title="다운로드"
         app:showAsAction="ifRoom" />

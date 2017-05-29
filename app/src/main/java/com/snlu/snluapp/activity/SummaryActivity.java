@@ -1,16 +1,27 @@
 package com.snlu.snluapp.activity;
 
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,8 +31,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.snlu.snluapp.R;
+import com.snlu.snluapp.data.LoginInformation;
 import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.SentenceItem;
 import com.snlu.snluapp.item.SummaryContentItem;
@@ -35,23 +48,26 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class SummaryActivity extends AppCompatActivity implements View.OnClickListener {
-    private DocumentItem document;
+    private DocumentItem documentItem;
+    private int roomNumber;
     private ArrayList<SentenceItem> sentenceItems;
     private ProgressDialog loagindDialog; // 로딩화면
     private LinearLayout linearContent;
     private ArrayList<SummaryContentItem> contentItems;
     private ScrollView scrollView;
-    ListView lv;
-    LinearLayout llo;
+    private ListView listViewSentence;
+    private EditText editDate, editDivision, editWriter, editSubject;
+    private TextView textToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
         getSupportActionBar().setTitle("요약하기");
-        document = new DocumentItem();
-        document.setNumber(getIntent().getStringExtra("documentNumber"));
-        lv = (ListView)findViewById(R.id.summary_sentence);
-        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        documentItem = new DocumentItem();
+        documentItem.setNumber(getIntent().getStringExtra("documentNumber"));
+        listViewSentence = (ListView)findViewById(R.id.summary_sentence);
+        listViewSentence.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
                 ClipData copy = ClipData.newPlainText("text", sentenceItems.get(position).getSentence());
@@ -61,72 +77,20 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
                 return false;
             }
         });
-        loadDocumentInformation(document.getNumber());
+        loadDocumentInformation(documentItem.getNumber());
         createThreadAndDialog(); // 로딩만들기
 
-        // 테스트 데이터
         contentItems = new ArrayList<>();
-//        {
-//            SummaryContentItem contentItem = new SummaryContentItem();
-//            contentItem.setName("아이디어");
-//            ArrayList<SentenceItem> sentenceItems = new ArrayList<>();
-//            {
-//                SentenceItem sentenceItem = new SentenceItem();
-//                sentenceItem.setSentence("문장입니다.");
-//                sentenceItem.setSpeakerName("홍태준");
-//                sentenceItems.add(sentenceItem);
-//            }
-//            {
-//                SentenceItem sentenceItem = new SentenceItem();
-//                sentenceItem.setSentence("반갑습니다.");
-//                sentenceItem.setSpeakerName("강동우");
-//                sentenceItems.add(sentenceItem);
-//            }
-//            contentItem.setSentenceItems(sentenceItems);
-//            contentItems.add(contentItem);
-//        }
-//        {
-//            SummaryContentItem contentItem = new SummaryContentItem();
-//            contentItem.setName("아이디어1 반응");
-//            ArrayList<SentenceItem> sentenceItems = new ArrayList<>();
-//            {
-//                SentenceItem sentenceItem = new SentenceItem();
-//                sentenceItem.setSentence("반응입니다.");
-//                sentenceItem.setSpeakerName("윤수환");
-//                sentenceItems.add(sentenceItem);
-//            }
-//            {
-//                SentenceItem sentenceItem = new SentenceItem();
-//                sentenceItem.setSentence("좋습니다.");
-//                sentenceItem.setSpeakerName("박정원");
-//                sentenceItems.add(sentenceItem);
-//            }
-//            contentItem.setSentenceItems(sentenceItems);
-//            contentItems.add(contentItem);
-//        }
-//        {
-//            SummaryContentItem contentItem = new SummaryContentItem();
-//            contentItem.setName("아이디어2 반응");
-//            ArrayList<SentenceItem> sentenceItems = new ArrayList<>();
-//            {
-//                SentenceItem sentenceItem = new SentenceItem();
-//                sentenceItem.setSentence("별로입니다.");
-//                sentenceItem.setSpeakerName("홍태준");
-//                sentenceItems.add(sentenceItem);
-//            }
-//            {
-//                SentenceItem sentenceItem = new SentenceItem();
-//                sentenceItem.setSentence("좋습니다.");
-//                sentenceItem.setSpeakerName("강동우");
-//                sentenceItems.add(sentenceItem);
-//            }
-//            contentItem.setSentenceItems(sentenceItems);
-//            contentItems.add(contentItem);
-//        }
         linearContent = (LinearLayout)findViewById(R.id.linear_content);
         scrollView = (ScrollView)findViewById(R.id.scroll_view);
         makeContent(linearContent, contentItems);
         findViewById(R.id.button_add_folder).setOnClickListener(this);
+        editDate = (EditText)findViewById(R.id.summary_time);
+        editWriter = (EditText)findViewById(R.id.summary_writer);
+        editDivision = (EditText)findViewById(R.id.summary_department);
+        editSubject = (EditText)findViewById(R.id.summary_topic);
+        textToggle = (TextView)findViewById(R.id.text_toggle);
+        textToggle.setOnClickListener(this);
     }
 
     @Override
@@ -141,7 +105,39 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
                     }
                 });
                 break;
+            case R.id.text_toggle:
+                if(listViewSentence.getVisibility() == View.VISIBLE) {
+                    listViewSentence.setVisibility(View.GONE);
+                    textToggle.setText("▲ 보이기");
+                }
+                else {
+                    listViewSentence.setVisibility(View.VISIBLE);
+                    textToggle.setText("▼ 숨기기");
+                }
+                break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(listViewSentence.getVisibility() == View.VISIBLE) {
+            listViewSentence.setVisibility(View.GONE);
+            textToggle.setText("▲ 보이기");
+        } else
+            super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_save:
+                saveSummary();
+                break;
+            case R.id.menu_download:
+                downloadFile();
+                break;
+        }
+        return true;
     }
 
     void createThreadAndDialog() { //로딩만들기
@@ -153,29 +149,6 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
         thread.start();
-    }
-
-    class MyDragListener implements View.OnDragListener {
-
-        @Override
-        public boolean onDrag(View v, DragEvent event) {
-            switch (event.getAction()) {
-                case DragEvent.ACTION_DRAG_STARTED:
-                    llo.setVisibility(View.GONE);
-                    break;
-                case DragEvent.ACTION_DRAG_ENTERED:
-                    break;
-                case DragEvent.ACTION_DRAG_EXITED:
-                    break;
-                case DragEvent.ACTION_DROP:
-                    break;
-                case DragEvent.ACTION_DRAG_ENDED:
-                    llo.setVisibility(View.VISIBLE);
-                default:
-                    break;
-            }
-            return true;
-        }
     }
 
     private void loadDocumentInformation(String documentNumber) {
@@ -205,8 +178,14 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
                         item2.setSpeakerName(array.getJSONObject(i).getString("name"));
                         sentenceItems.add(item2);
                     }
-                    lv.setAdapter(new SummaryActivity.SentenceAdapter(getApplicationContext(), sentenceItems));
-                    loagindDialog.dismiss();
+                    listViewSentence.setAdapter(new SummaryActivity.SentenceAdapter(getApplicationContext(), sentenceItems));
+                    JSONObject document = response.getJSONObject("document");
+                    documentItem.setDate(document.getString("date"));
+                    documentItem.setTitle(document.getString("title"));
+                    roomNumber = document.getInt("roomNumber");
+                    editDate.setText(document.getString("date"));
+                    editWriter.setText(LoginInformation.getUserItem().getName());
+                    loadSummary();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -298,7 +277,12 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
         TextView textSentence = (TextView)v.findViewById(R.id.text_sentence);
         textSentence.setText(sentenceItem.getSentence());
         parent.addView(v);
-        v.requestFocus();
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     private View.OnDragListener onDragListener = new View.OnDragListener() {
@@ -321,8 +305,6 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
                     item.setSentence(clipData.getItemAt(0).getText().toString());
                     item.setSpeakerName(clipData.getItemAt(1).getText().toString());
                     addSentence(parent, item);
-                    Log.v("TEST", parent.toString());
-                    Log.v("TEST", parent.getId() + "");
                     break;
 
                 case DragEvent.ACTION_DRAG_ENDED:
@@ -333,4 +315,173 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
             return true;
         }
     };
+
+    private ProgressDialog saveDialog;
+    private void saveSummary() {
+        saveDialog = ProgressDialog.show(this, "", "저장중입니다..", true, false);
+        JSONObject param = new JSONObject();
+        try {
+            param.put("division", editDivision.getText().toString());
+            param.put("writer", editWriter.getText().toString());
+            param.put("roomNumber", roomNumber);
+            param.put("documentNumber", documentItem.getNumber());
+            param.put("subject", editSubject.getText().toString());
+            JSONArray content = new JSONArray();
+            LinearLayout linearContent = (LinearLayout)findViewById(R.id.linear_content);
+            for(int i=0; i<linearContent.getChildCount(); i++) {
+                JSONObject con = new JSONObject();
+                EditText editName = (EditText)linearContent.getChildAt(i).findViewById(R.id.edit_name);
+                con.put("item", editName.getText().toString());
+                LinearLayout linearLayout = (LinearLayout)linearContent.getChildAt(i).findViewById(R.id.linear_layout);
+                JSONArray sentences = new JSONArray();
+                for(int j=0; j<linearLayout.getChildCount(); j++) {
+                    JSONObject sentence = new JSONObject();
+                    TextView textName = (TextView)linearLayout.getChildAt(j).findViewById(R.id.text_name);
+                    TextView textSentence = (TextView)linearLayout.getChildAt(j).findViewById(R.id.text_sentence);
+                    sentence.put("sentence", textName.getText() + ":" + textSentence.getText());
+                    sentences.put(sentence);
+                }
+                con.put("sentences", sentences);
+                content.put(con);
+            }
+
+            param.put("content", content.toString());
+            SNLUVolley.getInstance(this).post("saveSummary", param, new SNLUVolley.OnResponseListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        int result = response.getInt("result");
+                        if(result == 0) {
+                            Toast.makeText(SummaryActivity.this, "요약 저장 완료", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(SummaryActivity.this, "요약 저장 실패", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    saveDialog.dismiss();
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadSummary() {
+        JSONObject param = new JSONObject();
+        try {
+            param.put("documentNumber", documentItem.getNumber());
+            SNLUVolley.getInstance(this).post("loadSummary", param, new SNLUVolley.OnResponseListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        int result = response.getInt("result");
+                        if (result == 0) {
+                            JSONObject data = response.getJSONObject("data");
+                            String division = data.getString("division");
+                            String writer = data.getString("writer");
+                            String subject = data.getString("subject");
+                            contentItems = new ArrayList<>();
+                            JSONArray content = new JSONArray(data.getString("content"));
+                            for(int i=0; i<content.length(); i++) {
+                                SummaryContentItem contentItem = new SummaryContentItem();
+                                contentItem.setName(content.getJSONObject(i).getString("item"));
+                                JSONArray sentences = content.getJSONObject(i).getJSONArray("sentences");
+                                ArrayList<SentenceItem> sentenceItems = new ArrayList<>();
+                                for(int j=0; j<sentences.length(); j++) {
+                                    SentenceItem item = new SentenceItem();
+                                    String text = sentences.getJSONObject(j).getString("sentence");
+                                    String[] split = text.split(":");
+                                    item.setSpeakerName(split[0]);
+                                    item.setSentence(split[1]);
+                                    sentenceItems.add(item);
+                                }
+                                contentItem.setSentenceItems(sentenceItems);
+                                contentItems.add(contentItem);
+                            }
+                            editDivision.setText(division);
+                            editWriter.setText(writer);
+                            editSubject.setText(subject);
+                            makeContent(linearContent, contentItems);
+                        } else {
+                        }
+                        loagindDialog.dismiss();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private long downloadId = 0;
+    private void downloadFile() {
+        String fileName = "썰록_요약본_" + documentItem.getTitle() + ".doc";
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(SNLUVolley.BASE_URL + "downloadSummary?documentNumber=" + documentItem.getNumber()))
+                .setAllowedOverRoaming(false)
+                .setTitle(fileName)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+                .setDescription("문서를 다운로드 중입니다.");
+
+        DownloadManager downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+        downloadId = downloadManager.enqueue(request);
+    }
+
+    private void showFile(String file) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        String type = "application/doc";
+        intent.setDataAndType(Uri.parse(file), type);
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Snackbar.make(getWindow().getDecorView().getRootView(), "파일을 실행시킬 수 있는 프로그램이 없습니다.", 2000).show();
+        }
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // check whether the download-id is mine
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L);
+            if (id != downloadId) {
+                // not our download id, ignore
+                return;
+            }
+
+            final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+
+            // makeContent a query
+            final DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(id);
+
+            Cursor cursor = downloadManager.query(query);
+            if (cursor.moveToFirst()) {
+                // when download completed
+                int statusColumn = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                if (DownloadManager.STATUS_SUCCESSFUL != cursor.getInt(statusColumn)) {
+                    return;
+                }
+
+                int uriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+                String downloadedPackageUriString = cursor.getString(uriIndex);
+                String file = Uri.decode(downloadedPackageUriString);
+                showFile(file);
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
 }
