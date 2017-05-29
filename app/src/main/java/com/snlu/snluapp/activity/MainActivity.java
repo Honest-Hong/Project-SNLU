@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        try {
 //            startActivity(intent);
 //        } catch (ActivityNotFoundException e) {
-//            Snackbar.make(getWindow().getDecorView().getRootView(), "파일을 실행시킬 수 있는 프로그램이 없습니다.", 2000).show();
+//            Snackbar.makeContent(getWindow().getDecorView().getRootView(), "파일을 실행시킬 수 있는 프로그램이 없습니다.", 2000).show();
 //        }
 //    }
 //
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //
 //            final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 //
-//            // make a query
+//            // makeContent a query
 //            final DownloadManager.Query query = new DownloadManager.Query();
 //            query.setFilterById(id);
 //

@@ -305,7 +305,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(intentStatistic);
                 break;
             case R.id.fab_summary:
-                Intent intentSummary = new Intent(this, MakedocumentActivity.class);
+                Intent intentSummary = new Intent(this, SummaryActivity.class);
                 intentSummary.putExtra("documentNumber", documentItem.getNumber());
                 startActivity(intentSummary);
                 break;
@@ -405,7 +405,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
 
             final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 
-            // make a query
+            // makeContent a query
             final DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(id);
 
