@@ -236,23 +236,37 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
     public void makeContent(ViewGroup parent, ArrayList<SummaryContentItem> contentItems) {
         for(int i=0; i<contentItems.size(); i++) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_summary_content, parent, false);
-            final EditText editName = (EditText)v.findViewById(R.id.edit_name);
+            EditText editName = (EditText)v.findViewById(R.id.edit_name);
             editName.setText(contentItems.get(i).getName());
             LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.linear_layout);
             makeSentences(linearLayout, contentItems.get(i).getSentenceItems());
             editName.setTag(linearLayout);
             editName.setOnDragListener(onDragListener);
+            View buttonDelete = v.findViewById(R.id.button_delete);
+            buttonDelete.setTag(v);
+            buttonDelete.setOnClickListener(onFolderDeleteListener);
             parent.addView(v);
         }
     }
 
+    private View.OnClickListener onFolderDeleteListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            View parent = (View)v.getTag();
+            linearContent.removeView(parent);
+        }
+    };
+
     public void addFolder(ViewGroup parent, ArrayList<SummaryContentItem> contentItems) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_summary_content, parent, false);
-        final EditText editName = (EditText)v.findViewById(R.id.edit_name);
+        EditText editName = (EditText)v.findViewById(R.id.edit_name);
         editName.setText("새 폴더");
         LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.linear_layout);
         editName.setTag(linearLayout);
         editName.setOnDragListener(onDragListener);
+        View buttonDelete = v.findViewById(R.id.button_delete);
+        buttonDelete.setTag(v);
+        buttonDelete.setOnClickListener(onFolderDeleteListener);
         parent.addView(v);
         contentItems.add(new SummaryContentItem("새 폴더", new ArrayList<SentenceItem>()));
     }
