@@ -70,7 +70,7 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick(Integer.parseInt(documentItem.getNumber()));
+                    onItemClickListener.onItemClick(documentItems.indexOf(documentItem));
                 }
             });
             linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
@@ -93,6 +93,8 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
                                                     int result = response.getInt("result");
                                                     if(result == 0) {
                                                         Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                                                        documentItems.remove(documentItem);
+                                                        notifyDataSetChanged();
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
