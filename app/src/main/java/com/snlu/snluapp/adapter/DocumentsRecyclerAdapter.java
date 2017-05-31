@@ -9,9 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.DocumentItem;
+import com.snlu.snluapp.util.SNLUVolley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -45,7 +50,7 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
         vh.textTitle.setText(documentItems.get(position).getTitle());
         String date = documentItems.get(position).getDate();
         vh.textDate.setText(String.format("(%s년 %s월 %s일 %s시 %s분에 진행함)", date.substring(0,4), date.substring(5,7), date.substring(8,10), date.substring(11,13), date.substring(14,16)));
-        vh.linearLayout.setTag(position);
+        vh.documentItem = documentItems.get(position);
     }
 
     @Override
@@ -54,6 +59,7 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        public DocumentItem documentItem;
         public TextView textTitle, textDate;
         public LinearLayout linearLayout;
         public ViewHolder(View itemView) {
@@ -64,7 +70,49 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick((int)v.getTag());
+                    onItemClickListener.onItemClick(Integer.parseInt(documentItem.getNumber()));
+                }
+            });
+            linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    new AlertDialog.Builder(context)
+                            .setTitle("알림")
+                            .setMessage("정말로 " + documentItem.getTitle() + "를(을) 삭제하시겠습니까?")
+                            .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    JSONObject param = new JSONObject();
+                                    try {
+                                        param.put("documentNumber", documentItem.getNumber());
+                                        param.put("roomNumber", documentItem.getRoomNumber());
+                                        SNLUVolley.getInstance(context).post("documentDelete", param, new SNLUVolley.OnResponseListener() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                try {
+                                                    int result = response.getInt("result");
+                                                    if(result == 0) {
+                                                        Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    return true;
                 }
             });
         }

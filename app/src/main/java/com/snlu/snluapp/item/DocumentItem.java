@@ -6,10 +6,19 @@ package com.snlu.snluapp.item;
 
 public class DocumentItem {
     private String number;
+    private String roomNumber;
     private String date;
     private String title;
 
     public DocumentItem() {
+    }
+
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(String roomNumber) {
+        this.roomNumber = roomNumber;
     }
 
     public void setNumber(String number) {

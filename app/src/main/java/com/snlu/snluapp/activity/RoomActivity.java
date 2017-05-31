@@ -212,6 +212,7 @@ public class RoomActivity extends AppCompatActivity {
                     for(int i=0; i<array.length(); i++) {
                         DocumentItem item = new DocumentItem();
                         item.setNumber(array.getJSONObject(i).getString("documentNumber"));
+                        item.setRoomNumber(array.getJSONObject(i).getString("roomNumber"));
                         item.setDate(array.getJSONObject(i).getString("date"));
                         item.setTitle(array.getJSONObject(i).getString("title"));
                         documentItems.add(item);
