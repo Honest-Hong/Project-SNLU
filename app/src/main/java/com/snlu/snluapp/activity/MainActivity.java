@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.snlu.snluapp.R;
@@ -260,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         int result = response.getInt("result");
                                         if(result == 0) {
                                             roomAdapter.removeItem(deletePos);
+                                            Toast.makeText(MainActivity.this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();

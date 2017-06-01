@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="5dp"
-            android:text="회의장 제목"
+            android:text="회의방 제목"
             android:textColor="@color/colorRedPink"/>
 
         <EditText
