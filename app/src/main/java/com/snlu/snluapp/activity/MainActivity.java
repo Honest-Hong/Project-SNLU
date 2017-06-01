@@ -1,29 +1,21 @@
 package com.snlu.snluapp.activity;
 
-import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Environment;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.snlu.snluapp.R;
@@ -38,7 +30,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
     private SearchView searchView;
     private RecyclerView recyclerView;
     private RoomAdapter roomAdapter;
@@ -175,20 +167,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     class RoomAdapter extends RecyclerView.Adapter {
         private Context context;
-        private ArrayList<RoomItem> roomItems;
+        private ArrayList<RoomItem> data;
 
         public RoomAdapter(Context context) {
             this.context = context;
-            roomItems = new ArrayList<>();
+            data = new ArrayList<>();
         }
 
         public void setItems(ArrayList<RoomItem> items) {
-            this.roomItems = items;
+            data = items;
             notifyDataSetChanged();
         }
 
+        public void removeItem(int position) {
+            notifyItemRemoved(position);
+            data.remove(position);
+        }
+
         public RoomItem getItem(int position) {
-            return roomItems.get(position);
+            return data.get(position);
         }
 
         @Override
@@ -199,9 +196,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder vh = (ViewHolder)holder;
-            vh.textTitle.setText(roomItems.get(position).getTitle());
+            vh.textTitle.setText(data.get(position).getTitle());
             vh.linearLayout.setTag(position);
-            if(roomItems.get(position).getIsStart().equals("1")) {
+            if(data.get(position).getIsStart().equals("1")) {
                 vh.textProceed.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorRedPink));
                 vh.textProceed.setText("회의 진행중");
             }
@@ -213,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public int getItemCount() {
-            return roomItems.size();
+            return data.size();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
@@ -225,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 textProceed = (TextView)itemView.findViewById(R.id.text_proceed);
                 linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
                 linearLayout.setOnClickListener(MainActivity.this);
+                linearLayout.setOnLongClickListener(MainActivity.this);
             }
         }
     }
@@ -240,6 +238,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private int deletePos;
+    @Override
+    public boolean onLongClick(View v) {
+        deletePos = (int)v.getTag();
+        new AlertDialog.Builder(this)
+                .setTitle("알림")
+                .setMessage("정말로 " + roomItems.get(deletePos).getTitle() + "방을 삭제하시겠습니까?")
+                .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        JSONObject param = new JSONObject();
+                        try {
+                            param.put("roomNumber", roomItems.get(deletePos).getNumber());
+                            SNLUVolley.getInstance(MainActivity.this).post("roomDelete", param, new SNLUVolley.OnResponseListener() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        int result = response.getInt("result");
+                                        if(result == 0) {
+                                            roomAdapter.removeItem(deletePos);
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+        return true;
     }
 
     private SNLUVolley.OnResponseListener requestRefreshTokenListener = new SNLUVolley.OnResponseListener() {
