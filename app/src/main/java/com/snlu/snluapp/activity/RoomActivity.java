@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.adapter.DocumentsRecyclerAdapter;
@@ -29,17 +30,22 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class RoomActivity extends AppCompatActivity {
     public static final int REQUEST_ADD_USER = 100;
     private RoomItem room;
     private boolean isChief;
     private RecyclerView recyclerViewUsers, recyclerViewDocuments;
-    private View viewStart, viewEnter;
+    @BindView(R.id.button_start) View viewStart;
+    @BindView(R.id.text_title) TextView textTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
+        ButterKnife.bind(this);
 
         // 회의방의 정보를 저장한다.
         room = new RoomItem();
@@ -48,10 +54,9 @@ public class RoomActivity extends AppCompatActivity {
         room.setChief(getIntent().getStringExtra("roomChief"));
         room.setIsStart(getIntent().getStringExtra("roomIsStart"));
 
-        viewStart = findViewById(R.id.linear_start);
-        viewEnter = findViewById(R.id.linear_enter);
+        textTitle.setText(room.getTitle());
+
         if(room.getIsStart() != null && room.getIsStart().equals("1")) {
-            viewEnter.setVisibility(View.VISIBLE);
             viewStart.setVisibility(View.GONE);
             room.setStartedDocumentNumber(getIntent().getStringExtra("documentNumber"));
             startConferenceActivity(room.getStartedDocumentNumber());
@@ -62,9 +67,6 @@ public class RoomActivity extends AppCompatActivity {
 
         // 현재 사용자가 방장인지를 저장한다.
         isChief = room.getChief().equals(LoginInformation.getUserItem().getId());
-
-        // 회의방의 제목 지정
-        getSupportActionBar().setTitle(room.getTitle());
 
         if(!isChief) {
             viewStart.setVisibility(View.GONE);
@@ -94,12 +96,12 @@ public class RoomActivity extends AppCompatActivity {
             });
         }
 
-        findViewById(R.id.button_enter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startConferenceActivity(room.getStartedDocumentNumber());
-            }
-        });
+//        findViewById(R.id.button_enter).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startConferenceActivity(room.getStartedDocumentNumber());
+//            }
+//        });
 
         recyclerViewUsers = (RecyclerView)findViewById(R.id.recycler_view_users);
         recyclerViewUsers.setLayoutManager(new LinearLayoutManager(this));
@@ -125,7 +127,6 @@ public class RoomActivity extends AppCompatActivity {
                 String result = response.getString("result");
                 if(result.equals("0")) {
                     String documentNumber = response.getString("documentNumber");
-                    viewEnter.setVisibility(View.VISIBLE);
                     viewStart.setVisibility(View.GONE);
                     startConferenceActivity(documentNumber);
                 }
@@ -230,11 +231,6 @@ public class RoomActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                     }));
-                    if(documentItems.size() == 0) {
-                        findViewById(R.id.text_help).setVisibility(View.VISIBLE);
-                    } else {
-                        findViewById(R.id.text_help).setVisibility(View.GONE);
-                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

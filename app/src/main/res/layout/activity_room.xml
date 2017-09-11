@@ -1,103 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <include layout="@layout/toolbar_activity"/>
+
+    <TextView
+        android:id="@+id/text_document"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:textSize="@dimen/font_big"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:text="회의록"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/text_member"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/text_member"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:textSize="@dimen/font_big"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:text="회의인원"
+        app:layout_constraintLeft_toRightOf="@+id/text_document"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- 회의인원 목록 리스트 -->
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_members"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_document"
+        app:layout_constraintBottom_toTopOf="@+id/button_start"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:contentPadding="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:textSize="@dimen/font_small"
-            android:textColor="@color/colorGrey"
-            android:text="회의자 목록"/>
-
-        <!-- 회의자 목록 리스트 -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_users"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_margin="3dp"
-            android:padding="3dp"
-            android:orientation="vertical"
-            android:background="@drawable/shape_rectangle_grey"/>
+            android:layout_height="match_parent" />
+    </android.support.v7.widget.CardView>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:textSize="@dimen/font_small"
-            android:textColor="@color/colorGrey"
-            android:text="회의록 목록"/>
+    <!-- 회의록 목록 리스트 -->
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_documents"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_document"
+        app:layout_constraintBottom_toTopOf="@+id/button_start"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:contentPadding="16dp">
 
-        <!-- 회의자 목록 리스트 -->
-        <FrameLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_documents"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_margin="3dp"
-            android:background="@drawable/shape_rectangle_grey">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view_documents"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="3dp"
-                android:orientation="vertical"/>
-
-            <TextView
-                android:id="@+id/text_help"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:gravity="center"
-                android:textSize="@dimen/font_normal"
-                android:textColor="@color/colorPink"
-                android:text="회의록이 존재하지 않습니다.\n방장이시면 회의 시작버튼을 눌러서 시작하시고\n아니시면 회의 시작을 기다려주세요."/>
-        </FrameLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_start"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_button_height"
-        android:background="@color/colorPink">
-
-        <TextView
-            android:id="@+id/button_start"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackground"
-            android:textColor="#ffffff"
-            android:gravity="center"
-            android:text="새로운 회의 시작"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_enter"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_button_height"
-        android:visibility="gone"
-        android:background="@color/colorPink">
-
-        <TextView
-            android:id="@+id/button_enter"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackground"
-            android:textColor="#ffffff"
-            android:gravity="center"
-            android:text="현재 회의 참가하기"/>
-    </LinearLayout>
-</LinearLayout>
+            android:layout_height="match_parent" />
+    </android.support.v7.widget.CardView>
+    <TextView
+        android:id="@+id/button_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="7dp"
+        android:background="@drawable/shape_button_primary"
+        android:textSize="@dimen/font_big"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:gravity="center"
+        android:text="회의 시작하기"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.501" />
+</android.support.constraint.ConstraintLayout>

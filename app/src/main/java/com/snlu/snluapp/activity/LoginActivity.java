@@ -12,6 +12,7 @@ import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.KakaoParameterException;
 import com.kakao.util.exception.KakaoException;
+import com.snlu.snluapp.GlideApp;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.util.SNLUPermission;
 import com.snlu.snluapp.util.SNLUSharedPreferences;
@@ -46,6 +48,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, ISessionCallback, FacebookCallback<LoginResult> {
     private final static int REQUEST_READ_PHONE_STATE_PERMISSION = 100;
     private CallbackManager facebookCallbackManager;
@@ -55,13 +60,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
 
-        getSupportActionBar().setTitle("회원가입 및 로그인");
+        ImageView imageBackground = (ImageView) findViewById(R.id.image_background);
+        GlideApp.with(this)
+                .load(R.drawable.background_splash)
+                .centerCrop()
+                .into(imageBackground);
 
-        findViewById(R.id.button_kakao).setOnClickListener(this);
-        findViewById(R.id.button_facebook).setOnClickListener(this);
-
-//        getAppKeyHash();
+        getAppKeyHash();
         Session.getCurrentSession().addCallback(this);
         Session.getCurrentSession().checkAndImplicitOpen();
         facebookCallbackManager = CallbackManager.Factory.create();
@@ -225,7 +232,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
-    @Override
+    @OnClick({R.id.button_kakao, R.id.button_facebook})
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.button_kakao:

@@ -12,6 +12,7 @@ public class RoomItem {
     private String chief;
     private String isStart;
     private String startedDocumentNumber;
+    private int count;
 
     public RoomItem() {
     }
@@ -54,5 +55,13 @@ public class RoomItem {
 
     public void setStartedDocumentNumber(String startedDocumentNumber) {
         this.startedDocumentNumber = startedDocumentNumber;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

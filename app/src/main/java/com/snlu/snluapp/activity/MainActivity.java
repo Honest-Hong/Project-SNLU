@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -31,9 +32,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
     private SearchView searchView;
-    private RecyclerView recyclerView;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.text_title) TextView textTitle;
     private RoomAdapter roomAdapter;
     private ArrayList<RoomItem> roomItems;
     private ArrayList<RoomItem> searchItems;
@@ -42,13 +48,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        getSupportActionBar().setTitle("회의방 목록");
+        textTitle.setText("회의방");
 
         LoginInformation.loadLoginInformation(this);
         SNLULog.v("token: " + LoginInformation.getToken(this));
-
-        findViewById(R.id.button_add).setOnClickListener(this);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FirebaseMessaging.getInstance().subscribeToTopic("notice");
     }
 
-    @Override
+    @OnClick(R.id.button_add)
     public void onClick(View v) {
         if(v.getId() == R.id.button_add)
             startActivity(new Intent(MainActivity.this, CreateRoomActivity.class));
@@ -148,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             item.setChief(array.getJSONObject(i).getString("chiefPhoneNumber"));
                             item.setIsStart(array.getJSONObject(i).getString("isStart"));
                             item.setStartedDocumentNumber(array.getJSONObject(i).getString("documentNumber"));
+                            item.setCount(array.getJSONObject(i).getInt("count"));
                             roomItems.add(item);
                         }
                         roomAdapter.setItems(roomItems);
@@ -198,15 +204,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder vh = (ViewHolder)holder;
             vh.textTitle.setText(data.get(position).getTitle());
-            vh.linearLayout.setTag(position);
+            vh.cardView.setTag(position);
             if(data.get(position).getIsStart().equals("1")) {
-                vh.textProceed.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorRedPink));
                 vh.textProceed.setText("회의 진행중");
             }
             else {
-                vh.textProceed.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorGrey));
                 vh.textProceed.setText("회의 휴식중");
             }
+            vh.textCount.setText(data.get(position).getCount() + "");
         }
 
         @Override
@@ -215,15 +220,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView textTitle, textProceed;
-            public LinearLayout linearLayout;
+            public TextView textTitle, textProceed, textCount;
+            public CardView cardView;
             public ViewHolder(View itemView) {
                 super(itemView);
-                textTitle = (TextView)itemView.findViewById(R.id.item_room_text);
+                textTitle = (TextView)itemView.findViewById(R.id.text_title);
                 textProceed = (TextView)itemView.findViewById(R.id.text_proceed);
-                linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
-                linearLayout.setOnClickListener(MainActivity.this);
-                linearLayout.setOnLongClickListener(MainActivity.this);
+                textCount = (TextView)itemView.findViewById(R.id.text_amount);
+                cardView = (CardView)itemView.findViewById(R.id.linear_layout);
+                cardView.setOnClickListener(MainActivity.this);
+                cardView.setOnLongClickListener(MainActivity.this);
             }
         }
     }

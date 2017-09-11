@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 
+import com.snlu.snluapp.GlideApp;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.util.SNLUSharedPreferences;
 
@@ -15,7 +17,11 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        getSupportActionBar().hide();
+        ImageView imageBackground = (ImageView) findViewById(R.id.image_background);
+        GlideApp.with(this)
+                .load(R.drawable.background_splash)
+                .centerCrop()
+                .into(imageBackground);
 
         new Handler().postDelayed(new Runnable() {
             @Override

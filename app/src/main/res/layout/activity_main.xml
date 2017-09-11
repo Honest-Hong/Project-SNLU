@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/colorWhite">
+    android:layout_height="match_parent">
+
+    <include layout="@layout/toolbar_activity" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="60dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         android:id="@+id/text_help"
@@ -20,7 +26,11 @@
         android:visibility="gone"
         android:textSize="@dimen/font_big"
         android:text="아직 참가하고 있는 방이 없습니다.\n+ 버튼을 눌러서 방을 생성하거나\n방장의 초대를 기다려주세요."
-        android:textColor="@color/colorPink"/>
+        android:textColor="@color/colorPink"
+        app:layout_constraintLeft_toLeftOf="@id/recycler_view"
+        app:layout_constraintRight_toRightOf="@id/recycler_view"
+        app:layout_constraintTop_toTopOf="@id/recycler_view"
+        app:layout_constraintBottom_toBottomOf="@id/recycler_view"/>
 
     <android.support.design.widget.FloatingActionButton
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -31,4 +41,4 @@
         android:layout_margin="15dp"
         android:layout_gravity="end|bottom"
         app:backgroundTint="@color/colorPink"/>
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>

@@ -75,7 +75,6 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         documentItem.setDate(getIntent().getStringExtra("documentDate"));
         roomNumber = getIntent().getStringExtra("roomNumber");
         isChief = getIntent().getBooleanExtra("isChief", false);
-        getSupportActionBar().setTitle(documentItem.getTitle());
         loadDocumentInformation(documentItem.getNumber());
 
         recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
