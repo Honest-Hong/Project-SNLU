@@ -32,7 +32,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:textSize="@dimen/font_bigest"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorBlue"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
         
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textSize="@dimen/font_small"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorBlue"
             app:layout_constraintLeft_toRightOf="@id/rect_amount"
             app:layout_constraintTop_toTopOf="@id/text_title"
             app:layout_constraintBottom_toBottomOf="@id/text_title"/>
@@ -86,7 +86,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:textSize="@dimen/font_normal"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorBlue"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_title"
             app:layout_constraintBottom_toBottomOf="parent"/>

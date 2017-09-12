@@ -4,11 +4,13 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,8 +32,9 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
     private ArrayList<SentenceItem> searchItems;
     private String keyword;
     private boolean isCheif;
+    private String userId;
 
-    public SentencesDetailAdapter(Context context, OnEditListener editListener, boolean isCheif) {
+    public SentencesDetailAdapter(Context context, OnEditListener editListener, boolean isCheif, String userId) {
         this.context = context;
         this.sentenceItems = new ArrayList<>();
         this.editListener = editListener;
@@ -40,6 +43,7 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
         searchItems = null;
         keyword = "";
         this.isCheif = isCheif;
+        this.userId = userId;
     }
 
     public void setSearchKeyword(String keyword) {
@@ -119,8 +123,13 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
         if(searchItems == null) item = sentenceItems.get(position);
         else item = searchItems.get(position);
         ViewHolder vh = (ViewHolder)holder;
+        if(userId.equals(item.getSpeakerPhoneNumber())) {
+            vh.linearLayout.setGravity(Gravity.END);
+        } else {
+            vh.linearLayout.setGravity(Gravity.START);
+        }
         if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName()))
-            vh.textName.setVisibility(View.INVISIBLE);
+            vh.textName.setVisibility(View.GONE);
         else
             vh.textName.setVisibility(View.VISIBLE);
         vh.textName.setText(item.getSpeakerName() + ":");

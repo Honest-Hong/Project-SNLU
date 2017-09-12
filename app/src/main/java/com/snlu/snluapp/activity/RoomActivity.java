@@ -2,6 +2,7 @@ package com.snlu.snluapp.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -300,14 +301,14 @@ public class RoomActivity extends AppCompatActivity {
     public void onTabSelected(View v) {
         switch(v.getId()) {
             case R.id.text_document:
-                textDocuments.setAlpha(1.0f);
-                textMembers.setAlpha(0.5f);
+                textDocuments.setTextColor(ContextCompat.getColor(this, R.color.colorWhite));
+                textMembers.setTextColor(ContextCompat.getColor(this, R.color.colorBlue));
                 recyclerViewDocuments.setVisibility(View.VISIBLE);
                 recyclerViewUsers.setVisibility(View.GONE);
                 break;
             case R.id.text_member:
-                textDocuments.setAlpha(0.5f);
-                textMembers.setAlpha(1.0f);
+                textDocuments.setTextColor(ContextCompat.getColor(this, R.color.colorBlue));
+                textMembers.setTextColor(ContextCompat.getColor(this, R.color.colorWhite));
                 recyclerViewDocuments.setVisibility(View.GONE);
                 recyclerViewUsers.setVisibility(View.VISIBLE);
                 break;

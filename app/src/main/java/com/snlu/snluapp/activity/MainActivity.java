@@ -37,7 +37,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
-    private SearchView searchView;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.text_title) TextView textTitle;
     private RoomAdapter roomAdapter;
@@ -81,47 +80,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        searchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
-        searchView.setQueryHint("방 제목을 입력하세요.");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                searchItems = new ArrayList<>();
-                for(int i=0; i<roomItems.size(); i++) {
-                    if (roomItems.get(i).getTitle().contains(newText)) {
-                        searchItems.add(roomItems.get(i));
-                    }
-                }
-                roomAdapter.setItems(searchItems);
-
-                return false;
-            }
-        });
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                roomAdapter.setItems(roomItems);
-                return false;
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
+    @OnClick(R.id.button_search)
+    public void doSearch() {
+//        searchView.setQueryHint("방 제목을 입력하세요.");
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                searchItems = new ArrayList<>();
+//                for(int i=0; i<roomItems.size(); i++) {
+//                    if (roomItems.get(i).getTitle().contains(newText)) {
+//                        searchItems.add(roomItems.get(i));
+//                    }
+//                }
+//                roomAdapter.setItems(searchItems);
+//
+//                return false;
+//            }
+//        });
+//        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                roomAdapter.setItems(roomItems);
+//                return false;
+//            }
+//        });
+//        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public void onBackPressed() {
-        if(!searchView.isIconified()) {
-            searchView.setIconified(true);
-        } else {
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 
     @Override

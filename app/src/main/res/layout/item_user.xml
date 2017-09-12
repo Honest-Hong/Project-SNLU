@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:padding="8dp"
-    android:background="@drawable/shape_round_rectangle_primary"
+    android:background="@drawable/background_round_rectangle_primary"
     android:id="@+id/linear_layout">
 
     <LinearLayout
@@ -26,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_normal"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textColor="@color/colorBlue"/>
 
         <TextView
             android:id="@+id/text_id"
@@ -35,7 +34,7 @@
             android:layout_weight="1"
             android:layout_marginStart="3dp"
             android:textSize="@dimen/font_smallest"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textColor="@color/colorBlue"/>
 
         <ImageView
             android:id="@+id/button_del"

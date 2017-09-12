@@ -44,6 +44,7 @@ import com.snlu.snluapp.item.DocumentItem;
 import com.snlu.snluapp.item.SentenceItem;
 import com.snlu.snluapp.util.SNLULog;
 import com.snlu.snluapp.util.SNLUPermission;
+import com.snlu.snluapp.util.SNLUSharedPreferences;
 import com.snlu.snluapp.util.SNLUVolley;
 
 import org.json.JSONArray;
@@ -52,22 +53,38 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class DocumentActivity extends AppCompatActivity implements View.OnClickListener, OnEditListener{
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class DocumentActivity extends AppCompatActivity implements OnEditListener{
     private String roomNumber;
     private DocumentItem documentItem;
-    private RecyclerView recyclerView;
+    @BindView(R.id.text_title) TextView textTitle;
+    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.fab_word) FloatingActionButton fabWord;
+    @BindView(R.id.fab_pdf) FloatingActionButton fabPDF;
+    @BindView(R.id.fab_statistic) FloatingActionButton fabStatistic;
+    @BindView(R.id.fab_summary) FloatingActionButton fabSummary;
+    @BindView(R.id.text_word) TextView textWord;
+    @BindView(R.id.text_pdf) TextView textPDF;
+    @BindView(R.id.text_statistic) TextView textStatistic;
+    @BindView(R.id.text_summary) TextView textSummary;
+    @BindView(R.id.button_restart) View viewRestart;
+    @BindView(R.id.button_save) View buttonSave;
+    @BindView(R.id.button_cancel) View buttonCancel;
+    @BindView(R.id.button_edit) View buttonEdit;
+    @BindView(R.id.button_search) View buttonSearch;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
     private SentencesDetailAdapter adapter;
-    private FloatingActionButton fab;
-    private LinearLayout linearResume, linearPdf, linearWord, linearStatistic, linearSummary;
     private long downloadId;
-    private SearchView searchView;
-    private MenuItem menuEdit, menuSave, menuCancel;
     private boolean isChief = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document);
+        ButterKnife.bind(this);
 
         documentItem = new DocumentItem();
         documentItem.setTitle(getIntent().getStringExtra("documentTitle"));
@@ -77,27 +94,19 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         isChief = getIntent().getBooleanExtra("isChief", false);
         loadDocumentInformation(documentItem.getNumber());
 
-        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-        linearResume = (LinearLayout)findViewById(R.id.linear_resume);
-        linearPdf = (LinearLayout)findViewById(R.id.linear_pdf);
-        linearWord = (LinearLayout)findViewById(R.id.linear_word);
-        linearStatistic = (LinearLayout)findViewById(R.id.linear_statistic);
-        linearSummary = (LinearLayout)findViewById(R.id.linear_summary);
+        textTitle.setText(documentItem.getTitle());
 
-        // FAB 설정
-        fab = (FloatingActionButton)findViewById(R.id.fab);
-        fab.setOnClickListener(this);
-        findViewById(R.id.fab_resume).setOnClickListener(this);
-        findViewById(R.id.fab_pdf).setOnClickListener(this);
-        findViewById(R.id.fab_statistic).setOnClickListener(this);
-        findViewById(R.id.fab_summary).setOnClickListener(this);
-        findViewById(R.id.fab_word).setOnClickListener(this);
-        if(isChief) linearResume.setVisibility(View.VISIBLE);
-        else linearResume.setVisibility(View.GONE);
+        if(isChief) {
+            viewRestart.setVisibility(View.VISIBLE);
+            buttonEdit.setVisibility(View.VISIBLE);
+        } else {
+            viewRestart.setVisibility(View.GONE);
+            buttonEdit.setVisibility(View.GONE);
+        }
 
         // 회의 내용 리사이클러뷰 설정
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SentencesDetailAdapter(this, this, isChief);
+        adapter = new SentencesDetailAdapter(this, this, isChief, SNLUSharedPreferences.get(this, "user_phone_number"));
         recyclerView.setAdapter(adapter);
 
         SNLUPermission.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
@@ -112,44 +121,13 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_document, menu);
-        menuEdit = menu.findItem(R.id.menu_edit);
-        menuSave = menu.findItem(R.id.menu_save);
-        menuCancel = menu.findItem(R.id.menu_cancel);
-
-        if(isChief) menuEdit.setVisible(true);
-        else menuEdit.setVisible(false);
-
-        searchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
-        searchView.setQueryHint("검색할 내용을 입력하세요.");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                adapter.setSearchKeyword(newText);
-                return false;
-            }
-        });
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                adapter.setSearchKeyword("");
-                return false;
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_edit:
+    @OnClick({R.id.button_back, R.id.button_search, R.id.button_edit, R.id.button_save, R.id.button_cancel})
+    public void onMenuClick(View v) {
+        switch(v.getId()) {
+            case R.id.button_back:
+                finish();
+                break;
+            case R.id.button_edit:
                 SNLUInputDialog dialog = new SNLUInputDialog(this);
                 dialog.setTitleText("회의록의 제목을 입력하세요")
                         .setContent(documentItem.getTitle())
@@ -159,8 +137,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                                 requestEdit(text);
                             }
                         }).show();
-                return true;
-            case R.id.menu_save:
+                break;
+            case R.id.button_save:
                 if(adapter.getEditedPosition() != -1) {
                     SentenceItem sentenceItem = adapter.getItem(adapter.getEditedPosition());
                     sentenceItem.setSentence(adapter.getEditedText());
@@ -170,13 +148,13 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                     imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 }
                 showEditMenu(false);
-                return true;
-            case R.id.menu_cancel:
+                break;
+            case R.id.button_cancel:
                 adapter.returnEditedPosition();
                 showEditMenu(false);
-                return true;
-            default:
-                return true;
+                break;
+            case R.id.button_search:
+                break;
         }
     }
 
@@ -191,7 +169,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 public void onResponse(JSONObject response) {
                     try {
                         if (response.getInt("result") == 0) {
-                            getSupportActionBar().setTitle(title);
+                            textTitle.setText(title);
                             documentItem.setTitle(title);
                         } else {
                             Toast.makeText(DocumentActivity.this, "수정 실패", Toast.LENGTH_SHORT).show();
@@ -236,18 +214,16 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     // 수정모드일때 아닐때 메뉴를 숨기고 보여주는 함수.
     private void showEditMenu(boolean show) {
         if(show) {
-            menuCancel.setVisible(true);
-            menuSave.setVisible(true);
-            searchView.setVisibility(View.GONE);
-            if(isChief) menuEdit.setVisible(false);
+            buttonCancel.setVisibility(View.VISIBLE);
+            buttonSave.setVisibility(View.VISIBLE);
+            if(isChief) buttonEdit.setVisibility(View.GONE);
             if(fab.getRotation() == 45)
                 hideFabs();
             fab.hide();
         } else {
-            menuCancel.setVisible(false);
-            menuSave.setVisible(false);
-            searchView.setVisibility(View.VISIBLE);
-            if(isChief) menuEdit.setVisible(true);
+            buttonCancel.setVisibility(View.GONE);
+            buttonSave.setVisibility(View.GONE);
+            if(isChief) buttonEdit.setVisibility(View.VISIBLE);
             fab.show();
         }
     }
@@ -256,9 +232,6 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
     public void onBackPressed() {
         if(fab.getRotation() == 45) {
             hideFabs();
-        } else if(!searchView.isIconified()) {
-            searchView.setIconified(true);
-            adapter.setSearchKeyword("");
         } else if (adapter.getEditedPosition() != -1) {
             adapter.returnEditedPosition();
             showEditMenu(false);
@@ -267,8 +240,8 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    @Override
-    public void onClick(View v) {
+    @OnClick({R.id.fab, R.id.fab_word, R.id.fab_pdf, R.id.fab_statistic, R.id.fab_summary})
+    public void onFabClick(View v) {
         switch(v.getId()) {
             case R.id.fab:
                 if(fab.getRotation() != 45) {
@@ -276,19 +249,6 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                 } else {
                     hideFabs();
                 }
-                break;
-            case R.id.fab_resume:
-                SNLUAlertDialog dialog = new SNLUAlertDialog(this);
-                dialog.setTitle("알림");
-                dialog.setMessage("회의를 다시 시작 하시겠습니까?");
-                dialog.setOnYesClickListener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        requestResume();
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
                 break;
             case R.id.fab_pdf:
                 Snackbar.make(getWindow().getDecorView().getRootView(), "pdf파일을 다운로드합니다.", 2000).show();
@@ -311,23 +271,43 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    @OnClick(R.id.button_restart)
+    public void doRestart() {
+        SNLUAlertDialog dialog = new SNLUAlertDialog(this);
+        dialog.setTitle("알림");
+        dialog.setMessage("회의를 다시 시작 하시겠습니까?");
+        dialog.setOnYesClickListener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                requestResume();
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
     public void showFabs() {
         fab.animate().rotation(45f);
-        linearResume.animate().translationX(0);
-        linearSummary.animate().translationX(0);
-        linearStatistic.animate().translationX(0);
-        linearPdf.animate().translationX(0);
-        linearWord.animate().translationX(0);
+        fabWord.show();
+        fabPDF.show();
+        fabStatistic.show();
+        fabSummary.show();
+        textWord.setVisibility(View.VISIBLE);
+        textPDF.setVisibility(View.VISIBLE);
+        textStatistic.setVisibility(View.VISIBLE);
+        textSummary.setVisibility(View.VISIBLE);
     }
 
     public void hideFabs() {
         fab.animate().rotation(0f);
-        float dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
-        linearResume.animate().translationX(dp);
-        linearSummary.animate().translationX(dp);
-        linearStatistic.animate().translationX(dp);
-        linearPdf.animate().translationX(dp);
-        linearWord.animate().translationX(dp);
+        fabWord.hide();
+        fabPDF.hide();
+        fabStatistic.hide();
+        fabSummary.hide();
+        textWord.setVisibility(View.GONE);
+        textPDF.setVisibility(View.GONE);
+        textStatistic.setVisibility(View.GONE);
+        textSummary.setVisibility(View.GONE);
     }
 
     private void requestResume() {
@@ -447,6 +427,7 @@ public class DocumentActivity extends AppCompatActivity implements View.OnClickL
                         SentenceItem item = new SentenceItem();
                         item.setSpeakerName(array.getJSONObject(i).getString("name"));
                         item.setSpeakTime(array.getJSONObject(i).getString("speakTime"));
+                        item.setSpeakerPhoneNumber(array.getJSONObject(i).getString("speaker"));
                         item.setSentence(array.getJSONObject(i).getString("sentence"));
                         adapter.addItem(item);
                     }

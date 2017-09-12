@@ -2,9 +2,11 @@ package com.snlu.snluapp.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,10 +22,12 @@ import java.util.ArrayList;
 public class SentencesAdapter extends RecyclerView.Adapter {
     private Context context;
     private ArrayList<SentenceItem> sentenceItems;
+    private String userId;
 
-    public SentencesAdapter(Context context, ArrayList<SentenceItem> sentenceItems) {
+    public SentencesAdapter(Context context, ArrayList<SentenceItem> sentenceItems, String userId) {
         this.context = context;
         this.sentenceItems = sentenceItems;
+        this.userId = userId;
     }
 
     public void addItem(SentenceItem item) {
@@ -40,9 +44,14 @@ public class SentencesAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder vh = (ViewHolder)holder;
         SentenceItem item = sentenceItems.get(position);
+        if(userId.equals(item.getSpeakerPhoneNumber())) {
+            vh.linear.setGravity(Gravity.END);
+        } else {
+            vh.linear.setGravity(Gravity.START);
+        }
         vh.textName.setText(item.getSpeakerName() + ":");
         if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName()))
-            vh.textName.setVisibility(View.INVISIBLE);
+            vh.textName.setVisibility(View.GONE);
         else
             vh.textName.setVisibility(View.VISIBLE);
         vh.textSentence.setText(item.getSentence());
@@ -62,8 +71,10 @@ public class SentencesAdapter extends RecyclerView.Adapter {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textName, textTime, textSentence;
+        public LinearLayout linear;
         public ViewHolder(View itemView) {
             super(itemView);
+            linear = (LinearLayout) itemView;
             textName = (TextView)itemView.findViewById(R.id.text_name);
             textTime = (TextView)itemView.findViewById(R.id.text_time);
             textSentence = (TextView)itemView.findViewById(R.id.text_sentence);

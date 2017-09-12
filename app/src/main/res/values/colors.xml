@@ -11,4 +11,7 @@
     <color name="colorRedPink">#ff5e5e</color>
     <color name="colorGrey">#bfb9b9</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorBlue">#539dcf</color>
+    <color name="colorWhiteBlue">#b9e5fb</color>
+    <color name="colorWhiteBlueHalf">#40b9e5fb</color>
 </resources>

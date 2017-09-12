@@ -27,6 +27,7 @@ import com.snlu.snluapp.item.SentenceItem;
 import com.snlu.snluapp.util.SNLULog;
 import com.snlu.snluapp.util.SNLUMessageController;
 import com.snlu.snluapp.util.SNLUPermission;
+import com.snlu.snluapp.util.SNLUSharedPreferences;
 import com.snlu.snluapp.util.SNLUVolley;
 
 import org.json.JSONArray;
@@ -73,7 +74,7 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
         // 문장들을 뿌려주는 화면
         recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SentencesAdapter(this, new ArrayList<SentenceItem>());
+        adapter = new SentencesAdapter(this, new ArrayList<SentenceItem>(), SNLUSharedPreferences.get(this, "user_phone_number"));
         recyclerView.setAdapter(adapter);
         // 발언하는 사람의 이름
         textSpeaker = (TextView)findViewById(R.id.conference_speaker_name);
