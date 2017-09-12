@@ -3,9 +3,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:id="@+id/linear_layout"
-    android:clickable="true">
+    android:layout_margin="8dp"
+    android:padding="8dp"
+    android:background="@drawable/shape_round_rectangle_primary"
+    android:id="@+id/linear_layout">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,17 +25,17 @@
             android:id="@+id/text_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/font_small"
-            android:textColor="@color/colorBlack"/>
+            android:textSize="@dimen/font_normal"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:id="@+id/text_id"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
             android:textSize="@dimen/font_smallest"
-            android:textColor="@color/colorBlack"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
         <ImageView
             android:id="@+id/button_del"
@@ -43,9 +44,4 @@
             android:padding="10dp"
             android:src="@drawable/icon_delete"/>
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/colorGrey" />
 </LinearLayout>

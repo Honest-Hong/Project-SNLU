@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class RoomActivity extends AppCompatActivity {
     public static final int REQUEST_ADD_USER = 100;
@@ -40,6 +41,8 @@ public class RoomActivity extends AppCompatActivity {
     private RecyclerView recyclerViewUsers, recyclerViewDocuments;
     @BindView(R.id.button_start) View viewStart;
     @BindView(R.id.text_title) TextView textTitle;
+    @BindView(R.id.text_document) TextView textDocuments;
+    @BindView(R.id.text_member) TextView textMembers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,7 @@ public class RoomActivity extends AppCompatActivity {
 
         if(!isChief) {
             viewStart.setVisibility(View.GONE);
+            findViewById(R.id.button_add).setVisibility(View.GONE);
         } else {
             // 새로운 회의 시작
             findViewById(R.id.button_start).setOnClickListener(new View.OnClickListener() {
@@ -290,5 +294,36 @@ public class RoomActivity extends AppCompatActivity {
             default:
                 return false;
         }
+    }
+
+    @OnClick({R.id.text_document, R.id.text_member})
+    public void onTabSelected(View v) {
+        switch(v.getId()) {
+            case R.id.text_document:
+                textDocuments.setAlpha(1.0f);
+                textMembers.setAlpha(0.5f);
+                recyclerViewDocuments.setVisibility(View.VISIBLE);
+                recyclerViewUsers.setVisibility(View.GONE);
+                break;
+            case R.id.text_member:
+                textDocuments.setAlpha(0.5f);
+                textMembers.setAlpha(1.0f);
+                recyclerViewDocuments.setVisibility(View.GONE);
+                recyclerViewUsers.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    @OnClick(R.id.button_back)
+    public void onBack() {
+        finish();
+    }
+
+    @OnClick(R.id.button_add)
+    public void invite() {
+        Intent intent = new Intent(RoomActivity.this, CreateRoomActivity.class);
+        intent.putExtra("roomNumber", Integer.parseInt(room.getNumber()));
+        intent.putExtra("roomTitle", room.getTitle());
+        startActivityForResult(intent, REQUEST_ADD_USER);
     }
 }

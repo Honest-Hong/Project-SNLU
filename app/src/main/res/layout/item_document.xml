@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/linear_layout"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true">
+    android:layout_margin="8dp"
+    android:padding="8dp"
+    android:background="@drawable/shape_round_rectangle_primary">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,31 +14,19 @@
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <ImageView
-            android:layout_width="@dimen/content_icon_size_small"
-            android:layout_height="@dimen/content_icon_size_small"
-            android:layout_margin="@dimen/content_icon_margin"
-            android:src="@drawable/icon_document"
-            android:id="@+id/imageView" />
-
         <TextView
             android:id="@+id/text_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/font_small"
-            android:textColor="@color/colorBlack" />
+            android:textSize="@dimen/font_big"
+            android:textColor="@color/colorPrimaryDark" />
 
         <TextView
             android:id="@+id/text_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="8dp"
             android:textSize="@dimen/font_smallest"
-            android:textColor="@color/colorBlack"/>
+            android:textColor="@color/colorPrimaryDark"/>
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/colorGrey" />
 </LinearLayout>

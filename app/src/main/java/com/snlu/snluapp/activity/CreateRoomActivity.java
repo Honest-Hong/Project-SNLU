@@ -56,14 +56,14 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         roomNumber = getIntent().getIntExtra("roomNumber", 0);
         userItem = LoginInformation.getUserItem();
         if(roomNumber != 0) {
-            getSupportActionBar().setTitle("회의자 추가");
+//            getSupportActionBar().setTitle("회의자 추가");
             buttonCreate.setText("회의자 추가하기");
             editTitle.setEnabled(false);
             editTitle.setText(getIntent().getStringExtra("roomTitle"));
             requestUserList(roomNumber);
             findViewById(R.id.edit_search).requestFocus();
         } else {
-            getSupportActionBar().setTitle("회의방 생성");
+//            getSupportActionBar().setTitle("회의방 생성");
             buttonCreate.setText("회의방 생성하기");
             userItems.add(userItem);
         }
