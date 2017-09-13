@@ -1,78 +1,58 @@
 package com.snlu.snluapp.activity;
 
 import android.app.ProgressDialog;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.HorizontalBarChart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.DocumentItem;
-import com.snlu.snluapp.util.SNLULog;
 import com.snlu.snluapp.util.SNLUVolley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-public class StatisticActivity extends AppCompatActivity implements OnSeekBarChangeListener{
 
-    private static String TAG = "StatisticActivity";
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class StatisticActivity extends AppCompatActivity {
     private int[] yData;
     private String[] xData;
     private DocumentItem document;
-    protected BarChart barChart;
+    @BindView(R.id.statistic_bar_chart) BarChart barChart;
+    @BindView(R.id.text_amount) TextView textAmount;
     BarDataSet barDataSet;
     BarData barData;
-    private TextView tvX;
-    private SeekBar seekBarX;
     private ProgressDialog progressDialog;
+    private int amount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistc);
-
-        getSupportActionBar().setTitle("단어 통계");
+        ButterKnife.bind(this);
 
         document = new DocumentItem();
         document.setNumber(getIntent().getStringExtra("documentNumber"));
-
-        tvX = (TextView)findViewById(R.id.tvXMax);
-
-        seekBarX = (SeekBar)findViewById(R.id.seekBar);
 
         barChart = (BarChart) findViewById(R.id.statistic_bar_chart);
         barChart.setMaxVisibleValueCount(60);
@@ -83,32 +63,30 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         barChart.setPinchZoom(true);
         barChart.setDescription(null);
 
-        seekBarX.getProgress();
-        seekBarX.setOnSeekBarChangeListener(this);
-
-            findViewById(R.id.icon_minus).setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (seekBarX.getProgress() > 1) {
-                        seekBarX.setProgress(seekBarX.getProgress() - 1);
-                        tvX.setText("" + (seekBarX.getProgress()));
-                        setData(seekBarX.getProgress());
-                        barChart.invalidate();
-                    }
-                }
-            });
-
-            findViewById(R.id.icon_plus).setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (seekBarX.getProgress() >= 0) {
-                        seekBarX.setProgress(seekBarX.getProgress() + 1);
-                        tvX.setText("" + (seekBarX.getProgress()));
-                        setData(seekBarX.getProgress());
-                        barChart.invalidate();
-                    }
-                }
-            });
-
         requestStatistic();
+    }
+
+    @OnClick(R.id.button_back)
+    public void onBack() {
+        finish();
+    }
+
+    @OnClick({R.id.button_minus, R.id.button_plus})
+    public void onClickControl(View v) {
+        switch(v.getId()) {
+            case R.id.button_minus:
+                if (amount > 1) {
+                    amount--;
+                    setData(amount);
+                }
+                break;
+            case R.id.button_plus:
+                if (amount < xData.length - 1) {
+                    amount++;
+                    setData(amount);
+                }
+                break;
+        }
     }
 
     private void requestStatistic() {
@@ -136,6 +114,8 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
                                 xData[i] = array.getJSONObject(i).getString("name");
                             }
                             addDataSet();
+                            amount = xData.length / 2;
+                            setData(amount);
                         } else {
                             Log.v("TAG", "error");
                         }
@@ -175,17 +155,8 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
 
         setData(5);
     }
-
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-        if (seekBarX.getProgress() >= 1) {
-            tvX.setText("" + (seekBarX.getProgress()));
-            setData(seekBarX.getProgress());
-            barChart.invalidate();
-        }
-    }
-
     private void setData(int count){
-
+        textAmount.setText(amount + "");
         ArrayList<BarEntry> yEntry = new ArrayList<BarEntry>();
         barChart.setData(barData);
 
@@ -199,7 +170,6 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
                 yEntry.add(new BarEntry(i,yData[i]));
         }
 
-        seekBarX.setMax(yData.length);
         barDataSet = new BarDataSet(yEntry, "");
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         barData = new BarData(barDataSet);
@@ -216,6 +186,4 @@ public class StatisticActivity extends AppCompatActivity implements OnSeekBarCha
         barChart.setVisibleXRangeMaximum(5);
         barChart.invalidate();
     }
-    public void onStartTrackingTouch(SeekBar seekBar){}
-    public void onStopTrackingTouch(SeekBar seekBar){}
 }

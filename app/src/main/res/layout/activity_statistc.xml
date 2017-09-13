@@ -1,66 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.snlu.snluapp.activity.StatisticActivity">
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="@drawable/background_activity_top"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/font_bigest"
+        android:textStyle="bold"
+        android:text="단어 통계 보기"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/button_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:padding="4dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_chevron_left_white_24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.github.mikephil.charting.charts.BarChart
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
         android:id="@+id/statistic_bar_chart"
-        >
-    </com.github.mikephil.charting.charts.BarChart>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_title"
+        app:layout_constraintBottom_toTopOf="@+id/rect_control"/>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/text_word_amount"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/statistic_bar_chart"
-        android:gravity="center"
-        android:layout_marginBottom="5dp"
-        android:orientation="horizontal">
+        android:layout_marginEnd="16dp"
+        android:text="단어수"
+        android:textSize="@dimen/font_big"
+        android:textColor="@color/colorBlue"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/rect_control"
+        app:layout_constraintTop_toTopOf="@+id/rect_control"
+        app:layout_constraintBottom_toBottomOf="@+id/rect_control"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
 
-        <TextView
-            android:id="@+id/tvWord"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:text="단어수"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="5dp"
-            android:textAppearance="?android:attr/textAppearanceSmall">
-        </TextView>
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="3dp"
-            android:src="@drawable/icon_minus"
-            android:id="@+id/icon_minus"/>
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:progress="5"
-            android:max="99" />
+    <View
+        android:id="@+id/rect_control"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/background_button_primary"
+        app:layout_constraintLeft_toRightOf="@id/text_word_amount"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/icon_plus"
-            android:id="@+id/icon_plus"/>
+    <ImageView
+        android:id="@+id/button_minus"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:padding="4dp"
+        android:src="@drawable/ic_remove_blue_24dp"
+        app:layout_constraintLeft_toLeftOf="@id/rect_control"
+        app:layout_constraintRight_toLeftOf="@+id/text_amount"
+        app:layout_constraintTop_toTopOf="@id/rect_control"
+        app:layout_constraintBottom_toBottomOf="@id/rect_control"/>
 
-        <TextView
-            android:id="@+id/tvXMax"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="7dp"
-            android:text="5"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
-    </LinearLayout>
-</LinearLayout>
+    <TextView
+        android:id="@+id/text_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/font_normal"
+        android:textColor="@color/colorWhite"
+        android:text="0"
+        app:layout_constraintLeft_toRightOf="@id/button_minus"
+        app:layout_constraintRight_toLeftOf="@+id/button_plus"
+        app:layout_constraintTop_toTopOf="@id/rect_control"
+        app:layout_constraintBottom_toBottomOf="@id/rect_control"/>
+
+    <ImageView
+        android:id="@+id/button_plus"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_add_blue_24dp"
+        app:layout_constraintLeft_toRightOf="@id/text_amount"
+        app:layout_constraintRight_toRightOf="@id/rect_control"
+        app:layout_constraintTop_toTopOf="@id/rect_control"
+        app:layout_constraintBottom_toBottomOf="@id/rect_control"/>
+</android.support.constraint.ConstraintLayout>
