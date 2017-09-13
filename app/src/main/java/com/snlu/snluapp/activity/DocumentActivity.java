@@ -128,15 +128,16 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
                 finish();
                 break;
             case R.id.button_edit:
-                SNLUInputDialog dialog = new SNLUInputDialog(this);
-                dialog.setTitleText("회의록의 제목을 입력하세요")
-                        .setContent(documentItem.getTitle())
-                        .setOnConfirmListener(new SNLUInputDialog.OnConfirmListener() {
+                SNLUInputDialog.newInstance(
+                        "회의록의 제목을 입력하세요",
+                         documentItem.getTitle(),
+                        new SNLUInputDialog.OnConfirmListener() {
                             @Override
                             public void onConfirm(String text) {
                                 requestEdit(text);
                             }
-                        }).show();
+                        }
+                ).show(getSupportFragmentManager(), null);
                 break;
             case R.id.button_save:
                 if(adapter.getEditedPosition() != -1) {

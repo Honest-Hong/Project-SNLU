@@ -2,8 +2,15 @@ package com.snlu.snluapp.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -11,24 +18,31 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.snlu.snluapp.R;
+import com.snlu.snluapp.data.ExtraValue;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Hong Tae Joon on 2016-11-15.
  */
 
-public class SNLUInputDialog extends Dialog {
-    private String title;
-    private String content;
-    private EditText editText;
+public class SNLUInputDialog extends DialogFragment {
+    @BindView(R.id.text_title) TextView textTitle;
+    @BindView(R.id.edit_text) EditText editText;
+    @BindView(R.id.button_cancel) View buttonCancel;
+    @BindView(R.id.button_confirm) View buttonConfirm;
     private OnConfirmListener onConfirmListener;
 
-    public SNLUInputDialog(Context context) {
-        super(context);
-    }
 
-    public SNLUInputDialog setTitleText(CharSequence title) {
-        this.title = title.toString();
-        return this;
+    public static SNLUInputDialog newInstance(String title, String mesasge, OnConfirmListener onConfirmListener) {
+        SNLUInputDialog dialog = new SNLUInputDialog();
+        Bundle args = new Bundle();
+        args.putString(ExtraValue.TITLE, title);
+        args.putString(ExtraValue.MESSAGE, mesasge);
+        dialog.setArguments(args);
+        dialog.setOnConfirmListener(onConfirmListener);
+        return dialog;
     }
 
     public SNLUInputDialog setOnConfirmListener(OnConfirmListener onConfirmListener) {
@@ -36,40 +50,35 @@ public class SNLUInputDialog extends Dialog {
         return this;
     }
 
-    public SNLUInputDialog setContent(String content) {
-        this.content = content;
-        return this;
-    }
-
+    @NonNull
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.dialog_input);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        View v = LayoutInflater.from(getContext()).inflate(R.layout.dialog_input, null);
+        ButterKnife.bind(this, v);
 
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.gravity = Gravity.CENTER;
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getWindow().setAttributes(params);
+        textTitle.setText(getArguments().getString(ExtraValue.TITLE));
+        editText.setText(getArguments().getString(ExtraValue.MESSAGE));
 
-        TextView textTitle = (TextView)findViewById(R.id.text_title);
-        textTitle.setText(title);
-        editText = (EditText)findViewById(R.id.edit_text);
-        editText.setText(content);
-        findViewById(R.id.button_confirm).setOnClickListener(new View.OnClickListener() {
+        if(onConfirmListener!=null) buttonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onConfirmListener.onConfirm(editText.getText().toString());
                 dismiss();
             }
         });
-        findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
+
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(v)
+                .create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        return dialog;
     }
 
     public interface OnConfirmListener {
