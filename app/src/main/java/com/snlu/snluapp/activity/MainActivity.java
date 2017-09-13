@@ -9,9 +9,12 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,9 +40,12 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.text_title) TextView textTitle;
+    @BindView(R.id.button_search) ImageView buttonSearch;
+    @BindView(R.id.edit_search) EditText editSearch;
     private RoomAdapter roomAdapter;
     private ArrayList<RoomItem> roomItems;
     private ArrayList<RoomItem> searchItems;
+    private boolean searching = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         requestRefreshToken();
         FirebaseMessaging.getInstance().subscribeToTopic("notice");
+
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchItems = new ArrayList<>();
+                for(RoomItem item : roomItems) {
+                    if(item.getTitle().startsWith(s.toString())) {
+                        searchItems.add(item);
+                    }
+                }
+                roomAdapter.setItems(searchItems);
+            }
+        });
     }
 
     @OnClick(R.id.button_add)
@@ -80,39 +107,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @OnClick(R.id.button_search)
     public void doSearch() {
-//        searchView.setQueryHint("방 제목을 입력하세요.");
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                searchItems = new ArrayList<>();
-//                for(int i=0; i<roomItems.size(); i++) {
-//                    if (roomItems.get(i).getTitle().contains(newText)) {
-//                        searchItems.add(roomItems.get(i));
-//                    }
-//                }
-//                roomAdapter.setItems(searchItems);
-//
-//                return false;
-//            }
-//        });
-//        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-//            @Override
-//            public boolean onClose() {
-//                roomAdapter.setItems(roomItems);
-//                return false;
-//            }
-//        });
-//        return super.onCreateOptionsMenu(menu);
+        if(searching) {
+            buttonSearch.setImageResource(R.drawable.ic_search_white);
+            textTitle.setVisibility(View.VISIBLE);
+            editSearch.setVisibility(View.GONE);
+            roomAdapter.setItems(roomItems);
+        } else {
+            buttonSearch.setImageResource(R.drawable.ic_clear_white_24dp);
+            textTitle.setVisibility(View.GONE);
+            editSearch.setVisibility(View.VISIBLE);
+            editSearch.setText("");
+        }
+        searching = !searching;
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if(searching) {
+            doSearch();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
