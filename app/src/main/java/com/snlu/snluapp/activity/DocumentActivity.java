@@ -20,7 +20,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -73,12 +75,14 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
     @BindView(R.id.button_save) View buttonSave;
     @BindView(R.id.button_cancel) View buttonCancel;
     @BindView(R.id.button_edit) View buttonEdit;
-    @BindView(R.id.button_search) View buttonSearch;
+    @BindView(R.id.button_search) ImageView buttonSearch;
+    @BindView(R.id.edit_search) EditText editSearch;
     @BindView(R.id.image_cloud) ImageView imageCloud;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     private SentencesDetailAdapter adapter;
     private long downloadId;
     private boolean isChief = false;
+    private boolean searching = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +114,21 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
         recyclerView.setAdapter(adapter);
 
         SNLUPermission.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);
+
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter.setSearchKeyword(s.toString());
+            }
+        });
     }
 
     @Override
@@ -121,7 +140,7 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
         }
     }
 
-    @OnClick({R.id.button_back, R.id.button_search, R.id.button_edit, R.id.button_save, R.id.button_cancel})
+    @OnClick({R.id.button_back, R.id.button_edit, R.id.button_save, R.id.button_cancel})
     public void onMenuClick(View v) {
         switch(v.getId()) {
             case R.id.button_back:
@@ -154,9 +173,23 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
                 adapter.returnEditedPosition();
                 showEditMenu(false);
                 break;
-            case R.id.button_search:
-                break;
         }
+    }
+
+    @OnClick(R.id.button_search)
+    public void doSearch() {
+        if(searching) {
+            buttonSearch.setImageResource(R.drawable.ic_search_white);
+            textTitle.setVisibility(View.VISIBLE);
+            editSearch.setVisibility(View.GONE);
+        } else {
+            buttonSearch.setImageResource(R.drawable.ic_clear_white_24dp);
+            textTitle.setVisibility(View.GONE);
+            editSearch.setVisibility(View.VISIBLE);
+            editSearch.setText("");
+            adapter.setSearchKeyword("");
+        }
+        searching = !searching;
     }
 
     private void requestEdit(final String title) {
@@ -236,6 +269,8 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
         } else if (adapter.getEditedPosition() != -1) {
             adapter.returnEditedPosition();
             showEditMenu(false);
+        } else if(searching) {
+            doSearch();
         } else {
             super.onBackPressed();
         }
