@@ -38,7 +38,7 @@
         
         <View
             android:id="@+id/rect_amount"
-            android:layout_width="48dp"
+            android:layout_width="40dp"
             android:layout_height="24dp"
             android:layout_marginStart="16dp"
             android:background="@drawable/background_member_amount"
@@ -50,7 +50,7 @@
             android:id="@+id/image_user"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:src="@drawable/ic_person_white_24dp"
             app:layout_constraintLeft_toLeftOf="@id/rect_amount"
             app:layout_constraintTop_toTopOf="@id/rect_amount"

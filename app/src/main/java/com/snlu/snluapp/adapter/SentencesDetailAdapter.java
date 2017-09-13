@@ -19,6 +19,9 @@ import com.snlu.snluapp.item.SentenceItem;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Hong Tae Joon on 2017-04-13.
  */
@@ -132,7 +135,7 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
             vh.textName.setVisibility(View.GONE);
         else
             vh.textName.setVisibility(View.VISIBLE);
-        vh.textName.setText(item.getSpeakerName() + ":");
+        vh.textName.setText(item.getSpeakerName());
         if(editedPosition == position) {
             vh.textSentence.setVisibility(View.GONE);
             vh.editSentence.setVisibility(View.VISIBLE);
@@ -164,16 +167,14 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textName, textTime, textSentence;
-        public EditText editSentence;
-        public LinearLayout linearLayout;
+        @BindView(R.id.text_name) TextView textName;
+        @BindView(R.id.text_time) TextView textTime;
+        @BindView(R.id.text_sentence) TextView textSentence;
+        @BindView(R.id.linear_layout) LinearLayout linearLayout;
+        @BindView(R.id.edit_sentence) EditText editSentence;
         public ViewHolder(View itemView) {
             super(itemView);
-            textName = (TextView)itemView.findViewById(R.id.text_name);
-            textTime = (TextView)itemView.findViewById(R.id.text_time);
-            textSentence = (TextView)itemView.findViewById(R.id.text_sentence);
-            editSentence = (EditText)itemView.findViewById(R.id.edit_sentence);
-            linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
+            ButterKnife.bind(this, itemView);
             if(isCheif) linearLayout.setOnClickListener(listener);
         }
         private View.OnClickListener listener = new View.OnClickListener() {

@@ -2,6 +2,7 @@ package com.snlu.snluapp.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,9 @@ import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.SentenceItem;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Hong Tae Joon on 2017-04-13.
@@ -44,12 +48,13 @@ public class SentencesAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder vh = (ViewHolder)holder;
         SentenceItem item = sentenceItems.get(position);
+        Log.i("HTJ", userId + "///" + item.getSpeakerPhoneNumber());
         if(userId.equals(item.getSpeakerPhoneNumber())) {
             vh.linear.setGravity(Gravity.END);
         } else {
             vh.linear.setGravity(Gravity.START);
         }
-        vh.textName.setText(item.getSpeakerName() + ":");
+        vh.textName.setText(item.getSpeakerName());
         if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName()))
             vh.textName.setVisibility(View.GONE);
         else
@@ -70,14 +75,13 @@ public class SentencesAdapter extends RecyclerView.Adapter {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textName, textTime, textSentence;
-        public LinearLayout linear;
+        @BindView(R.id.text_name) TextView textName;
+        @BindView(R.id.text_time) TextView textTime;
+        @BindView(R.id.text_sentence) TextView textSentence;
+        @BindView(R.id.linear_layout) LinearLayout linear;
         public ViewHolder(View itemView) {
             super(itemView);
-            linear = (LinearLayout) itemView;
-            textName = (TextView)itemView.findViewById(R.id.text_name);
-            textTime = (TextView)itemView.findViewById(R.id.text_time);
-            textSentence = (TextView)itemView.findViewById(R.id.text_sentence);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

@@ -37,6 +37,10 @@ import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import static android.view.View.GONE;
 
 /**
@@ -50,9 +54,9 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
     private Intent recognizerIntent;
     private SpeechRecognizer recognizer;
     // 발언자 이름 텍스트 뷰
-    private TextView textSpeaker;
+//    private TextView textSpeaker;
     // 내화 내용
-    private RecyclerView recyclerView;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
     private SentencesAdapter adapter;
     // 날짜 형식을 변환해줄 포멧
     private Timestamp timestamp;
@@ -61,23 +65,25 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
     // 방 정보
     private RoomItem roomItem;
     // 발언하기 버튼
-    private TextView buttonSay;
+    @BindView(R.id.button_say) TextView buttonSay;
     private boolean toggleSay;
+
+    @BindView(R.id.text_title) TextView textTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conference);
+        ButterKnife.bind(this);
 
-        getSupportActionBar().setTitle("회의중");
+        textTitle.setText("회의중");
 
         // 문장들을 뿌려주는 화면
-        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new SentencesAdapter(this, new ArrayList<SentenceItem>(), SNLUSharedPreferences.get(this, "user_phone_number"));
         recyclerView.setAdapter(adapter);
         // 발언하는 사람의 이름
-        textSpeaker = (TextView)findViewById(R.id.conference_speaker_name);
+//        textSpeaker = (TextView)findViewById(R.id.conference_speaker_name);
         // 음성인식 인텐트
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
@@ -105,8 +111,6 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
             viewEnd.setOnClickListener(this);
         }
 
-        buttonSay = (TextView)findViewById(R.id.button_say);
-        buttonSay.setOnClickListener(this);
         toggleSay = true;
     }
 
@@ -129,7 +133,7 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
         }
     }
 
-    @Override
+    @OnClick({R.id.button_say, R.id.button_end, R.id.button_back})
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.button_say:
@@ -144,6 +148,9 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
             case R.id.button_end:
                 requestEndConference();
                 break;
+            case R.id.button_back:
+                finish();
+                break;
         }
     }
 
@@ -155,7 +162,7 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
         recognizer = SpeechRecognizer.createSpeechRecognizer(this);
         recognizer.setRecognitionListener(this);
         recognizer.startListening(recognizerIntent);
-        textSpeaker.setText("음성인식이 시작되었습니다.");
+//        textSpeaker.setText("음성인식이 시작되었습니다.");
     }
 
     // 발언 중단
@@ -215,7 +222,7 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
                     if(roomNumber.equals(roomItem.getNumber())) {
                         // 다른 사람이 말하고 있는 경우에만 표시해줌
                         if(!speakerPhoneNumber.equals(LoginInformation.getUserItem().getId())) {
-                            textSpeaker.setText(speakerName + "님이 발언중입니다.");
+//                            textSpeaker.setText(speakerName + "님이 발언중입니다.");
                             setButtonSayMode(2);
                         }
                     }
@@ -230,7 +237,7 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
                         adapter.addItem(SentenceItem.make(intent));
                         recyclerView.scrollToPosition(adapter.getItemCount() - 1);
 
-                        textSpeaker.setText("");
+//                        textSpeaker.setText("");
                         setButtonSayMode(0);
                     }
                     break;

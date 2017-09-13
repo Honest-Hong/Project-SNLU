@@ -28,11 +28,16 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class CreateRoomActivity extends AppCompatActivity implements View.OnClickListener{
-    private RecyclerView recyclerView;
+    @BindView(R.id.edit_title) EditText editTitle;
+    @BindView(R.id.button_create) TextView buttonCreate;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.text_title) TextView textTitle;
     private ListAdapter adapter;
-    private EditText editTitle;
-    private TextView buttonCreate;
     private UserItem userItem, searchItem;
     private int roomNumber;
 
@@ -40,29 +45,26 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_room);
+        ButterKnife.bind(this);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        editTitle = (EditText)findViewById(R.id.edit_title);
-        buttonCreate = (TextView)findViewById(R.id.button_create);
 
         buttonCreate.setOnClickListener(this);
         findViewById(R.id.button_search).setOnClickListener(this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
 
         ArrayList<UserItem> userItems = new ArrayList<>();
         roomNumber = getIntent().getIntExtra("roomNumber", 0);
         userItem = LoginInformation.getUserItem();
         if(roomNumber != 0) {
-//            getSupportActionBar().setTitle("회의자 추가");
-            buttonCreate.setText("회의자 추가하기");
+            textTitle.setText("회의 인원 추가");
+            buttonCreate.setText("회의인원 추가하기");
             editTitle.setEnabled(false);
             editTitle.setText(getIntent().getStringExtra("roomTitle"));
             requestUserList(roomNumber);
             findViewById(R.id.edit_search).requestFocus();
         } else {
-//            getSupportActionBar().setTitle("회의방 생성");
+            textTitle.setText("회의방 생성");
             buttonCreate.setText("회의방 생성하기");
             userItems.add(userItem);
         }
@@ -114,9 +116,12 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    @Override
+    @OnClick({R.id.button_back, R.id.button_create, R.id.button_manager})
     public void onClick(View v) {
         switch(v.getId()) {
+            case R.id.button_back:
+                finish();
+                break;
             case R.id.button_create:
                 if(roomNumber == 0) requestCreateRoom(editTitle.getText().toString(), userItem.getId());
                 else {

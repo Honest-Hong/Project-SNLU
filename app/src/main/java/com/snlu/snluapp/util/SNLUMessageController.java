@@ -83,7 +83,7 @@ public class SNLUMessageController {
         Intent intent = new Intent(BROADCAST_END_SPEAK);
         intent.putExtra("code", "04");
         intent.putExtra("roomNumber", roomNumber);
-        intent.putExtra("speakerPhoneName", item.getSpeakerPhoneNumber());
+        intent.putExtra("speakerPhoneNumber", item.getSpeakerPhoneNumber());
         intent.putExtra("speakerName", item.getSpeakerName());
         intent.putExtra("sentence", item.getSentence());
         intent.putExtra("speakTime", item.getSpeakTime());
