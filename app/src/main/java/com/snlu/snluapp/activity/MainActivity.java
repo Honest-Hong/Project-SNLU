@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @BindView(R.id.button_search) ImageView buttonSearch;
     @BindView(R.id.edit_search) EditText editSearch;
     private RoomAdapter roomAdapter;
-    private ArrayList<RoomItem> roomItems;
+    private ArrayList<RoomItem> roomItems = new ArrayList<>();
+    private HashMap<String, Integer> roomMap;
     private ArrayList<RoomItem> searchItems;
     private boolean searching = false;
 
@@ -158,7 +160,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     result = response.getString("result");
                     if(result.equals("0")) {
-                        roomItems = new ArrayList<>();
+                        ArrayList<RoomItem> temp = new ArrayList<>();
+                        roomMap = new HashMap<>();
                         JSONArray array = response.getJSONArray("data");
                         for(int i=0; i<array.length(); i++) {
                             RoomItem item = new RoomItem();
@@ -168,9 +171,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             item.setIsStart(array.getJSONObject(i).getString("isStart"));
                             item.setStartedDocumentNumber(array.getJSONObject(i).getString("documentNumber"));
                             item.setCount(array.getJSONObject(i).getInt("count"));
-                            roomItems.add(item);
+                            temp.add(item);
+                            roomMap.put(item.getNumber(), i);
                         }
-                        roomAdapter.setItems(roomItems);
+                        if(roomItems.size() != temp.size()) {
+                            roomItems = temp;
+                            roomAdapter.setItems(roomItems);
+                        }
                         if(roomItems.size() == 0) {
                             findViewById(R.id.text_help).setVisibility(View.VISIBLE);
                         } else {
@@ -189,10 +196,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // 유저 목록 요청
     private void requestUserList() {
-        if(roomCount == roomItems.size()) {
-            return;
-        }
-        roomCount = 0;
         try {
             for(RoomItem item : roomItems) {
                 JSONObject json = new JSONObject();
@@ -205,20 +208,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     // 유저 목록 요청 결과 리스너
-    private int roomCount = 0;
     private SNLUVolley.OnResponseListener requestUserListListener = new SNLUVolley.OnResponseListener() {
         @Override
         public void onResponse(JSONObject response) {
             try {
-                String result = response.getString("result");
+                String roomNumber = response.getString("result");
                 SNLULog.v(response.toString());
-                if(result.equals("0")) {
-                    JSONArray array = response.getJSONArray("data");
-                    ArrayList<UserItem> userItems = new ArrayList<>();
-                    for(int i=0; i<array.length(); i++)
-                        userItems.add(new UserItem(array.getJSONObject(i)));
-                    roomItems.get(roomCount++).setUsers(userItems);
-                    roomAdapter.notifyItemChanged(roomCount - 1);
+                JSONArray array = response.getJSONArray("data");
+                ArrayList<UserItem> userItems = new ArrayList<>();
+                for(int i=0; i<array.length(); i++)
+                    userItems.add(new UserItem(array.getJSONObject(i)));
+                int realIndex = roomMap.get(roomNumber);
+                if(roomItems.get(realIndex).getUsers().size() != userItems.size()) {
+                    roomItems.get(realIndex).setUsers(userItems);
+                    roomAdapter.notifyItemChanged(realIndex);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
