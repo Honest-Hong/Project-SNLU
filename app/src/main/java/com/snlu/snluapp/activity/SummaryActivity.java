@@ -45,6 +45,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class SummaryActivity extends AppCompatActivity implements View.OnClickListener {
     private DocumentItem documentItem;
     private int roomNumber;
@@ -61,7 +64,8 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
-        getSupportActionBar().setTitle("요약하기");
+        ButterKnife.bind(this);
+
         documentItem = new DocumentItem();
         documentItem.setNumber(getIntent().getStringExtra("documentNumber"));
         listViewSentence = (ListView)findViewById(R.id.summary_sentence);
@@ -125,17 +129,16 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
             super.onBackPressed();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_save:
+    @OnClick({R.id.button_save, R.id.button_download})
+    public void onMenuClick(View v) {
+        switch(v.getId()) {
+            case R.id.button_save:
                 saveSummary();
                 break;
-            case R.id.menu_download:
+            case R.id.button_download:
                 downloadFile();
                 break;
         }
-        return true;
     }
 
     void createThreadAndDialog() { //로딩만들기
@@ -190,12 +193,6 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
     };
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_summary, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
     class SentenceAdapter extends BaseAdapter {
         Context context;

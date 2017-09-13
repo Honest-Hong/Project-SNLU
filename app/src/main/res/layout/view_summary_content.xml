@@ -20,7 +20,7 @@
             android:inputType="text"
             android:maxLines="1"
             android:textColor="@color/colorWhite"
-            android:background="@color/colorPink"/>
+            android:background="@drawable/background_button_primary"/>
 
         <ImageView
             android:id="@+id/button_delete"

@@ -88,21 +88,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    @OnClick(R.id.button_add)
     public void onClick(View v) {
-        if(v.getId() == R.id.button_add)
-            startActivity(new Intent(MainActivity.this, CreateRoomActivity.class));
-        else {
-            int position = (int)v.getTag();
-            RoomItem data = roomAdapter.getItem(position);
-            Intent intent = new Intent(MainActivity.this, RoomActivity.class);
-            intent.putExtra("roomNumber", data.getNumber());
-            intent.putExtra("roomTitle", data.getTitle());
-            intent.putExtra("roomChief", data.getChief());
-            intent.putExtra("roomIsStart", data.getIsStart());
-            intent.putExtra("documentNumber", data.getStartedDocumentNumber());
-            startActivity(intent);
-        }
+        int position = (int)v.getTag();
+        RoomItem data = roomAdapter.getItem(position);
+        Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+        intent.putExtra("roomNumber", data.getNumber());
+        intent.putExtra("roomTitle", data.getTitle());
+        intent.putExtra("roomChief", data.getChief());
+        intent.putExtra("roomIsStart", data.getIsStart());
+        intent.putExtra("documentNumber", data.getStartedDocumentNumber());
+        startActivity(intent);
     }
 
     @OnClick(R.id.button_search)
@@ -119,6 +114,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             editSearch.setText("");
         }
         searching = !searching;
+    }
+
+    @OnClick({R.id.button_star, R.id.button_add, R.id.button_profile})
+    public void onClickMenu(View v) {
+        switch(v.getId()) {
+            case R.id.button_star:
+                break;
+            case R.id.button_add:
+                startActivity(new Intent(this, CreateRoomActivity.class));
+                break;
+            case R.id.button_profile:
+                break;
+        }
     }
 
     @Override
