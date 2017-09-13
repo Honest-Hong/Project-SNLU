@@ -25,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -70,7 +69,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         adapter = new ListAdapter(userItems);
         recyclerView.setAdapter(adapter);
 
-        ImageView button = (ImageView)findViewById(R.id.button_del);
+        ImageView button = (ImageView)findViewById(R.id.button_manager);
         button.setOnClickListener(this);
         button.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.icon_plus));
         setSearchResult(null);
@@ -81,7 +80,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
         final ImageView imageView = (ImageView)findViewById(R.id.image_view);
         TextView textName = (TextView)findViewById(R.id.text_name);
         TextView textId = (TextView)findViewById(R.id.text_id);
-        ImageView button = (ImageView)findViewById(R.id.button_del);
+        ImageView button = (ImageView)findViewById(R.id.button_manager);
         if(item == null) {
             imageView.setVisibility(View.INVISIBLE);
             textName.setVisibility(View.INVISIBLE);
@@ -130,7 +129,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 EditText editText = (EditText)findViewById(R.id.edit_search);
                 requestSearch(editText.getText().toString());
                 break;
-            case R.id.button_del:
+            case R.id.button_manager:
                 // 회의자를 리사이클러 뷰에 추가하는 과정
                 boolean isExisted = false;
                 for(int i=0; i<adapter.data.size(); i++) {
@@ -336,7 +335,7 @@ public class CreateRoomActivity extends AppCompatActivity implements View.OnClic
                 super(view);
                 textName = (TextView)view.findViewById(R.id.text_name);
                 textId = (TextView)view.findViewById(R.id.text_id);
-                button = (ImageView)view.findViewById(R.id.button_del);
+                button = (ImageView)view.findViewById(R.id.button_manager);
                 button.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_delete));
                 imageView = (ImageView)view.findViewById(R.id.image_view);
             }

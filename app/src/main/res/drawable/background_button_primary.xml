@@ -9,8 +9,8 @@
             <solid
                 android:color="@color/colorPrimaryDark"/>
             <padding
-                android:left="24dp"
-                android:right="24dp"
+                android:left="32dp"
+                android:right="32dp"
                 android:top="12dp"
                 android:bottom="12dp" />
         </shape>
@@ -24,8 +24,8 @@
             <solid
                 android:color="@color/colorBlue"/>
             <padding
-                android:left="24dp"
-                android:right="24dp"
+                android:left="32dp"
+                android:right="32dp"
                 android:top="12dp"
                 android:bottom="12dp" />
         </shape>

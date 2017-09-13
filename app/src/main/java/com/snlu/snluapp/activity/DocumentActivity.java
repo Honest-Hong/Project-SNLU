@@ -31,6 +31,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,8 +51,6 @@ import com.snlu.snluapp.util.SNLUVolley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +74,7 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
     @BindView(R.id.button_cancel) View buttonCancel;
     @BindView(R.id.button_edit) View buttonEdit;
     @BindView(R.id.button_search) View buttonSearch;
+    @BindView(R.id.image_cloud) ImageView imageCloud;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     private SentencesDetailAdapter adapter;
     private long downloadId;
@@ -273,17 +273,18 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
 
     @OnClick(R.id.button_restart)
     public void doRestart() {
-        SNLUAlertDialog dialog = new SNLUAlertDialog(this);
-        dialog.setTitle("알림");
-        dialog.setMessage("회의를 다시 시작 하시겠습니까?");
-        dialog.setOnYesClickListener(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                requestResume();
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
+        SNLUAlertDialog.newInstance(
+                "알림",
+                "회의를 다시 시작 하시겠습니까?",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestResume();
+                        dialog.dismiss();
+                    }
+                },
+                null
+        ).show(getSupportFragmentManager(), null);
     }
 
     public void showFabs() {
@@ -296,6 +297,7 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
         textPDF.setVisibility(View.VISIBLE);
         textStatistic.setVisibility(View.VISIBLE);
         textSummary.setVisibility(View.VISIBLE);
+        imageCloud.setVisibility(View.VISIBLE);
     }
 
     public void hideFabs() {
@@ -308,6 +310,7 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
         textPDF.setVisibility(View.GONE);
         textStatistic.setVisibility(View.GONE);
         textSummary.setVisibility(View.GONE);
+        imageCloud.setVisibility(View.GONE);
     }
 
     private void requestResume() {

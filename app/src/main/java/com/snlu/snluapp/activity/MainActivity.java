@@ -3,19 +3,16 @@ package com.snlu.snluapp.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +20,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.data.LoginInformation;
 import com.snlu.snluapp.item.RoomItem;
+import com.snlu.snluapp.item.UserItem;
 import com.snlu.snluapp.util.SNLULog;
 import com.snlu.snluapp.util.SNLUVolley;
 
@@ -154,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             findViewById(R.id.text_help).setVisibility(View.VISIBLE);
                         } else {
                             findViewById(R.id.text_help).setVisibility(View.GONE);
+                            requestUserList();
                         }
                     } else if (result.equals("1")) {
                         // 다른 에러
@@ -164,6 +163,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
+    // 유저 목록 요청
+    private void requestUserList() {
+        if(roomCount == roomItems.size()) {
+            return;
+        }
+        roomCount = 0;
+        try {
+            for(RoomItem item : roomItems) {
+                JSONObject json = new JSONObject();
+                json.put("roomNumber", item.getNumber());
+                SNLUVolley.getInstance(this).post("userList", json, requestUserListListener);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 유저 목록 요청 결과 리스너
+    private int roomCount = 0;
+    private SNLUVolley.OnResponseListener requestUserListListener = new SNLUVolley.OnResponseListener() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                String result = response.getString("result");
+                SNLULog.v(response.toString());
+                if(result.equals("0")) {
+                    JSONArray array = response.getJSONArray("data");
+                    ArrayList<UserItem> userItems = new ArrayList<>();
+                    for(int i=0; i<array.length(); i++)
+                        userItems.add(new UserItem(array.getJSONObject(i)));
+                    roomItems.get(roomCount++).setUsers(userItems);
+                    roomAdapter.notifyItemChanged(roomCount - 1);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     class RoomAdapter extends RecyclerView.Adapter {
         private Context context;
@@ -199,12 +237,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             vh.textTitle.setText(data.get(position).getTitle());
             vh.cardView.setTag(position);
             if(data.get(position).getIsStart().equals("1")) {
-                vh.textProceed.setText("회의 진행중");
+                vh.textProceed.setText("회의중");
+                vh.imageState.setImageResource(R.drawable.ic_circle_green);
             }
             else {
-                vh.textProceed.setText("회의 휴식중");
+                vh.textProceed.setText("회의종료");
+                vh.imageState.setImageResource(R.drawable.ic_circle_red);
             }
             vh.textCount.setText(data.get(position).getCount() + "");
+            String str = "";
+            for(UserItem item : data.get(position).getUsers()) {
+                str += item.getName() + ", ";
+            }
+            if(str.length() > 0) {
+                vh.textMember.setText(str.substring(0, str.length() - 2));
+            }
         }
 
         @Override
@@ -213,14 +260,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView textTitle, textProceed, textCount;
-            public CardView cardView;
+            @BindView(R.id.card_view) CardView cardView;
+            @BindView(R.id.text_title) TextView textTitle;
+            @BindView(R.id.text_proceed) TextView textProceed;
+            @BindView(R.id.text_member) TextView textMember;
+            @BindView(R.id.text_amount) TextView textCount;
+            @BindView(R.id.image_state) ImageView imageState;
             public ViewHolder(View itemView) {
                 super(itemView);
-                textTitle = (TextView)itemView.findViewById(R.id.text_title);
-                textProceed = (TextView)itemView.findViewById(R.id.text_proceed);
-                textCount = (TextView)itemView.findViewById(R.id.text_amount);
-                cardView = (CardView)itemView.findViewById(R.id.linear_layout);
+                ButterKnife.bind(this, itemView);
                 cardView.setOnClickListener(MainActivity.this);
                 cardView.setOnLongClickListener(MainActivity.this);
             }

@@ -18,7 +18,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="5dp"
-            android:src="@drawable/icon_user"/>
+            android:src="@drawable/ic_user"/>
 
         <TextView
             android:id="@+id/text_name"
@@ -37,10 +37,10 @@
             android:textColor="@color/colorBlue"/>
 
         <ImageView
-            android:id="@+id/button_del"
+            android:id="@+id/button_manager"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:padding="10dp"
-            android:src="@drawable/icon_delete"/>
+            android:src="@drawable/ic_manager"/>
     </LinearLayout>
 </LinearLayout>

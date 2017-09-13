@@ -13,8 +13,10 @@ public class RoomItem {
     private String isStart;
     private String startedDocumentNumber;
     private int count;
+    private ArrayList<UserItem> users;
 
     public RoomItem() {
+        users = new ArrayList<>();
     }
 
     public String getNumber() {
@@ -63,5 +65,13 @@ public class RoomItem {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public ArrayList<UserItem> getUsers() {
+        return users;
+    }
+
+    public void setUsers(ArrayList<UserItem> users) {
+        this.users = users;
     }
 }

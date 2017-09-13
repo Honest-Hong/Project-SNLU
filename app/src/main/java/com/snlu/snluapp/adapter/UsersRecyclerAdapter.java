@@ -3,11 +3,9 @@ package com.snlu.snluapp.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,6 @@ import android.widget.TextView;
 import com.snlu.snluapp.R;
 import com.snlu.snluapp.item.UserItem;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -80,17 +77,15 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
         }
         vh.textName.setText(userItems.get(position).getName());
 
-        if(userItems.get(position).isSelected())
+        if(userItems.get(position).isSelected()) {
             vh.textId.setText(String.format("(%s)(방장)", userItems.get(position).getId()));
-        else
+            vh.imageManager.setVisibility(View.VISIBLE);
+        }
+        else {
             vh.textId.setText("(" + userItems.get(position).getId() + ")");
-
-        if(isChief && !userItems.get(position).isSelected()) {
+            vh.imageManager.setVisibility(View.GONE);
             vh.linearLayout.setOnClickListener(onUserClickListener);
             vh.linearLayout.setTag(position);
-            vh.buttonDel.setVisibility(View.VISIBLE);
-        } else {
-            vh.buttonDel.setVisibility(View.GONE);
         }
     }
 
@@ -101,24 +96,24 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textName, textId;
-        public ImageView imageView, buttonDel;
+        public ImageView imageView, imageManager;
         public LinearLayout linearLayout;
         public ViewHolder(View itemView) {
             super(itemView);
             textName = (TextView)itemView.findViewById(R.id.text_name);
             textId = (TextView)itemView.findViewById(R.id.text_id);
             imageView = (ImageView)itemView.findViewById(R.id.image_view);
-            buttonDel = (ImageView)itemView.findViewById(R.id.button_del);
-            if(isChief) {
-                linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
-            }
+            imageManager = (ImageView)itemView.findViewById(R.id.button_manager);
+            linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
         }
     }
 
     private View.OnClickListener onUserClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            onItemClickListener.onItemClick((int)v.getTag());
+            if(isChief) {
+                onItemClickListener.onItemClick((int) v.getTag());
+            }
         }
     };
 }
