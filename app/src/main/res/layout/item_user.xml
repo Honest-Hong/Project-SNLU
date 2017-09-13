@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:background="@drawable/background_round_rectangle_primary"
-    android:id="@+id/linear_layout">
+    android:id="@+id/parent">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -66,7 +66,7 @@ public class DocumentsRecyclerAdapter extends RecyclerView.Adapter {
             super(itemView);
             textTitle = (TextView)itemView.findViewById(R.id.text_title);
             textDate = (TextView)itemView.findViewById(R.id.text_date);
-            linearLayout = (LinearLayout)itemView.findViewById(R.id.linear_layout);
+            linearLayout = (LinearLayout)itemView.findViewById(R.id.parent);
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

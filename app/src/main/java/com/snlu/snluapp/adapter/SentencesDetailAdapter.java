@@ -8,9 +8,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,8 +35,9 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
     private String keyword;
     private boolean isCheif;
     private String userId;
+    private String managerId;
 
-    public SentencesDetailAdapter(Context context, OnEditListener editListener, boolean isCheif, String userId) {
+    public SentencesDetailAdapter(Context context, OnEditListener editListener, boolean isCheif, String userId, String managerId) {
         this.context = context;
         this.sentenceItems = new ArrayList<>();
         this.editListener = editListener;
@@ -47,6 +47,7 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
         keyword = "";
         this.isCheif = isCheif;
         this.userId = userId;
+        this.managerId = managerId;
     }
 
     public void setSearchKeyword(String keyword) {
@@ -131,10 +132,16 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
         } else {
             vh.linearLayout.setGravity(Gravity.START);
         }
-        if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName()))
+        if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName())) {
             vh.textName.setVisibility(View.GONE);
-        else
+            vh.imageManager.setVisibility(View.GONE);
+        }
+        else {
             vh.textName.setVisibility(View.VISIBLE);
+            if(managerId.equals(item.getSpeakerPhoneNumber())) {
+                vh.imageManager.setVisibility(View.VISIBLE);
+            }
+        }
         vh.textName.setText(item.getSpeakerName());
         if(editedPosition == position) {
             vh.textSentence.setVisibility(View.GONE);
@@ -170,8 +177,9 @@ public class SentencesDetailAdapter extends RecyclerView.Adapter {
         @BindView(R.id.text_name) TextView textName;
         @BindView(R.id.text_time) TextView textTime;
         @BindView(R.id.text_sentence) TextView textSentence;
-        @BindView(R.id.linear_layout) LinearLayout linearLayout;
+        @BindView(R.id.parent) LinearLayout linearLayout;
         @BindView(R.id.edit_sentence) EditText editSentence;
+        @BindView(R.id.image_manager) ImageView imageManager;
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

@@ -106,7 +106,7 @@ public class DocumentActivity extends AppCompatActivity implements OnEditListene
 
         // 회의 내용 리사이클러뷰 설정
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SentencesDetailAdapter(this, this, isChief, SNLUSharedPreferences.get(this, "user_phone_number"));
+        adapter = new SentencesDetailAdapter(this, this, isChief, SNLUSharedPreferences.get(this, "user_phone_number"), getIntent().getStringExtra("managerId"));
         recyclerView.setAdapter(adapter);
 
         SNLUPermission.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 100);

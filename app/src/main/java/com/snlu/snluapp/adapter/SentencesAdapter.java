@@ -7,7 +7,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,11 +27,13 @@ public class SentencesAdapter extends RecyclerView.Adapter {
     private Context context;
     private ArrayList<SentenceItem> sentenceItems;
     private String userId;
+    private String managerId;
 
-    public SentencesAdapter(Context context, ArrayList<SentenceItem> sentenceItems, String userId) {
+    public SentencesAdapter(Context context, ArrayList<SentenceItem> sentenceItems, String userId, String managerId) {
         this.context = context;
         this.sentenceItems = sentenceItems;
         this.userId = userId;
+        this.managerId = managerId;
     }
 
     public void addItem(SentenceItem item) {
@@ -55,10 +57,16 @@ public class SentencesAdapter extends RecyclerView.Adapter {
             vh.linear.setGravity(Gravity.START);
         }
         vh.textName.setText(item.getSpeakerName());
-        if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName()))
+        if(position > 0 && sentenceItems.get(position - 1).getSpeakerName().equals(item.getSpeakerName())) {
             vh.textName.setVisibility(View.GONE);
-        else
+            vh.imageManager.setVisibility(View.GONE);
+        }
+        else {
             vh.textName.setVisibility(View.VISIBLE);
+            if(managerId.equals(item.getSpeakerPhoneNumber())) {
+                vh.imageManager.setVisibility(View.VISIBLE);
+            }
+        }
         vh.textSentence.setText(item.getSentence());
         String time = item.getSpeakTime();
         if(position > 0 && sentenceItems.get(position - 1).getSpeakTime().substring(11,16).equals(item.getSpeakTime().substring(11,16)))
@@ -78,7 +86,8 @@ public class SentencesAdapter extends RecyclerView.Adapter {
         @BindView(R.id.text_name) TextView textName;
         @BindView(R.id.text_time) TextView textTime;
         @BindView(R.id.text_sentence) TextView textSentence;
-        @BindView(R.id.linear_layout) LinearLayout linear;
+        @BindView(R.id.parent) LinearLayout linear;
+        @BindView(R.id.image_manager) ImageView imageManager;
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

@@ -104,7 +104,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter {
             textId = (TextView)itemView.findViewById(R.id.text_id);
             imageView = (ImageView)itemView.findViewById(R.id.image_view);
             imageManager = (ImageView)itemView.findViewById(R.id.button_manager);
-            linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
+            linearLayout = (LinearLayout) itemView.findViewById(R.id.parent);
         }
     }
 

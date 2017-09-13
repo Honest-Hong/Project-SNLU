@@ -77,11 +77,6 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
         ButterKnife.bind(this);
 
         textTitle.setText("회의중");
-
-        // 문장들을 뿌려주는 화면
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SentencesAdapter(this, new ArrayList<SentenceItem>(), SNLUSharedPreferences.get(this, "user_phone_number"));
-        recyclerView.setAdapter(adapter);
         // 발언하는 사람의 이름
 //        textSpeaker = (TextView)findViewById(R.id.conference_speaker_name);
         // 음성인식 인텐트
@@ -94,6 +89,11 @@ public class ConferenceActivity extends AppCompatActivity implements Recognition
         roomItem = new RoomItem();
         roomItem.setNumber(getIntent().getStringExtra("roomNumber"));
         roomItem.setChief(getIntent().getStringExtra("roomChief"));
+
+        // 문장들을 뿌려주는 화면
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new SentencesAdapter(this, new ArrayList<SentenceItem>(), SNLUSharedPreferences.get(this, "user_phone_number"), roomItem.getChief());
+        recyclerView.setAdapter(adapter);
 
         // 회의록의 정보 저장하기
         documentItem = new DocumentItem();

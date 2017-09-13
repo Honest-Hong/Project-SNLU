@@ -16,8 +16,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -238,7 +236,7 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_summary_content, parent, false);
             EditText editName = (EditText)v.findViewById(R.id.edit_name);
             editName.setText(contentItems.get(i).getName());
-            LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.linear_layout);
+            LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.parent);
             makeSentences(linearLayout, contentItems.get(i).getSentenceItems());
             editName.setTag(linearLayout);
             editName.setOnDragListener(onDragListener);
@@ -261,7 +259,7 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_summary_content, parent, false);
         EditText editName = (EditText)v.findViewById(R.id.edit_name);
         editName.setText("새 폴더");
-        LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.linear_layout);
+        LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.parent);
         editName.setTag(linearLayout);
         editName.setOnDragListener(onDragListener);
         View buttonDelete = v.findViewById(R.id.button_delete);
@@ -346,7 +344,7 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
                 JSONObject con = new JSONObject();
                 EditText editName = (EditText)linearContent.getChildAt(i).findViewById(R.id.edit_name);
                 con.put("item", editName.getText().toString());
-                LinearLayout linearLayout = (LinearLayout)linearContent.getChildAt(i).findViewById(R.id.linear_layout);
+                LinearLayout linearLayout = (LinearLayout)linearContent.getChildAt(i).findViewById(R.id.parent);
                 JSONArray sentences = new JSONArray();
                 for(int j=0; j<linearLayout.getChildCount(); j++) {
                     JSONObject sentence = new JSONObject();
