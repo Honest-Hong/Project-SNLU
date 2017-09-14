@@ -111,8 +111,10 @@ public class RoomActivity extends AppCompatActivity {
 
         recyclerViewUsers = (RecyclerView)findViewById(R.id.recycler_view_users);
         recyclerViewUsers.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewUsers.setHasFixedSize(true);
         recyclerViewDocuments = (RecyclerView)findViewById(R.id.recycler_view_documents);
         recyclerViewDocuments.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewDocuments.setHasFixedSize(true);
     }
 
     private void startConferenceActivity(String documentNumber) {
@@ -158,37 +160,34 @@ public class RoomActivity extends AppCompatActivity {
         @Override
         public void onResponse(JSONObject response) {
             try {
-                String result = response.getString("result");
                 SNLULog.v(response.toString());
-                if(result.equals("0")) {
-                    JSONArray array = response.getJSONArray("data");
-                    ArrayList<UserItem> userItems = new ArrayList<>();
-                    for(int i=0; i<array.length(); i++)
-                        userItems.add(new UserItem(array.getJSONObject(i)));
-                    for(int i=0; i<array.length(); i++)
-                        if(userItems.get(i).getId().equals(room.getChief()))
-                            userItems.get(i).setSelected(true);
-                    recyclerViewUsers.setAdapter(new UsersRecyclerAdapter(RoomActivity.this, userItems, new OnItemClickListener() {
-                        @Override
-                        public void onItemClick(int position) {
-                            UsersRecyclerAdapter adapter = (UsersRecyclerAdapter)recyclerViewUsers.getAdapter();
-                            SNLUAlertDialog.newInstance(
-                                    "알림",
-                                    "정말로 " + adapter.getItem(position).getName() + "님을 회의방에서 강퇴하시겠습니까?",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            SNLUAlertDialog snluAlertDialog = (SNLUAlertDialog)dialog;
-                                            UserItem item = (UserItem)snluAlertDialog.getItem();
-                                            requestDelUser(item.getId());
-                                            dialog.dismiss();
-                                        }
-                                    },
-                                    null
-                            ).show(getSupportFragmentManager(), null);
-                        }
-                    }, isChief));
-                }
+                JSONArray array = response.getJSONArray("data");
+                ArrayList<UserItem> userItems = new ArrayList<>();
+                for(int i=0; i<array.length(); i++)
+                    userItems.add(new UserItem(array.getJSONObject(i)));
+                for(int i=0; i<array.length(); i++)
+                    if(userItems.get(i).getId().equals(room.getChief()))
+                        userItems.get(i).setSelected(true);
+                recyclerViewUsers.setAdapter(new UsersRecyclerAdapter(RoomActivity.this, userItems, new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        UsersRecyclerAdapter adapter = (UsersRecyclerAdapter)recyclerViewUsers.getAdapter();
+                        SNLUAlertDialog.newInstance(
+                                "알림",
+                                "정말로 " + adapter.getItem(position).getName() + "님을 회의방에서 강퇴하시겠습니까?",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        SNLUAlertDialog snluAlertDialog = (SNLUAlertDialog)dialog;
+                                        UserItem item = (UserItem)snluAlertDialog.getItem();
+                                        requestDelUser(item.getId());
+                                        dialog.dismiss();
+                                    }
+                                },
+                                null
+                        ).show(getSupportFragmentManager(), null);
+                    }
+                }, isChief));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
