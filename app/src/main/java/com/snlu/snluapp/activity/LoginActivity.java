@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .centerCrop()
                 .into(imageBackground);
 
-        getAppKeyHash();
+        //getAppKeyHash();
         Session.getCurrentSession().addCallback(this);
         Session.getCurrentSession().checkAndImplicitOpen();
         facebookCallbackManager = CallbackManager.Factory.create();
@@ -105,14 +105,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // 카카오 로그인 처리
     @Override
     public void onSessionOpened() {
-        Log.v("Kakao", "onSessionOpened");
+        //Log.v("Kakao", "onSessionOpened");
         requestKaKaoInformation();
     }
 
     @Override
     public void onSessionOpenFailed(KakaoException exception) {
         Toast.makeText(LoginActivity.this, "onSessionOpenFailed: " + exception, Toast.LENGTH_LONG).show();
-        Log.e("Kakao", "onSessionOpenFailed: " + exception);
+        //Log.e("Kakao", "onSessionOpenFailed: " + exception);
     }
 
     private void requestKaKaoInformation() {
@@ -192,7 +192,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void requestSignUp(final String phoneNumber, final String name, final String image) {
-        Log.d("SignUp", String.format("userName(%s), userEmail(%s), userImage(%s)", name, phoneNumber, image));
+        //Log.d("SignUp", String.format("userName(%s), userEmail(%s), userImage(%s)", name, phoneNumber, image));
         try {
             JSONObject json = new JSONObject();
             json.put("phoneNumber", phoneNumber);
